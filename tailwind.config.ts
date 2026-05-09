@@ -59,6 +59,9 @@ export default {
         'breathing': 'breathing 4s ease-in-out infinite',
         'buff-pulse': 'buff-pulse 1.2s ease-in-out infinite',
         'shimmer': 'shimmer 1.5s linear infinite',
+        'shuffle': 'shuffle 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards',
+        'reveal-flip': 'reveal-flip 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'halo-pulse': 'halo-pulse 2s ease-in-out infinite',
       },
       keyframes: {
         breathing: {
@@ -72,6 +75,22 @@ export default {
         shimmer: {
           '0%':   { backgroundPosition: '200% 0' },
           '100%': { backgroundPosition: '-200% 0' },
+        },
+        shuffle: {
+          '0%':   { transform: 'rotate(0deg) scale(0.85)',   opacity: '0.6' },
+          '20%':  { transform: 'rotate(-12deg) scale(0.95)', opacity: '0.85' },
+          '50%':  { transform: 'rotate(180deg) scale(1.05)', opacity: '1' },
+          '80%':  { transform: 'rotate(348deg) scale(0.95)', opacity: '0.85' },
+          '100%': { transform: 'rotate(360deg) scale(0.7)',  opacity: '0' },
+        },
+        'reveal-flip': {
+          '0%':   { transform: 'rotateY(180deg) scale(0.5)', opacity: '0' },
+          '60%':  { transform: 'rotateY(-12deg) scale(1.08)', opacity: '1' },
+          '100%': { transform: 'rotateY(0deg) scale(1)',     opacity: '1' },
+        },
+        'halo-pulse': {
+          '0%, 100%': { filter: 'brightness(1.0)' },
+          '50%':      { filter: 'brightness(1.25)' },
         },
       },
     },

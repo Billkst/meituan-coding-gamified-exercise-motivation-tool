@@ -1,28 +1,19 @@
 import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
-import {
-  useSubmitWorkout,
-  type SubmitWorkoutResult,
-} from '@/api/submitWorkout'
-import type { Intensity, Sport, Rarity } from '@/types/db'
+import { useSubmitWorkout } from '@/api/submitWorkout'
+import type { Intensity, Sport } from '@/types/db'
 
 const INTENSITIES: Intensity[] = ['light', 'medium', 'high']
 
-const RARITY_BADGE_CLASS: Record<Rarity, string> = {
-  common: 'border-rarity-common text-rarity-common',
-  rare: 'border-rarity-rare text-rarity-rare',
-  epic: 'border-rarity-epic text-rarity-epic',
-  legendary: 'border-rarity-legendary text-rarity-legendary',
-}
-
 export default function Workout() {
   const { t, lang } = useTranslation()
+  const navigate = useNavigate()
   const [sportId, setSportId] = useState('running')
   const [duration, setDuration] = useState(30)
   const [intensity, setIntensity] = useState<Intensity>('medium')
-  const [result, setResult] = useState<SubmitWorkoutResult | null>(null)
 
   const { data: sports } = useQuery({
     queryKey: ['sports'],
@@ -42,7 +33,11 @@ export default function Workout() {
     e.preventDefault()
     submit.mutate(
       { sportId, durationMinutes: duration, intensity },
-      { onSuccess: (r) => setResult(r) }
+      {
+        onSuccess: (r) => {
+          navigate('/loot', { state: { result: r, ts: Date.now() } })
+        },
+      }
     )
   }
 
@@ -144,44 +139,6 @@ export default function Workout() {
           </div>
         )}
       </form>
-
-      {/* Result */}
-      {result && (
-        <section className="mt-6 bg-bg-secondary border border-white/10 rounded-card p-8 max-w-2xl">
-          <div className="font-mono text-[11px] uppercase tracking-widest text-accent-primary mb-4">
-            {t('workout.result')}
-          </div>
-          <div className="space-y-3">
-            <div className="font-display text-2xl font-bold text-accent-primary tabular-nums">
-              {t('workout.xp_gained', { n: result.xp_gained })}
-            </div>
-            <div className="font-mono text-sm">
-              {t('workout.streak_now', { n: result.streak })}
-              {result.streak_status === 'new' && (
-                <span className="text-text-tertiary"> · {t('workout.streak_new')}</span>
-              )}
-              {result.streak_status === 'continued' && (
-                <span className="text-text-tertiary"> · {t('workout.streak_continued')}</span>
-              )}
-              {result.streak_status === 'same_day' && (
-                <span className="text-text-tertiary"> · {t('workout.streak_same_day')}</span>
-              )}
-            </div>
-            <div className="font-mono text-sm flex items-center gap-2">
-              <span className="text-text-secondary">{t('workout.card_drawn')} ·</span>
-              <span className="text-text-primary">{result.card_drawn.id}</span>
-              <span
-                className={
-                  'inline-block px-2 py-0.5 text-[10px] uppercase tracking-widest rounded-full border ' +
-                  RARITY_BADGE_CLASS[result.card_drawn.rarity]
-                }
-              >
-                {result.card_drawn.rarity}
-              </span>
-            </div>
-          </div>
-        </section>
-      )}
     </div>
   )
 }
