@@ -1,0 +1,71 @@
+import { useTranslation } from '@/lib/i18n'
+
+export default function Dashboard() {
+  const { t } = useTranslation()
+  const streak = 47
+
+  return (
+    <div className="max-w-container mx-auto px-8 py-12">
+      <header className="mb-12">
+        <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
+          {t('dashboard.section')}
+        </div>
+        <h1 className="font-display font-bold text-3xl uppercase tracking-tight">
+          {t('dashboard.welcome', { name: '陈思源' })}
+        </h1>
+      </header>
+
+      {/* Streak hero — memorable visual anchor */}
+      <section className="bg-bg-secondary border border-white/10 rounded-card py-16 px-8 mb-8 text-center">
+        <div className="font-mono text-base uppercase tracking-[0.1em] text-text-secondary mb-2">
+          {t('dashboard.streak_label', { n: streak })}
+        </div>
+        <div
+          className="font-display font-black text-accent-primary leading-none animate-breathing"
+          style={{
+            fontSize: 'clamp(80px, 14vh, 180px)',
+            fontVariantNumeric: 'tabular-nums',
+            textShadow:
+              '0 0 24px rgba(182,255,60,0.7), 0 0 48px rgba(182,255,60,0.3)',
+          }}
+        >
+          {streak}
+        </div>
+        <div className="font-mono text-xs text-text-tertiary mt-4 uppercase tracking-wider">
+          {t('dashboard.streak_sub')}
+        </div>
+      </section>
+
+      {/* Secondary stats */}
+      <section className="grid grid-cols-3 gap-4">
+        <StatCard
+          label={t('dashboard.total_cards')}
+          value="47"
+          sub={t('dashboard.total_cards_sub')}
+        />
+        <StatCard
+          label={t('dashboard.this_week')}
+          value="286"
+          sub={t('dashboard.this_week_sub')}
+        />
+        <StatCard
+          label={t('dashboard.rank')}
+          value="#12"
+          sub={t('dashboard.rank_sub')}
+        />
+      </section>
+    </div>
+  )
+}
+
+function StatCard({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div className="bg-bg-secondary border border-white/10 rounded-card px-6 py-5">
+      <div className="font-mono text-[11px] uppercase tracking-widest text-text-tertiary mb-2">
+        {label}
+      </div>
+      <div className="font-display text-3xl font-bold tabular-nums">{value}</div>
+      <div className="font-mono text-xs text-text-secondary mt-1">{sub}</div>
+    </div>
+  )
+}

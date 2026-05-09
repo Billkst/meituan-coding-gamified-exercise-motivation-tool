@@ -81,6 +81,12 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
+## 5. Design System
+
+Always read `DESIGN.md` (in repo root) before making any visual or UI decisions. All font choices, colors, spacing, and aesthetic direction are defined there. Do not deviate without explicit user approval. In QA mode, flag any code that doesn't match DESIGN.md.
+
+Token preview reference (live fonts + glow + icons): `~/.gstack/projects/Billkst-meituan-coding-gamified-exercise-motivation-tool/designs/design-tokens-preview-20260509.html`
+
 ---
 
 ## gstack

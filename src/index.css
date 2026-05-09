@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #14182a;
+  --bg-tertiary: #1a2030;
+  --accent-primary: #b6ff3c;
+  --accent-pink: #ff3c8c;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a8c0;
+  --text-tertiary: #666870;
+  --rarity-common: #888888;
+  --rarity-rare: #3c8cff;
+  --rarity-epic: #9c3cff;
+  --rarity-legendary: #ffc83c;
+  --semantic-success: #b6ff3c;
+  --semantic-warning: #ffc83c;
+  --semantic-error: #ff4040;
+  --semantic-info: #3c8cff;
+  --border-default: rgba(255, 255, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Instrument Sans', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

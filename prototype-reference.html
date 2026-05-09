@@ -1,0 +1,2076 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1440" />
+<title>PULSE · 大学生运动公会</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg-deep: #060912;
+    --panel: #111729;
+    --panel-2: #161e36;
+    --line: rgba(255,255,255,.06);
+    --line-2: rgba(255,255,255,.10);
+    --ink: #eef1f8;
+    --ink-2: #aab3c8;
+    --ink-3: #6a7493;
+    --ink-4: #444d68;
+    --acid: #b6ff3c;          /* primary neon */
+    --acid-deep: #7cd820;
+    --cyan: #4cf2ff;
+    --magenta: #ff3d8a;
+    --gold: #ffd166;
+    --orange: #ff7a3d;
+    --violet: #a78bfa;
+    --hp: #ff5577;
+    --mp: #4cf2ff;
+    --xp: #b6ff3c;
+    --rare: #4cf2ff;
+    --epic: #a78bfa;
+    --legend: #ffd166;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg-deep); color: var(--ink); font-family: 'Manrope', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .display { font-family: 'Bebas Neue', 'Manrope', sans-serif; letter-spacing: .02em; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.06); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.12); border: 2px solid transparent; background-clip: content-box; }
+
+  /* base utils */
+  .stripes-bg {
+    background-image:
+      linear-gradient(135deg, rgba(255,255,255,.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.02) 50%, rgba(255,255,255,.02) 75%, transparent 75%);
+    background-size: 16px 16px;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .scanlines::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
+  }
+
+  /* background ambient */
+  .ambient {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(70% 50% at 20% 10%, rgba(76,242,255,.06), transparent 60%),
+      radial-gradient(60% 50% at 90% 90%, rgba(182,255,60,.05), transparent 60%),
+      radial-gradient(40% 30% at 60% 50%, rgba(167,139,250,.04), transparent 60%);
+  }
+
+  /* shell */
+  .shell { position: relative; min-height: 100vh; display: grid; grid-template-columns: 240px 1fr; z-index: 1; }
+  .sidebar {
+    position: sticky; top: 0; height: 100vh; background: linear-gradient(180deg, #0c1124 0%, #080d1a 100%);
+    border-right: 1px solid var(--line); display: flex; flex-direction: column;
+  }
+  .main { min-height: 100vh; min-width: 0; }
+
+  /* header */
+  .topbar {
+    height: 72px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--line); background: rgba(8,11,22,.7); backdrop-filter: blur(12px); position: sticky; top: 0; z-index: 10;
+  }
+
+  /* generic surfaces */
+  .panel {
+    background: linear-gradient(180deg, var(--panel) 0%, #0d1322 100%);
+    border: 1px solid var(--line); border-radius: 16px; position: relative;
+  }
+  .panel.elev { box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 24px 60px rgba(0,0,0,.4); }
+  .panel.tile {
+    background: linear-gradient(180deg, var(--panel) 0%, #0a0f1c 100%);
+  }
+  .panel.acid {
+    border: 1px solid rgba(182,255,60,.3);
+    background: linear-gradient(180deg, rgba(182,255,60,.08) 0%, rgba(182,255,60,.02) 100%);
+  }
+  .corner-ticks::before, .corner-ticks::after {
+    content: ''; position: absolute; width: 14px; height: 14px;
+    border: 1px solid rgba(182,255,60,.55);
+  }
+  .corner-ticks::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+  .corner-ticks::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+  /* primary button */
+  .btn {
+    appearance: none; border: 0; cursor: pointer; font-family: inherit;
+    display: inline-flex; align-items: center; gap: 10px; justify-content: center;
+    padding: 12px 20px; border-radius: 10px; font-weight: 700; letter-spacing: .02em;
+    transition: transform .12s, box-shadow .12s, background .12s, color .12s;
+  }
+  .btn-acid {
+    background: var(--acid); color: #0a0e1a;
+    box-shadow: 0 0 0 1px rgba(182,255,60,.4), 0 8px 24px rgba(182,255,60,.25);
+  }
+  .btn-acid:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(182,255,60,.5), 0 12px 32px rgba(182,255,60,.35); }
+  .btn-ghost {
+    background: rgba(255,255,255,.04); color: var(--ink); border: 1px solid var(--line-2);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.08); }
+  .btn-magenta {
+    background: var(--magenta); color: #fff;
+    box-shadow: 0 0 0 1px rgba(255,61,138,.4), 0 8px 24px rgba(255,61,138,.25);
+  }
+
+  /* chip */
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    letter-spacing: .04em; text-transform: uppercase;
+    background: rgba(255,255,255,.06); color: var(--ink-2);
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .chip.acid { background: rgba(182,255,60,.15); color: var(--acid); }
+  .chip.cyan { background: rgba(76,242,255,.12); color: var(--cyan); }
+  .chip.magenta { background: rgba(255,61,138,.14); color: var(--magenta); }
+  .chip.gold { background: rgba(255,209,102,.14); color: var(--gold); }
+  .chip.violet { background: rgba(167,139,250,.14); color: var(--violet); }
+
+  /* HUD bars */
+  .bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.06); overflow: hidden; position: relative; }
+  .bar > i { position: absolute; inset: 0; right: auto; border-radius: 999px; }
+  .bar.thin { height: 4px; }
+  .bar.thick { height: 14px; }
+
+  /* placeholder image */
+  .ph {
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 6px, rgba(255,255,255,.01) 6px 12px),
+      linear-gradient(180deg, #1a2238 0%, #0c1326 100%);
+    border: 1px dashed rgba(255,255,255,.10);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,.35); font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    text-transform: uppercase; letter-spacing: .12em; text-align: center;
+  }
+
+  /* utility text */
+  .label-tiny { font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--ink-3); }
+  .label-sm { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
+  .h1 { font-family: 'Bebas Neue', sans-serif; font-size: 56px; line-height: 1; letter-spacing: .02em; }
+  .h2 { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; letter-spacing: .02em; }
+  .num { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* glow text */
+  .glow-acid { color: var(--acid); text-shadow: 0 0 12px rgba(182,255,60,.5); }
+  .glow-cyan { color: var(--cyan); text-shadow: 0 0 12px rgba(76,242,255,.5); }
+
+  /* shake/pulse animations */
+  @keyframes pulse-acid { 0%,100% { box-shadow: 0 0 0 0 rgba(182,255,60,.4); } 50% { box-shadow: 0 0 0 8px rgba(182,255,60,0); } }
+  @keyframes blink { 0%,49% {opacity:1} 50%,100% {opacity:.2} }
+  @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+  @keyframes drift { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .live-dot { display:inline-block; width:8px; height:8px; border-radius:999px; background: var(--magenta); animation: blink 1s infinite; }
+
+  /* dividers */
+  .hr { height:1px; background: var(--line); }
+</style>
+
+<!-- React + Babel pinned -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+  <div class="ambient"></div>
+  <div id="root"></div>
+
+  <script>
+    window.TWEAK_DEFAULTS = {
+      "accent": "#b6ff3c",
+      "currentScreen": "dashboard",
+      "showGrid": true,
+      "intensity": "high"
+    };
+  </script>
+
+<script type="text/babel" data-presets="react">
+// ════════════════════════════════════════════════════════════════════════════
+// Shared UI primitives (was components.jsx)
+// ════════════════════════════════════════════════════════════════════════════
+const { useState, useEffect } = React;
+
+const cls = (...a) => a.filter(Boolean).join(' ');
+
+// ICONS — minimal stroke set, all 1.5px stroke, currentColor
+const Icon = ({ name, size = 18, stroke = 1.6 }) => {
+  const paths = {
+    home: <><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></>,
+    bolt: <><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></>,
+    target: <><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></>,
+    sword: <><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></>,
+    shield: <><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/></>,
+    flag: <><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></>,
+    medal: <><circle cx="12" cy="14" r="6"/><path d="M9 4l3 6 3-6"/><path d="M9 4h6"/></>,
+    user: <><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></>,
+    bag: <><path d="M5 8h14l-1 12H6z"/><path d="M9 8a3 3 0 016 0"/></>,
+    chat: <><path d="M21 12c0 4-4 7-9 7-1.5 0-3-.3-4-.7L3 20l1.4-4C3.5 14.7 3 13.4 3 12c0-4 4-7 9-7s9 3 9 7z"/></>,
+    plus: <><path d="M12 5v14M5 12h14"/></>,
+    play: <><path d="M7 4l13 8-13 8z" fill="currentColor"/></>,
+    pause: <><path d="M7 4h4v16H7zM13 4h4v16h-4z" fill="currentColor"/></>,
+    stop: <><rect x="5" y="5" width="14" height="14" fill="currentColor"/></>,
+    fire: <><path d="M12 3c0 4-4 5-4 9a4 4 0 008 0c0-2-1-3-1-5 2 1 3 3 3 5a6 6 0 11-12 0c0-5 6-5 6-9z"/></>,
+    heart: <><path d="M12 21s-8-5-8-11a4.5 4.5 0 018-3 4.5 4.5 0 018 3c0 6-8 11-8 11z"/></>,
+    run: <><circle cx="14" cy="4.5" r="1.5"/><path d="M5 12l4-2 2 4 4-2-2 5 4 4"/><path d="M9 22l2-5"/></>,
+    bike: <><circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M6 17l4-7h5l-3-4"/><path d="M14 6h3"/></>,
+    dumbbell: <><path d="M3 9v6M21 9v6M6 7v10M18 7v10"/><path d="M6 12h12"/></>,
+    yoga: <><circle cx="12" cy="4" r="2"/><path d="M12 7v6M5 21l7-8 7 8"/></>,
+    chevron: <><path d="M9 6l6 6-6 6"/></>,
+    chevronD: <><path d="M6 9l6 6 6-6"/></>,
+    star: <><path d="M12 3l2.6 5.5 6 .9-4.3 4.2 1 6L12 16.8 6.7 19.6l1-6L3.4 9.4l6-.9z"/></>,
+    map: <><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></>,
+    settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1A2 2 0 113 16.9l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H1a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8L2.1 7A2 2 0 014.9 4l.1.1a1.7 1.7 0 001.8.3H7a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1A2 2 0 1117.7 7l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H19a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></>,
+    bell: <><path d="M6 8a6 6 0 1112 0c0 7 3 9 3 9H3s3-2 3-9z"/><path d="M10 21a2 2 0 004 0"/></>,
+    coin: <><circle cx="12" cy="12" r="9"/><path d="M9 9h4a2 2 0 010 4h-3a2 2 0 000 4h4M12 6v2M12 16v2"/></>,
+    crown: <><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></>,
+    lock: <><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 018 0v4"/></>,
+    check: <><path d="M5 12l4 4 10-10"/></>,
+    x: <><path d="M6 6l12 12M18 6L6 18"/></>,
+    arrowR: <><path d="M5 12h14M13 5l7 7-7 7"/></>,
+    timer: <><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></>,
+    pin: <><path d="M12 21s-7-7-7-12a7 7 0 0114 0c0 5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></>,
+    grid: <><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth={stroke}
+         strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {paths[name] || null}
+    </svg>
+  );
+};
+
+// HUD BARS
+const ProgressBar = ({ value, max = 100, color = 'var(--acid)', glow = false, height = 8, segmented = false }) => {
+  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  return (
+    <div className="bar" style={{ height }}>
+      <i style={{
+        width: `${pct}%`,
+        background: color,
+        boxShadow: glow ? `0 0 12px ${color}` : 'none',
+        backgroundImage: segmented
+          ? `repeating-linear-gradient(90deg, transparent 0 7px, rgba(0,0,0,.35) 7px 8px)`
+          : 'none',
+      }} />
+    </div>
+  );
+};
+
+const StatBar = ({ label, value, max, color, abbr }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+      <span className="label-tiny" style={{ color }}>{abbr || label}</span>
+      <span className="num" style={{ fontSize: 12, color: 'var(--ink-2)' }}>
+        <b style={{ color: 'var(--ink)' }}>{value}</b> / {max}
+      </span>
+    </div>
+    <ProgressBar value={value} max={max} color={color} glow height={6} />
+  </div>
+);
+
+// AVATAR — geometric badge, no real photo
+const Avatar = ({ seed = 'A', size = 40, level, ring, color }) => {
+  const colors = ['#b6ff3c', '#4cf2ff', '#ff3d8a', '#ffd166', '#a78bfa', '#ff7a3d'];
+  const idx = (seed.charCodeAt(0) || 0) % colors.length;
+  const c = color || colors[idx];
+  return (
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      <div style={{
+        width: size, height: size, borderRadius: '50%',
+        background: `conic-gradient(from 200deg, ${c}, #0c1124, ${c})`,
+        padding: 2, boxSizing: 'border-box',
+      }}>
+        <div style={{
+          width: '100%', height: '100%', borderRadius: '50%',
+          background: '#0c1124',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: 'Bebas Neue, sans-serif', fontSize: size * 0.45,
+          color: c, letterSpacing: '.04em',
+        }}>{seed}</div>
+      </div>
+      {level != null && (
+        <div style={{
+          position: 'absolute', right: -2, bottom: -2,
+          minWidth: 18, height: 18, padding: '0 4px',
+          borderRadius: 4, background: c, color: '#0a0e1a',
+          fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '2px solid #0c1124',
+        }}>{level}</div>
+      )}
+    </div>
+  );
+};
+
+// PANEL with corner ticks (HUD style)
+const HudPanel = ({ children, style, label, action, padding = 24 }) => (
+  <div className="panel elev" style={{ position: 'relative', ...style }}>
+    {(label || action) && (
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '14px 20px', borderBottom: '1px solid var(--line)',
+      }}>
+        <div className="label-sm" style={{ color: 'var(--ink-2)' }}>{label}</div>
+        <div>{action}</div>
+      </div>
+    )}
+    <div style={{ padding }}>{children}</div>
+  </div>
+);
+
+// SECTION HEADER
+const SectionHeader = ({ kicker, title, action }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 16, gap: 16 }}>
+    <div style={{ minWidth: 0 }}>
+      {kicker && <div className="label-tiny" style={{ color: 'var(--acid)', marginBottom: 6, whiteSpace: 'nowrap' }}>{kicker}</div>}
+      <div className="display" style={{ fontSize: 32, color: 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{title}</div>
+    </div>
+    <div style={{ flexShrink: 0 }}>{action}</div>
+  </div>
+);
+
+// QUEST CARD
+const QuestCard = ({ icon, title, desc, progress, max, xp, coin, rarity = 'common', completed, onClaim }) => {
+  const rarityColor = { common: 'var(--ink-3)', rare: 'var(--rare)', epic: 'var(--epic)', legend: 'var(--legend)' }[rarity];
+  const pct = Math.min(100, (progress / max) * 100);
+  const done = progress >= max;
+  return (
+    <div className="panel tile" style={{
+      padding: 18, display: 'flex', flexDirection: 'column', gap: 14,
+      borderColor: done ? 'rgba(182,255,60,.35)' : 'var(--line)',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 10,
+          background: `linear-gradient(135deg, ${rarityColor}22, transparent)`,
+          border: `1px solid ${rarityColor}55`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: rarityColor, flexShrink: 0,
+        }}>
+          <Icon name={icon} size={22} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, minWidth: 0, lineHeight: 1.3 }}>{title}</div>
+            <div className="label-tiny mono" style={{ color: rarityColor, flexShrink: 0, fontSize: 9, whiteSpace: 'nowrap' }}>{rarity.toUpperCase()}</div>
+          </div>
+          <div style={{ color: 'var(--ink-2)', fontSize: 13, marginTop: 6, lineHeight: 1.4 }}>{desc}</div>
+        </div>
+      </div>
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span className="num" style={{ fontSize: 11, color: 'var(--ink-3)' }}>
+            进度 <b style={{ color: 'var(--ink)' }}>{progress}</b> / {max}
+          </span>
+          <span className="num" style={{ fontSize: 11, color: 'var(--acid)' }}>{Math.round(pct)}%</span>
+        </div>
+        <ProgressBar value={progress} max={max} color={done ? 'var(--acid)' : rarityColor} glow={done} segmented />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          {xp && <span className="chip acid">+{xp} XP</span>}
+          {coin && <span className="chip gold">+{coin} ⊙</span>}
+        </div>
+        {done && !completed && (
+          <button className="btn btn-acid" style={{ padding: '6px 14px', fontSize: 12 }} onClick={onClaim}>
+            领取
+          </button>
+        )}
+        {completed && (
+          <span className="chip acid"><Icon name="check" size={12}/> 已领取</span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// HEAT CELL ROW (calendar / weekly)
+const HeatRow = ({ days = [] }) => (
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+    {days.map((d, i) => {
+      const hasWorkout = d.value > 0;
+      const intensity = Math.min(1, d.value / 100);
+      return (
+        <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+          <div className="label-tiny" style={{ fontSize: 9, color: 'var(--ink-3)' }}>{d.label}</div>
+          <div style={{
+            width: '100%', aspectRatio: '1', borderRadius: 8,
+            background: hasWorkout
+              ? `linear-gradient(180deg, rgba(182,255,60,${.15 + intensity * .55}), rgba(182,255,60,${.05 + intensity * .25}))`
+              : 'rgba(255,255,255,.03)',
+            border: `1px solid ${hasWorkout ? 'rgba(182,255,60,.4)' : 'var(--line)'}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: hasWorkout ? 'var(--acid)' : 'var(--ink-4)',
+            fontFamily: 'JetBrains Mono', fontSize: 11, fontWeight: 700,
+            position: 'relative',
+          }}>
+            {d.today && <i style={{ position: 'absolute', top: 4, right: 4, width: 5, height: 5, borderRadius: '50%', background: 'var(--magenta)' }}/>}
+            {hasWorkout ? d.value : '·'}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+);
+
+// STAT TILE
+const StatTile = ({ label, value, unit, sub, color = 'var(--ink)' }) => (
+  <div className="panel tile" style={{ padding: 18, minWidth: 0 }}>
+    <div className="label-tiny" style={{ marginBottom: 10, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{label}</div>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, whiteSpace: 'nowrap' }}>
+      <span className="display" style={{ fontSize: 36, color, lineHeight: 1 }}>{value}</span>
+      {unit && <span className="mono" style={{ fontSize: 12, color: 'var(--ink-3)' }}>{unit}</span>}
+    </div>
+    {sub && <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 6, lineHeight: 1.4 }}>{sub}</div>}
+  </div>
+);
+
+// ════════════════════════════════════════════════════════════════════════════
+// DASHBOARD — 今日 (player home)
+// ════════════════════════════════════════════════════════════════════════════
+const DashboardScreen = ({ navigate, claimed, onClaim }) => {
+  const week = [
+    { label: '一', value: 78 },
+    { label: '二', value: 0 },
+    { label: '三', value: 65 },
+    { label: '四', value: 92 },
+    { label: '五', value: 48 },
+    { label: '六', value: 34, today: true },
+    { label: '日', value: 0 },
+  ];
+
+  const quests = [
+    { id: 'q1', icon: 'run', title: '校园晨跑 3km', desc: '在 30 分钟内沿西操场环跑 3 公里。',
+      progress: 1.8, max: 3, xp: 120, coin: 60, rarity: 'common' },
+    { id: 'q2', icon: 'dumbbell', title: '上肢推 · 三组', desc: '完成 3 组卧推 / 哑铃推举，组间 ≤ 90s。',
+      progress: 3, max: 3, xp: 200, coin: 120, rarity: 'rare' },
+    { id: 'q3', icon: 'fire', title: '坚持周连击', desc: '本周累计完成 5 次有效训练，已完成 4 次。',
+      progress: 4, max: 5, xp: 350, coin: 200, rarity: 'epic' },
+    { id: 'q4', icon: 'shield', title: '【宿舍战】贡献 200 步力', desc: '为 405 寝室公会战贡献至少 200 步力值。',
+      progress: 142, max: 200, xp: 500, coin: 300, rarity: 'legend' },
+  ];
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 28 }}>
+      {/* HERO STRIP — player banner */}
+      <div className="panel elev" style={{
+        position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0e1b2e 0%, #0a0e1a 60%, #0d2a18 120%)',
+        border: '1px solid rgba(182,255,60,.15)',
+      }}>
+        <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: .5 }}/>
+        <div style={{
+          position: 'absolute', top: -80, right: -40, width: 360, height: 360, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(182,255,60,.18), transparent 60%)',
+        }}/>
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 320px', gap: 32, padding: 32 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <span className="live-dot"/>
+              <span className="label-tiny" style={{ color: 'var(--magenta)' }}>SEASON 03 · 残夏赛季</span>
+              <span className="chip" style={{ marginLeft: 8 }}>剩余 12 天</span>
+            </div>
+            <div className="display" style={{ fontSize: 64, lineHeight: .95, marginBottom: 4 }}>
+              下午好，<span className="glow-acid">陈思源</span>。
+            </div>
+            <div style={{ fontSize: 17, color: 'var(--ink-2)', marginBottom: 24, maxWidth: 540 }}>
+              你的宿舍 <b style={{ color: 'var(--ink)' }}>「405 不夜城」</b> 正在进行第 7 周公会战，距离击败 BOSS「大三早八」还差 <b style={{ color: 'var(--acid)' }}>1,247 步力</b>。
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button className="btn btn-acid" onClick={() => navigate('workout')}>
+                <Icon name="play" size={14}/> 开始今日副本
+              </button>
+              <button className="btn btn-ghost" onClick={() => navigate('guild')}>
+                <Icon name="shield" size={16}/> 查看公会战
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="panel corner-ticks" style={{
+              padding: 16, borderColor: 'rgba(182,255,60,.3)',
+              background: 'linear-gradient(180deg, rgba(182,255,60,.04), transparent)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div className="label-tiny" style={{ color: 'var(--acid)' }}>LV.27 · 铁血先锋</div>
+                <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)' }}>4,820 / 6,000</div>
+              </div>
+              <ProgressBar value={4820} max={6000} color="var(--acid)" glow segmented height={10}/>
+              <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 8 }}>
+                还需 <b style={{ color: 'var(--ink)' }}>1,180 XP</b> 即可升至 LV.28，解锁 <b style={{ color: 'var(--cyan)' }}>「夜跑者」</b> 称号。
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+              <MiniStat label="连击" value="14" unit="天" color="var(--magenta)"/>
+              <MiniStat label="金币" value="3,240" unit="⊙" color="var(--gold)"/>
+              <MiniStat label="排名" value="#42" unit="校内" color="var(--cyan)"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* TWO-COL: Quests + Sidebar */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24 }}>
+        <div>
+          <SectionHeader
+            kicker="DAILY QUESTS · 今日任务"
+            title="今天要打的副本"
+            action={<button className="btn btn-ghost" style={{ padding: '8px 14px', fontSize: 12 }}>
+              <Icon name="plus" size={14}/> 自定义任务
+            </button>}/>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {quests.map(q => (
+              <QuestCard key={q.id} {...q}
+                completed={claimed.includes(q.id)}
+                onClaim={() => onClaim(q.id)}/>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <HudPanel label="周连击 · WEEKLY STREAK" padding={20}
+            action={<span className="chip magenta">14 天 🔥</span>}>
+            <HeatRow days={week}/>
+            <div className="hr" style={{ margin: '14px 0' }}/>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div className="label-tiny">本周已训练</div>
+                <div className="display" style={{ fontSize: 28, color: 'var(--acid)' }}>4 <span style={{ fontSize: 16, color: 'var(--ink-3)' }}>/ 5</span></div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div className="label-tiny">距奖励</div>
+                <div className="num" style={{ fontSize: 12, color: 'var(--ink-2)' }}>再练 1 次解锁 <b style={{ color: 'var(--gold)' }}>稀有掉落</b></div>
+              </div>
+            </div>
+          </HudPanel>
+
+          <HudPanel label="好友动态 · LIVE FEED" padding={0}
+            action={<span className="chip"><span className="live-dot" style={{ background: 'var(--acid)' }}/> 3 在练</span>}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <FeedRow seed="林" name="林叶" lv={31} action="正在跑步" detail="2.4 km · 节奏 5'12''" live/>
+              <FeedRow seed="黄" name="黄一鸣" lv={28} action="完成训练" detail="上肢推 · 获得 200 XP"/>
+              <FeedRow seed="苏" name="苏锦" lv={42} action="解锁徽章" detail="🥇 百日不辍"/>
+              <FeedRow seed="陆" name="陆星" lv={19} action="向你发起 PK" detail="深蹲挑战 50 个" cta/>
+            </div>
+          </HudPanel>
+
+          <div className="panel" style={{
+            padding: 18, position: 'relative', overflow: 'hidden',
+            background: 'linear-gradient(135deg, #2a0e1a 0%, #1a0a14 100%)',
+            border: '1px solid rgba(255,61,138,.3)',
+          }}>
+            <div className="stripes-bg" style={{ position: 'absolute', inset: 0, opacity: .3 }}/>
+            <div style={{ position: 'relative' }}>
+              <div className="label-tiny" style={{ color: 'var(--magenta)', marginBottom: 6 }}>WEEKLY BOSS · 周 BOSS</div>
+              <div className="display" style={{ fontSize: 28, marginBottom: 4 }}>大三 · 早八</div>
+              <div style={{ fontSize: 12, color: 'var(--ink-2)', marginBottom: 12 }}>
+                公会成员合力击败，每人 +800 XP，宿舍 +200 战力
+              </div>
+              <div className="num" style={{ fontSize: 11, color: 'var(--ink-2)', display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span>BOSS HP</span><span><b style={{ color: 'var(--magenta)' }}>67%</b> · 6,753 / 10,000</span>
+              </div>
+              <ProgressBar value={6753} max={10000} color="var(--magenta)" glow height={10}/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MiniStat = ({ label, value, unit, color }) => (
+  <div className="panel tile" style={{ padding: 12 }}>
+    <div className="label-tiny" style={{ fontSize: 9 }}>{label}</div>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginTop: 4 }}>
+      <span className="display" style={{ fontSize: 22, color, lineHeight: 1 }}>{value}</span>
+      <span className="mono" style={{ fontSize: 10, color: 'var(--ink-3)' }}>{unit}</span>
+    </div>
+  </div>
+);
+
+const FeedRow = ({ seed, name, lv, action, detail, live, cta }) => (
+  <div style={{
+    display: 'flex', alignItems: 'center', gap: 12,
+    padding: '12px 16px',
+    borderBottom: '1px solid var(--line)',
+  }}>
+    <Avatar seed={seed} size={36} level={lv}/>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 13, fontWeight: 600 }}>
+        {name} <span style={{ color: 'var(--ink-3)', fontWeight: 400 }}>· {action}</span>
+        {live && <span className="chip magenta" style={{ marginLeft: 8, padding: '2px 6px', fontSize: 9 }}>LIVE</span>}
+      </div>
+      <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>{detail}</div>
+    </div>
+    {cta && <button className="btn btn-magenta" style={{ padding: '6px 12px', fontSize: 11 }}>应战</button>}
+  </div>
+);
+
+// ════════════════════════════════════════════════════════════════════════════
+// WORKOUT HUD — running with live boss-fight metaphor
+// ════════════════════════════════════════════════════════════════════════════
+const WorkoutScreen = ({ navigate }) => {
+  const [t, setT] = React.useState(847);
+  const [paused, setPaused] = React.useState(false);
+  React.useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setT(x => x + 1), 1000);
+    return () => clearInterval(id);
+  }, [paused]);
+
+  const fmt = (s) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => navigate('dashboard')}
+          className="btn btn-ghost" style={{ padding: '6px 10px', fontSize: 11 }}>
+          <Icon name="chevron" size={12} stroke={2}/> 返回主城
+        </button>
+        <span className="chip magenta"><span className="live-dot"/> WORKOUT IN PROGRESS</span>
+        <span className="chip acid">CHAPTER 03 · 黄昏赛道</span>
+      </div>
+
+      <div className="panel elev" style={{
+        position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0e1426 0%, #0a0e1a 100%)',
+        minHeight: 540,
+      }}>
+        <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: .6 }}/>
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(60% 80% at 50% 60%, rgba(76,242,255,.06), transparent 70%)',
+        }}/>
+
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, padding: 36, height: '100%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div>
+              <div className="label-tiny">DISTANCE · 距离</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
+                <span className="display glow-acid" style={{ fontSize: 96, lineHeight: 1 }}>2.41</span>
+                <span className="mono" style={{ fontSize: 18, color: 'var(--ink-3)' }}>km</span>
+              </div>
+              <div className="mono" style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>
+                目标 <b style={{ color: 'var(--ink)' }}>3.00 km</b> · 完成 80%
+              </div>
+              <div style={{ marginTop: 10 }}>
+                <ProgressBar value={2.41} max={3} color="var(--acid)" glow height={10} segmented/>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <HudStat label="TIME" value={fmt(t)} sub="计时中" mono/>
+              <HudStat label="PACE" value="5'12''" sub="km · 当前节奏"/>
+              <HudStat label="HEART" value="142" sub="bpm · 高强度区间" color="var(--magenta)"/>
+              <HudStat label="CADENCE" value="172" sub="spm · 步频"/>
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span className="label-tiny" style={{ color: 'var(--magenta)' }}>♥ HEART RATE LIVE</span>
+                <span className="num" style={{ fontSize: 11, color: 'var(--ink-3)' }}>Z4 · 燃脂</span>
+              </div>
+              <HeartLine/>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div className="panel corner-ticks" style={{
+              padding: 22, position: 'relative', overflow: 'hidden',
+              borderColor: 'rgba(255,61,138,.4)',
+              background: 'linear-gradient(180deg, rgba(255,61,138,.06), transparent)',
+            }}>
+              <div className="label-tiny" style={{ color: 'var(--magenta)' }}>NOW FIGHTING · 当前对手</div>
+              <div className="display" style={{ fontSize: 36, marginTop: 4, marginBottom: 10 }}>影狼 · 西操场守卫</div>
+              <div style={{ display: 'flex', gap: 18, alignItems: 'center', marginBottom: 16 }}>
+                <div className="ph" style={{
+                  width: 96, height: 96, borderRadius: 12, flexShrink: 0,
+                  background: 'radial-gradient(circle, rgba(255,61,138,.3), transparent), repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 6px, rgba(255,255,255,.01) 6px 12px)',
+                  borderColor: 'rgba(255,61,138,.4)', color: 'var(--magenta)',
+                }}>BOSS<br/>SPRITE</div>
+                <div style={{ flex: 1 }}>
+                  <div className="num" style={{ fontSize: 11, color: 'var(--ink-2)', display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span>HP</span><span><b style={{ color: 'var(--magenta)' }}>1,847</b> / 4,200</span>
+                  </div>
+                  <ProgressBar value={1847} max={4200} color="var(--magenta)" glow height={12}/>
+                  <div className="num" style={{ fontSize: 10, color: 'var(--ink-3)', marginTop: 8 }}>
+                    距击败还需 <b style={{ color: 'var(--ink)' }}>0.56 km</b> · 击败掉落 <span style={{ color: 'var(--gold)' }}>稀有装备 ×1</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <span className="chip cyan">寒霜抗性 +20%</span>
+                <span className="chip magenta">弱点：心率 ≥ 140</span>
+                <span className="chip">环境：黄昏 / 微风</span>
+              </div>
+            </div>
+
+            <HudPanel label="XP 进帐 · GAIN STREAM" padding={0}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <GainRow t="+0:42" text="跨过西门坡道" xp={20} kind="cyan"/>
+                <GainRow t="+1:18" text="心率达到 Z4 区间" xp={35} kind="magenta"/>
+                <GainRow t="+2:05" text="保持配速 5'10''" xp={50} kind="acid"/>
+                <GainRow t="+3:30" text="第一公里达标 ⚡ COMBO ×2" xp={120} kind="gold" big/>
+              </div>
+            </HudPanel>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setPaused(p => !p)}>
+                <Icon name={paused ? 'play' : 'pause'} size={14}/> {paused ? '继续' : '暂停'}
+              </button>
+              <button className="btn btn-magenta" style={{ flex: 1 }} onClick={() => navigate('loot')}>
+                <Icon name="stop" size={12}/> 结束并结算
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HudStat = ({ label, value, sub, color = 'var(--ink)', mono }) => (
+  <div className="panel tile" style={{ padding: 16 }}>
+    <div className="label-tiny" style={{ fontSize: 9 }}>{label}</div>
+    <div className={mono ? 'mono' : 'display'} style={{
+      fontSize: mono ? 32 : 36, color, lineHeight: 1, marginTop: 4,
+    }}>{value}</div>
+    <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 6 }}>{sub}</div>
+  </div>
+);
+
+const GainRow = ({ t, text, xp, kind, big }) => {
+  const colorMap = { cyan: 'var(--cyan)', magenta: 'var(--magenta)', acid: 'var(--acid)', gold: 'var(--gold)' };
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 12,
+      padding: '10px 16px', borderBottom: '1px solid var(--line)',
+      background: big ? 'rgba(255,209,102,.04)' : 'transparent',
+    }}>
+      <span className="num" style={{ fontSize: 10, color: 'var(--ink-4)', width: 38 }}>{t}</span>
+      <span style={{ fontSize: 12, flex: 1, color: 'var(--ink-2)' }}>{text}</span>
+      <span className="num" style={{ fontSize: big ? 14 : 12, fontWeight: 700, color: colorMap[kind] }}>+{xp} XP</span>
+    </div>
+  );
+};
+
+const HeartLine = () => {
+  const pts = [];
+  const w = 600, h = 60;
+  for (let i = 0; i <= 60; i++) {
+    const x = (i / 60) * w;
+    const noise = Math.sin(i * 0.7) * 8 + Math.sin(i * 0.3) * 4;
+    const spike = (i % 10 === 0) ? -18 : 0;
+    const y = h / 2 + noise + spike + (Math.random() - .5) * 4;
+    pts.push(`${x},${y}`);
+  }
+  return (
+    <div className="panel tile" style={{ padding: 8, height: 80 }}>
+      <svg viewBox={`0 0 ${w} ${h}`} width="100%" height="100%" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="hr-grad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="rgba(255,61,138,.4)"/>
+            <stop offset="100%" stopColor="rgba(255,61,138,0)"/>
+          </linearGradient>
+        </defs>
+        <polyline points={pts.join(' ')} fill="none" stroke="var(--magenta)" strokeWidth="1.6"/>
+        <polygon points={`0,${h} ${pts.join(' ')} ${w},${h}`} fill="url(#hr-grad)"/>
+      </svg>
+    </div>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// LOOT — post-workout result screen
+// ════════════════════════════════════════════════════════════════════════════
+const LootScreen = ({ navigate }) => {
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => navigate('dashboard')}
+          className="btn btn-ghost" style={{ padding: '6px 10px', fontSize: 11 }}>
+          <Icon name="chevron" size={12} stroke={2}/> 返回主城
+        </button>
+        <span className="chip acid">VICTORY · 副本通关</span>
+      </div>
+
+      <div className="panel elev" style={{
+        position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(180deg, #0d2a18 0%, #0a0e1a 60%)',
+        border: '1px solid rgba(182,255,60,.25)',
+        padding: 44,
+      }}>
+        <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: .4 }}/>
+        <div style={{
+          position: 'absolute', top: '-30%', left: '50%', transform: 'translateX(-50%)',
+          width: 600, height: 600, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(182,255,60,.18), transparent 60%)',
+          pointerEvents: 'none',
+        }}/>
+
+        <div style={{ position: 'relative', textAlign: 'center', marginBottom: 32 }}>
+          <div className="label-tiny" style={{ color: 'var(--acid)', marginBottom: 8 }}>DUNGEON CLEARED · 黄昏赛道 · CHAPTER 03</div>
+          <div className="display glow-acid" style={{ fontSize: 96, lineHeight: 1 }}>VICTORY</div>
+          <div style={{ fontSize: 16, color: 'var(--ink-2)', marginTop: 8 }}>
+            击败 <b style={{ color: 'var(--magenta)' }}>影狼</b> · 总时长 <b className="mono" style={{ color: 'var(--ink)' }}>18:42</b> · 完成度 <b style={{ color: 'var(--acid)' }}>S 级</b>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 28 }}>
+          <StatTile label="DISTANCE" value="3.04" unit="km" sub="目标 +1.3%" color="var(--ink)"/>
+          <StatTile label="AVG PACE" value="5'12''" sub="个人最佳 −18 秒 ⚡" color="var(--cyan)"/>
+          <StatTile label="CALORIES" value="287" unit="kcal" sub="约 1 杯奶茶" color="var(--magenta)"/>
+          <StatTile label="AVG HR" value="138" unit="bpm" sub="高强度区间 62%" color="var(--gold)"/>
+        </div>
+
+        <div className="panel tile" style={{ padding: 20, marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 10, gap: 16, flexWrap: 'wrap' }}>
+            <div style={{ minWidth: 0 }}>
+              <div className="label-tiny" style={{ color: 'var(--acid)' }}>EXPERIENCE GAINED</div>
+              <div className="display" style={{ fontSize: 36, lineHeight: 1, marginTop: 4, whiteSpace: 'nowrap' }}>+ 875 XP</div>
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div className="label-tiny">LV 27 → 28</div>
+              <div className="num" style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 4 }}>4,820 → <b style={{ color: 'var(--acid)' }}>5,695</b> / 6,000</div>
+            </div>
+          </div>
+          <ProgressBar value={5695} max={6000} color="var(--acid)" glow height={14} segmented/>
+        </div>
+
+        <div className="label-tiny" style={{ marginBottom: 12 }}>战利品 · LOOT DROPPED</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          <LootCard rarity="legend" name="影狼之牙·头巾" type="头部 · 装饰" buff="+8% 跑步 XP"/>
+          <LootCard rarity="rare" name="疾风奖牌" type="徽章 · 永久" buff="解锁「夜跑者」称号"/>
+          <LootCard rarity="common" name="能量罐 ×3" type="消耗品" buff="离线 +10% XP / 30min"/>
+          <LootCard rarity="gold" name="赛季积分" type="货币" buff="+ 320 ⊙"/>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, marginTop: 28, justifyContent: 'center' }}>
+          <button className="btn btn-ghost" onClick={() => navigate('feed')}>
+            <Icon name="chat" size={14}/> 分享到动态
+          </button>
+          <button className="btn btn-acid" onClick={() => navigate('dashboard')}>
+            收下战利品 <Icon name="arrowR" size={14}/>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LootCard = ({ rarity, name, type, buff }) => {
+  const colors = {
+    common: 'var(--ink-3)', rare: 'var(--rare)', epic: 'var(--epic)',
+    legend: 'var(--legend)', gold: 'var(--gold)',
+  };
+  const c = colors[rarity];
+  return (
+    <div className="panel tile" style={{
+      padding: 16, position: 'relative', overflow: 'hidden',
+      borderColor: `${c}66`,
+      background: `linear-gradient(180deg, ${c}11, transparent 60%)`,
+    }}>
+      <div className="ph" style={{
+        height: 88, borderRadius: 8, marginBottom: 12,
+        borderColor: `${c}55`, color: c,
+      }}>
+        ITEM · {rarity.toUpperCase()}
+      </div>
+      <div className="label-tiny" style={{ color: c, fontSize: 9 }}>{rarity.toUpperCase()} DROP</div>
+      <div style={{ fontWeight: 700, fontSize: 13, marginTop: 4 }}>{name}</div>
+      <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>{type}</div>
+      <div className="hr" style={{ margin: '10px 0' }}/>
+      <div style={{ fontSize: 11, color: c }}>{buff}</div>
+    </div>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// SPORTS LIBRARY — 26 项目 · 每项独立段位
+// ════════════════════════════════════════════════════════════════════════════
+const SPORTS = [
+  // 有氧 Aerobic
+  { id: 'run',     name: '跑步',    glyph: '跑', cat: 'aerobic', color: '#b6ff3c', lv: 27, xp: 4820, max: 6000, sessions: 142, rank: 'S', boss: '影狼' },
+  { id: 'cycle',   name: '骑行',    glyph: '骑', cat: 'aerobic', color: '#4cf2ff', lv: 14, xp: 1240, max: 2400, sessions: 38, rank: 'B' },
+  { id: 'swim',    name: '游泳',    glyph: '泳', cat: 'aerobic', color: '#4cf2ff', lv: 9,  xp: 480,  max: 1600, sessions: 18, rank: 'C' },
+  { id: 'jumprope',name: '跳绳',    glyph: '绳', cat: 'aerobic', color: '#b6ff3c', lv: 12, xp: 720,  max: 2000, sessions: 24, rank: 'B' },
+  { id: 'hiit',    name: 'HIIT',    glyph: 'H',  cat: 'aerobic', color: '#ff3d8a', lv: 16, xp: 1680, max: 2800, sessions: 32, rank: 'A' },
+  { id: 'row',     name: '划船',    glyph: '划', cat: 'aerobic', color: '#4cf2ff', lv: 4,  xp: 120,  max: 800, sessions: 6, rank: 'D' },
+  // 力量 Strength
+  { id: 'gym',     name: '力量训练',glyph: '铁', cat: 'strength', color: '#ff7a3d', lv: 18, xp: 1820, max: 3000, sessions: 56, rank: 'A' },
+  { id: 'box',     name: '拳击',    glyph: '拳', cat: 'strength', color: '#ff3d8a', lv: 7,  xp: 320,  max: 1200, sessions: 12, rank: 'C' },
+  { id: 'climb',   name: '攀岩',    glyph: '岩', cat: 'strength', color: '#ffd166', lv: 5,  xp: 240,  max: 1000, sessions: 8, rank: 'D' },
+  { id: 'calist',  name: '徒手健身',glyph: '徒', cat: 'strength', color: '#ff7a3d', lv: 11, xp: 580,  max: 1800, sessions: 22, rank: 'B' },
+  // 球类 Ball
+  { id: 'basket',  name: '篮球',    glyph: '篮', cat: 'ball', color: '#ff7a3d', lv: 22, xp: 3200, max: 4500, sessions: 86, rank: 'A' },
+  { id: 'soccer',  name: '足球',    glyph: '足', cat: 'ball', color: '#b6ff3c', lv: 8,  xp: 380,  max: 1400, sessions: 14, rank: 'C' },
+  { id: 'badmin',  name: '羽毛球',  glyph: '羽', cat: 'ball', color: '#ffd166', lv: 19, xp: 2100, max: 3200, sessions: 64, rank: 'A' },
+  { id: 'pingpong',name: '乒乓球',  glyph: '乒', cat: 'ball', color: '#a78bfa', lv: 15, xp: 1340, max: 2600, sessions: 42, rank: 'B' },
+  { id: 'tennis',  name: '网球',    glyph: '网', cat: 'ball', color: '#b6ff3c', lv: 6,  xp: 220,  max: 1100, sessions: 9, rank: 'D' },
+  { id: 'volley',  name: '排球',    glyph: '排', cat: 'ball', color: '#ffd166', lv: 3,  xp: 80,   max: 600,  sessions: 4, rank: 'D' },
+  { id: 'frisbee', name: '飞盘',    glyph: '盘', cat: 'ball', color: '#4cf2ff', lv: 10, xp: 540,  max: 1700, sessions: 18, rank: 'C', hot: true },
+  // 柔韧 Flexibility
+  { id: 'yoga',    name: '瑜伽',    glyph: '瑜', cat: 'flex', color: '#a78bfa', lv: 13, xp: 980,  max: 2200, sessions: 36, rank: 'B' },
+  { id: 'pilates', name: '普拉提',  glyph: '普', cat: 'flex', color: '#a78bfa', lv: 6,  xp: 260,  max: 1100, sessions: 10, rank: 'D' },
+  { id: 'dance',   name: '舞蹈',    glyph: '舞', cat: 'flex', color: '#ff3d8a', lv: 11, xp: 660,  max: 1900, sessions: 22, rank: 'B' },
+  // 武道 Martial
+  { id: 'taichi',  name: '太极',    glyph: '太', cat: 'martial', color: '#ffd166', lv: 4,  xp: 140,  max: 800,  sessions: 6, rank: 'D' },
+  { id: 'wushu',   name: '武术',    glyph: '武', cat: 'martial', color: '#ff7a3d', lv: 2,  xp: 60,   max: 500,  sessions: 3, rank: 'D', locked: false },
+  { id: 'judo',    name: '柔道',    glyph: '柔', cat: 'martial', color: '#ff3d8a', lv: 0,  xp: 0,    max: 400,  sessions: 0, rank: '—', locked: '体验课开放中' },
+  // 户外 Outdoor
+  { id: 'hike',    name: '徒步登山',glyph: '徒', cat: 'outdoor', color: '#b6ff3c', lv: 9,  xp: 460,  max: 1600, sessions: 14, rank: 'C' },
+  { id: 'skate',   name: '滑板',    glyph: '滑', cat: 'outdoor', color: '#ff3d8a', lv: 5,  xp: 200,  max: 1000, sessions: 7, rank: 'D' },
+  { id: 'ski',     name: '滑雪',    glyph: '雪', cat: 'outdoor', color: '#4cf2ff', lv: 0,  xp: 0,    max: 400,  sessions: 0, rank: '—', locked: '冬季限定' },
+];
+
+const SPORT_CATS = [
+  { id: 'all',     label: '全部',  count: SPORTS.length },
+  { id: 'aerobic', label: '有氧',  color: '#b6ff3c' },
+  { id: 'strength',label: '力量',  color: '#ff7a3d' },
+  { id: 'ball',    label: '球类',  color: '#ffd166' },
+  { id: 'flex',    label: '柔韧',  color: '#a78bfa' },
+  { id: 'martial', label: '武道',  color: '#ff3d8a' },
+  { id: 'outdoor', label: '户外',  color: '#4cf2ff' },
+];
+
+const RANK_TIER = { S: 'var(--gold)', A: 'var(--epic)', B: 'var(--cyan)', C: 'var(--ink-2)', D: 'var(--ink-3)', '—': 'var(--ink-4)' };
+
+const SportTile = ({ s, onSelect }) => {
+  const c = s.color;
+  return (
+    <button onClick={() => !s.locked && onSelect && onSelect(s)} className="panel tile" style={{
+      padding: 16, position: 'relative', textAlign: 'left',
+      borderColor: s.locked ? 'var(--line)' : `${c}33`,
+      background: s.locked ? '' : `linear-gradient(180deg, ${c}08, transparent 70%)`,
+      cursor: s.locked ? 'not-allowed' : 'pointer',
+      opacity: s.locked ? 0.5 : 1,
+      fontFamily: 'inherit', color: 'inherit',
+    }}>
+      {s.hot && <span className="chip magenta" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9 }}>HOT</span>}
+      {s.locked && <span className="chip" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9 }}><Icon name="lock" size={10}/> {s.locked}</span>}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 12, flexShrink: 0,
+          background: `radial-gradient(circle at 30% 20%, ${c}33, ${c}08)`,
+          border: `1px solid ${c}55`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: c, fontFamily: 'Bebas Neue', fontSize: 26,
+        }}>{s.glyph}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 700, fontSize: 15 }}>{s.name}</div>
+          <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>
+            LV.{s.lv} · {s.sessions} 次
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div className="label-tiny" style={{ fontSize: 9 }}>段位</div>
+          <div className="display" style={{ fontSize: 22, color: RANK_TIER[s.rank], lineHeight: 1, marginTop: 2 }}>{s.rank}</div>
+        </div>
+      </div>
+      <div className="num" style={{ fontSize: 10, color: 'var(--ink-3)', display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+        <span>XP</span><span>{s.xp} / {s.max}</span>
+      </div>
+      <ProgressBar value={s.xp} max={s.max} color={c} height={5} segmented={!s.locked}/>
+    </button>
+  );
+};
+
+const SportsScreen = ({ navigate }) => {
+  const [cat, setCat] = React.useState('all');
+  const filtered = cat === 'all' ? SPORTS : SPORTS.filter(s => s.cat === cat);
+
+  const totalLv = SPORTS.reduce((sum, s) => sum + s.lv, 0);
+  const totalSessions = SPORTS.reduce((sum, s) => sum + s.sessions, 0);
+  const unlocked = SPORTS.filter(s => !s.locked).length;
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <SectionHeader kicker="SPORTS LIBRARY · 项目库"
+        title="26 种运动 · 每项独立段位"
+        action={<button className="btn btn-acid" style={{ padding: '10px 16px', fontSize: 13 }}
+          onClick={() => navigate('workout')}>
+          <Icon name="play" size={14}/> 立即开练
+        </button>}/>
+
+      <div className="panel elev" style={{
+        position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(135deg, #0e1426 0%, #0a0e1a 100%)',
+        padding: 24,
+      }}>
+        <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: .4 }}/>
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+          <BannerStat label="项目总等级" value={totalLv} color="var(--acid)"/>
+          <BannerStat label="累积训练" value={totalSessions} color="var(--cyan)"/>
+          <BannerStat label="已解锁" value={`${unlocked}/26`} color="var(--ink)"/>
+          <BannerStat label="S 段位" value="1" color="var(--gold)"/>
+          <BannerStat label="主修方向" value="跑步" color="var(--magenta)"/>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {SPORT_CATS.map(c => {
+          const active = cat === c.id;
+          return (
+            <button key={c.id} onClick={() => setCat(c.id)} className="panel tile" style={{
+              padding: '10px 16px', cursor: 'pointer', fontFamily: 'inherit',
+              borderColor: active ? `${c.color || 'var(--acid)'}55` : 'var(--line)',
+              background: active ? `${c.color || 'var(--acid)'}10` : '',
+              color: active ? (c.color || 'var(--acid)') : 'var(--ink-2)',
+            }}>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>{c.label}</span>
+              {c.count != null && <span className="num" style={{ marginLeft: 8, fontSize: 10, color: 'var(--ink-3)' }}>{c.count}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+        {filtered.map(s => <SportTile key={s.id} s={s} onSelect={() => navigate('workout')}/>)}
+      </div>
+    </div>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// GUILD — 公会战 / 宿舍战
+// ════════════════════════════════════════════════════════════════════════════
+const GuildScreen = ({ navigate }) => {
+  const members = [
+    { seed: '陈', name: '陈思源 (你)', lv: 27, role: '会长', power: 1247, you: true, status: 'online' },
+    { seed: '林', name: '林叶', lv: 31, role: '副会', power: 1820, status: 'workout' },
+    { seed: '黄', name: '黄一鸣', lv: 28, role: '成员', power: 980, status: 'online' },
+    { seed: '苏', name: '苏锦', lv: 42, role: '成员', power: 2104, status: 'online' },
+    { seed: '陆', name: '陆星', lv: 19, role: '成员', power: 320, status: 'idle' },
+    { seed: '周', name: '周野', lv: 25, role: '成员', power: 750, status: 'offline' },
+  ];
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div className="panel elev" style={{
+        position: 'relative', overflow: 'hidden',
+        background: 'linear-gradient(135deg, #2a0e1a 0%, #1a0a14 60%, #0a0e1a 120%)',
+        border: '1px solid rgba(255,61,138,.25)',
+      }}>
+        <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: .4 }}/>
+        <div style={{ position: 'relative', display: 'grid', gridTemplateColumns: '1fr 360px', padding: 32, gap: 24 }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+              <span className="chip magenta">DORM RAID · 公会战 WEEK 7</span>
+              <span className="chip" style={{ background: 'transparent', border: '1px solid var(--line-2)' }}>
+                <Icon name="timer" size={11}/> 剩余 02:14:38
+              </span>
+            </div>
+            <div className="display" style={{ fontSize: 48, lineHeight: 1, marginBottom: 6 }}>
+              405 不夜城 <span style={{ color: 'var(--magenta)' }}>VS</span> 大三早八
+            </div>
+            <div style={{ fontSize: 14, color: 'var(--ink-2)', maxWidth: 540 }}>
+              你和 5 位室友组成公会，共同累积步力击败本周 BOSS。失败惩罚：本周公会奖励减半。
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 24 }}>
+              <BannerStat label="累积步力" value="8,753" color="var(--acid)"/>
+              <BannerStat label="目标" value="10,000" color="var(--ink-2)"/>
+              <BannerStat label="进度" value="87%" color="var(--magenta)"/>
+              <BannerStat label="剩余" value="1,247" color="var(--gold)"/>
+            </div>
+          </div>
+
+          <div className="panel corner-ticks" style={{
+            padding: 20, alignSelf: 'center',
+            borderColor: 'rgba(255,61,138,.4)',
+            background: 'linear-gradient(180deg, rgba(255,61,138,.04), transparent)',
+          }}>
+            <div className="label-tiny" style={{ color: 'var(--magenta)', marginBottom: 6 }}>BOSS · 大三 · 早八</div>
+            <div className="ph" style={{ height: 120, borderRadius: 8, marginBottom: 12, borderColor: 'rgba(255,61,138,.4)', color: 'var(--magenta)' }}>
+              BOSS · WEEKLY RAID
+            </div>
+            <div className="num" style={{ fontSize: 11, color: 'var(--ink-2)', display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span>HP</span><span><b style={{ color: 'var(--magenta)' }}>1,247</b> / 10,000</span>
+            </div>
+            <ProgressBar value={8753} max={10000} color="var(--magenta)" glow height={12}/>
+            <div style={{ marginTop: 12, fontSize: 11, color: 'var(--ink-3)' }}>
+              击败奖励：每人 +800 XP · 公会战力 +200 · 限时徽章「不夜城守卫」
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 24 }}>
+        <HudPanel label="公会成员 · 6 / 8" padding={0}
+          action={<button className="btn btn-ghost" style={{ padding: '6px 12px', fontSize: 11 }}>
+            <Icon name="plus" size={12}/> 邀请室友
+          </button>}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '32px 1fr 80px 100px 90px',
+              padding: '10px 20px', borderBottom: '1px solid var(--line)',
+              fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--ink-4)',
+            }}>
+              <span>#</span><span>成员</span><span>角色</span><span style={{ textAlign: 'right' }}>本周步力</span><span style={{ textAlign: 'right' }}>状态</span>
+            </div>
+            {members.sort((a, b) => b.power - a.power).map((m, i) => (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '32px 1fr 80px 100px 90px',
+                alignItems: 'center', padding: '14px 20px',
+                borderBottom: '1px solid var(--line)',
+                background: m.you ? 'rgba(182,255,60,.05)' : 'transparent',
+              }}>
+                <span className="num" style={{ fontSize: 13, color: i < 3 ? 'var(--gold)' : 'var(--ink-3)', fontWeight: 700 }}>{i + 1}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Avatar seed={m.seed} size={32} level={m.lv}/>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{m.name}</div>
+                    <div className="num" style={{ fontSize: 10, color: 'var(--ink-4)' }}>LV.{m.lv}</div>
+                  </div>
+                </div>
+                <span className="chip" style={{ fontSize: 9, padding: '2px 8px',
+                  background: m.role === '会长' ? 'rgba(255,209,102,.15)' : 'rgba(255,255,255,.04)',
+                  color: m.role === '会长' ? 'var(--gold)' : 'var(--ink-2)',
+                }}>{m.role}</span>
+                <div style={{ textAlign: 'right' }}>
+                  <div className="num" style={{ fontSize: 14, fontWeight: 700, color: 'var(--acid)' }}>{m.power.toLocaleString()}</div>
+                </div>
+                <div style={{ textAlign: 'right', fontSize: 11 }}>
+                  <StatusDot status={m.status}/>
+                </div>
+              </div>
+            ))}
+            <div style={{ padding: '14px 20px' }}>
+              <div className="ph" style={{ height: 60, borderRadius: 8 }}>2 个空位 · 邀请室友加入</div>
+            </div>
+          </div>
+        </HudPanel>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <HudPanel label="今日战术 · 会长留言" padding={20}
+            action={<span className="chip cyan">PINNED</span>}>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+              <Avatar seed="陈" size={32} level={27}/>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>陈思源 <span className="chip gold" style={{ marginLeft: 6, fontSize: 9, padding: '1px 6px' }}>会长</span></div>
+                <div className="num" style={{ fontSize: 10, color: 'var(--ink-4)' }}>2 小时前</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6 }}>
+              今晚 7 点统一去西操场跑步，目标击败 BOSS！谁先到达 1000 步力，<b style={{ color: 'var(--gold)' }}>请喝奶茶</b> 🧋
+            </div>
+            <div className="hr" style={{ margin: '14px 0' }}/>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn btn-ghost" style={{ flex: 1, fontSize: 12, padding: '8px 12px' }}>
+                <Icon name="chat" size={12}/> 公会聊天
+              </button>
+              <button className="btn btn-acid" style={{ flex: 1, fontSize: 12, padding: '8px 12px' }} onClick={() => navigate('workout')}>
+                <Icon name="bolt" size={12}/> 立即出战
+              </button>
+            </div>
+          </HudPanel>
+
+          <HudPanel label="公会增益 · ACTIVE BUFFS" padding={20}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <BuffRow icon="fire" name="火力全开" desc="本周公会内每完成一次训练，全员 XP +5%（叠加 4 / 10）" color="var(--magenta)"/>
+              <BuffRow icon="shield" name="室友互助" desc="任意成员训练时，在线室友被动获得 30% XP" color="var(--cyan)"/>
+              <BuffRow icon="crown" name="会长光环" desc="会长在场时全员步力转换效率 +10%" color="var(--gold)"/>
+            </div>
+          </HudPanel>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const BannerStat = ({ label, value, color }) => (
+  <div style={{ flex: '0 0 auto', minWidth: 100 }}>
+    <div className="label-tiny" style={{ fontSize: 9, whiteSpace: 'nowrap' }}>{label}</div>
+    <div className="display" style={{ fontSize: 28, color, lineHeight: 1, marginTop: 4, whiteSpace: 'nowrap' }}>{value}</div>
+  </div>
+);
+
+const StatusDot = ({ status }) => {
+  const map = {
+    online: { color: 'var(--acid)', label: '在线' },
+    workout: { color: 'var(--magenta)', label: '训练中', pulse: true },
+    idle: { color: 'var(--gold)', label: '挂机' },
+    offline: { color: 'var(--ink-4)', label: '离线' },
+  };
+  const m = map[status];
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: m.color, fontWeight: 600 }}>
+      <i style={{
+        width: 6, height: 6, borderRadius: '50%', background: m.color,
+        animation: m.pulse ? 'blink 1s infinite' : 'none',
+      }}/>
+      {m.label}
+    </span>
+  );
+};
+
+const BuffRow = ({ icon, name, desc, color }) => (
+  <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+    <div style={{
+      width: 36, height: 36, borderRadius: 8, flexShrink: 0,
+      background: `${color}15`, border: `1px solid ${color}55`,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', color,
+    }}>
+      <Icon name={icon} size={18}/>
+    </div>
+    <div style={{ flex: 1 }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color }}>{name}</div>
+      <div style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2, lineHeight: 1.4 }}>{desc}</div>
+    </div>
+  </div>
+);
+
+// ════════════════════════════════════════════════════════════════════════════
+// ARENA — 好友 PK + 三层排行榜
+// ════════════════════════════════════════════════════════════════════════════
+const ArenaScreen = ({ navigate }) => {
+  const [scope, setScope] = React.useState('campus');
+  const [filter, setFilter] = React.useState(0);
+
+  const challenges = [
+    { from: '陆星', avatar: '陆', lv: 19, type: '深蹲挑战', target: '50个 / 60秒', stake: 200, expires: '04:18:22' },
+    { from: '黄一鸣', avatar: '黄', lv: 28, type: '5 公里', target: '看谁先跑完', stake: 500, expires: '21:47:12', hot: true },
+    { from: '林叶', avatar: '林', lv: 31, type: '一周步数', target: '本周累计步数', stake: 1000, expires: '3 天', big: true },
+  ];
+
+  const campus = [
+    { rank: 1,  seed: '苏', name: '苏锦',     lv: 42, score: 18420, sub: '体育学院 · 404', delta: '+12' },
+    { rank: 2,  seed: '林', name: '林叶',     lv: 31, score: 15680, sub: '设计学院 · 405', delta: '+8'  },
+    { rank: 3,  seed: '王', name: '王宥然',   lv: 38, score: 14200, sub: '工学院 · 212',   delta: '−2'  },
+    { rank: 4,  seed: '黄', name: '黄一鸣',   lv: 28, score: 11450, sub: '计算机 · 405',   delta: '+5'  },
+    { rank: 5,  seed: '吴', name: '吴语晴',   lv: 35, score: 10800, sub: '医学院 · 317',   delta: '+1'  },
+    { rank: 41, seed: '何', name: '何深安',   lv: 26, score: 4880,  sub: '法学院 · 108',   delta: '−1'  },
+    { rank: 42, seed: '陈', name: '陈思源 (你)', lv: 27, score: 4820, sub: '计算机 · 405',  delta: '+3', you: true },
+    { rank: 43, seed: '周', name: '周漫秋',   lv: 25, score: 4710,  sub: '外语学院 · 221', delta: '+2'  },
+  ];
+
+  const national = [
+    { rank: 1,     seed: '霁', name: '霁川',     lv: 86, score: 91240, sub: '九州大学 · 羊城',         delta: '+312' },
+    { rank: 2,     seed: '安', name: '安远',     lv: 81, score: 86720, sub: '华夏大学 · 沪城',         delta: '+148' },
+    { rank: 3,     seed: '洛', name: '洛雪',     lv: 78, score: 84500, sub: '瀚海科技大学 · 春城',     delta: '−42'  },
+    { rank: 4,     seed: '靳', name: '靳邵白',   lv: 75, score: 80120, sub: '锦城理工 · 锦城',         delta: '+96'  },
+    { rank: 5,     seed: '苏', name: '苏锦',     lv: 42, score: 78410, sub: '知行大学 · 华京',         delta: '+22', highlight: true },
+    { rank: 18419, seed: '段', name: '段景遥',   lv: 27, score: 4825,  sub: '云麓学院 · 山城',         delta: '+201' },
+    { rank: 18420, seed: '陈', name: '陈思源 (你)', lv: 27, score: 4820, sub: '知行大学 · 405',     delta: '+148', you: true },
+    { rank: 18421, seed: '尹', name: '尹倦秋',   lv: 26, score: 4818,  sub: '白川大学 · 海岛',         delta: '−12'  },
+  ];
+
+  const global = [
+    { rank: 1,        seed: 'L', name: 'Léa Mercier',     lv: 94, score: 184500, sub: 'Saint-Aurel U · FR', flag: 'FR', delta: '+892' },
+    { rank: 2,        seed: 'T', name: 'Takumi Satō',     lv: 91, score: 178200, sub: 'Solaris Tokyo · JP', flag: 'JP', delta: '+512' },
+    { rank: 3,        seed: 'A', name: 'Anika Patel',     lv: 88, score: 172480, sub: 'Northgate U · US',   flag: 'US', delta: '+340' },
+    { rank: 4,        seed: 'M', name: 'Mika Lindqvist',  lv: 86, score: 168900, sub: 'Helsing Tech · DE',  flag: 'DE', delta: '−118' },
+    { rank: 5,        seed: '霁', name: '霁川',            lv: 86, score: 165200, sub: '九州大学 · CN',       flag: 'CN', delta: '+278', highlight: true },
+    { rank: 2407818,  seed: 'O', name: 'Owen Park',       lv: 27, score: 4823,   sub: 'Aurora Seoul · KR',  flag: 'KR', delta: '+402' },
+    { rank: 2407819,  seed: '陈', name: '陈思源 (你)',     lv: 27, score: 4820,   sub: '知行大学 · CN',       flag: 'CN', delta: '+8.4k', you: true },
+    { rank: 2407820,  seed: 'N', name: 'Nara Beltrán',    lv: 27, score: 4819,   sub: 'Marin College · BR', flag: 'BR', delta: '−92'  },
+  ];
+
+  const scopes = {
+    campus:   { board: campus,   label: '校园排行榜', kicker: '知行大学 · 残夏赛季', subHead: '院系 · 寝室', filters: ['全校', '同院系', '405 室友', '关注'], you: '#42 全校 · 7,200 / 12,400 同学', accent: 'var(--acid)', podiumColors: ['var(--cyan)', 'var(--gold)', 'var(--magenta)'] },
+    national: { board: national, label: '全国排行榜', kicker: '中国大陆 · 残夏赛季', subHead: '学校 · 城市', filters: ['全部', '985 院校', '同省份 · 直辖市', '同年级', '关注'], you: '#18,420 全国 · 击败 84% 同年级', accent: 'var(--gold)', podiumColors: ['var(--cyan)', 'var(--gold)', 'var(--magenta)'] },
+    global:   { board: global,   label: '全球排行榜', kicker: 'Worldwide · Late-Summer Season', subHead: 'School · Country', filters: ['全部', '亚洲', '欧美', '同语言', '中国地区'], you: '#2,407,819 / 全球 · 击败 70% 同年级', accent: 'var(--cyan)', podiumColors: ['var(--cyan)', 'var(--gold)', 'var(--magenta)'] },
+  };
+  const cfg = scopes[scope];
+  const top3 = cfg.board.slice(0, 3);
+  const tail = cfg.board.slice(3);
+
+  React.useEffect(() => { setFilter(0); }, [scope]);
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <SectionHeader kicker="ARENA · 排行榜 · PK"
+        title="校园 / 全国 / 全球"
+        action={<button className="btn btn-magenta" style={{ padding: '10px 16px', fontSize: 13 }}>
+          <Icon name="sword" size={14}/> 发起对战
+        </button>}/>
+
+      <div>
+        <div className="label-sm" style={{ marginBottom: 12, color: 'var(--magenta)' }}>未应战 · {challenges.length} 个对战邀请</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {challenges.map((c, i) => (
+            <div key={i} className="panel tile" style={{
+              padding: 18, position: 'relative', overflow: 'hidden',
+              borderColor: c.big ? 'rgba(255,209,102,.35)' : c.hot ? 'rgba(255,61,138,.3)' : 'var(--line)',
+              background: c.big ? 'linear-gradient(180deg, rgba(255,209,102,.06), transparent)' : 'inherit',
+            }}>
+              {c.hot && <span className="chip magenta" style={{ position: 'absolute', top: 12, right: 12, fontSize: 9 }}>HOT</span>}
+              {c.big && <span className="chip gold" style={{ position: 'absolute', top: 12, right: 12, fontSize: 9 }}>WEEKLY</span>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, paddingRight: 70 }}>
+                <Avatar seed={c.avatar} size={32} level={c.lv}/>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>{c.from} 向你发起</div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>{c.type}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--ink-2)', marginBottom: 8 }}>{c.target}</div>
+              <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)', marginBottom: 14 }}>
+                押注 <b style={{ color: 'var(--gold)' }}>{c.stake} ⊙</b> · 倒计时 <b style={{ color: 'var(--magenta)' }}>{c.expires}</b>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button className="btn btn-ghost" style={{ flex: 1, fontSize: 11, padding: '6px 10px' }}>拒绝</button>
+                <button className="btn btn-magenta" style={{ flex: 1, fontSize: 11, padding: '6px 10px' }}>应战</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        {[
+          { id: 'campus',   icon: 'pin',   title: '校园排行', sub: '知行大学 · 12,400 人',    rank: '#42'        },
+          { id: 'national', icon: 'flag',  title: '全国排行', sub: '中国大陆 · 1,840 所院校', rank: '#18,420'   },
+          { id: 'global',   icon: 'map',   title: '全球排行', sub: 'Worldwide · 47 国家',     rank: '#2.4M'      },
+        ].map(t => {
+          const active = scope === t.id;
+          return (
+            <button key={t.id} onClick={() => setScope(t.id)} className="panel tile" style={{
+              padding: '16px 20px', cursor: 'pointer', textAlign: 'left',
+              borderColor: active ? 'rgba(182,255,60,.4)' : 'var(--line)',
+              background: active ? 'linear-gradient(180deg, rgba(182,255,60,.08), rgba(182,255,60,.02))' : '',
+              fontFamily: 'inherit', position: 'relative',
+            }}>
+              {active && <span style={{ position: 'absolute', top: 0, left: 16, right: 16, height: 2, background: 'var(--acid)' }}/>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, color: active ? 'var(--acid)' : 'var(--ink-2)' }}>
+                <Icon name={t.icon} size={16}/>
+                <span style={{ fontSize: 13, fontWeight: 700 }}>{t.title}</span>
+                <span className="num" style={{ marginLeft: 'auto', fontSize: 11, color: active ? 'var(--acid)' : 'var(--ink-4)', fontWeight: 700 }}>你 {t.rank}</span>
+              </div>
+              <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)' }}>{t.sub}</div>
+            </button>
+          );
+        })}
+      </div>
+
+      <HudPanel label={`${cfg.label} · ${cfg.kicker}`} padding={0}
+        action={<div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {cfg.filters.map((t, i) => (
+            <button key={t} onClick={() => setFilter(i)} className="chip" style={{
+              background: i === filter ? 'rgba(182,255,60,.15)' : 'rgba(255,255,255,.04)',
+              color:      i === filter ? 'var(--acid)'         : 'var(--ink-2)',
+              border: '0', padding: '4px 12px', cursor: 'pointer', fontFamily: 'inherit',
+            }}>{t}</button>
+          ))}
+        </div>}>
+        <div style={{ padding: 24 }}>
+          <div className="panel" style={{
+            padding: '12px 18px', marginBottom: 22, display: 'flex', alignItems: 'center', gap: 14,
+            background: 'rgba(182,255,60,.05)', border: '1px solid rgba(182,255,60,.2)',
+          }}>
+            <Avatar seed="陈" size={36} level={27} color="var(--acid)"/>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>你在该榜的排名</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{cfg.you}</div>
+            </div>
+            <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)' }}>赛季积分</div>
+            <div className="display" style={{ fontSize: 28, color: 'var(--acid)', lineHeight: 1 }}>4,820</div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+            <PodiumCard rank={2} {...top3[1]} color={cfg.podiumColors[0]}/>
+            <PodiumCard rank={1} {...top3[0]} color={cfg.podiumColors[1]} big/>
+            <PodiumCard rank={3} {...top3[2]} color={cfg.podiumColors[2]}/>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '70px 1fr 1.1fr 130px 80px',
+              padding: '10px 16px', borderTop: '1px solid var(--line)', borderBottom: '1px solid var(--line)',
+              fontSize: 10, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--ink-4)',
+            }}>
+              <span>#</span><span>玩家</span><span>{cfg.subHead}</span><span style={{ textAlign: 'right' }}>赛季积分</span><span style={{ textAlign: 'right' }}>趋势</span>
+            </div>
+            {tail.map((p, i) => (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '70px 1fr 1.1fr 130px 80px',
+                alignItems: 'center', padding: '12px 16px', gap: 8,
+                borderBottom: '1px solid var(--line)',
+                background: p.you ? 'rgba(182,255,60,.06)' : p.highlight ? 'rgba(76,242,255,.04)' : 'transparent',
+              }}>
+                <span className="num" style={{
+                  fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap',
+                  color: p.you ? 'var(--acid)' : p.highlight ? 'var(--cyan)' : 'var(--ink-3)',
+                }}>{p.rank.toLocaleString()}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+                  <Avatar seed={p.seed} size={32} level={p.lv}/>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: p.you ? 'var(--acid)' : 'var(--ink)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                    <div className="num" style={{ fontSize: 10, color: 'var(--ink-4)' }}>LV.{p.lv}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                  {p.flag && <span className="chip" style={{ fontSize: 9, padding: '2px 6px', background: 'rgba(76,242,255,.08)', color: 'var(--cyan)', border: '1px solid rgba(76,242,255,.2)' }}>{p.flag}</span>}
+                  <span style={{ fontSize: 12, color: 'var(--ink-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.sub}</span>
+                </div>
+                <div className="num" style={{ textAlign: 'right', fontSize: 14, fontWeight: 700 }}>
+                  {p.score.toLocaleString()}
+                </div>
+                <div className="num" style={{
+                  textAlign: 'right', fontSize: 12, fontWeight: 700,
+                  color: p.delta.startsWith('+') ? 'var(--acid)' : 'var(--magenta)',
+                }}>
+                  {p.delta}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </HudPanel>
+    </div>
+  );
+};
+
+const PodiumCard = ({ rank, seed, name, lv, score, sub, flag, color, big }) => (
+  <div className="panel tile" style={{
+    padding: big ? 22 : 18,
+    position: 'relative',
+    borderColor: `${color}55`,
+    background: `linear-gradient(180deg, ${color}10, transparent 60%)`,
+    transform: big ? 'translateY(-8px)' : 'none',
+    textAlign: 'center',
+  }}>
+    {rank === 1 && <Icon name="crown" size={22} stroke={1.6} />}
+    <div className="display" style={{ fontSize: big ? 56 : 40, color, lineHeight: 1, marginTop: 4 }}>#{rank}</div>
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 18, marginBottom: 12 }}>
+      <Avatar seed={seed} size={big ? 64 : 48} level={lv} color={color}/>
+    </div>
+    <div style={{ fontWeight: 700, fontSize: big ? 16 : 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</div>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, margin: '4px 0 8px' }}>
+      {flag && <span className="chip" style={{ fontSize: 9, padding: '1px 6px', background: 'rgba(76,242,255,.08)', color: 'var(--cyan)', border: '1px solid rgba(76,242,255,.2)' }}>{flag}</span>}
+      <span className="num" style={{ fontSize: 10, color: 'var(--ink-3)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{sub}</span>
+    </div>
+    <div className="num" style={{ fontSize: big ? 22 : 18, fontWeight: 700, color }}>{score.toLocaleString()}</div>
+  </div>
+);
+
+// ════════════════════════════════════════════════════════════════════════════
+// CODEX — 徽章墙 / 成就
+// ════════════════════════════════════════════════════════════════════════════
+const CodexScreen = ({ navigate }) => {
+  const cats = [
+    { id: 'distance', label: '里程', count: '12 / 24' },
+    { id: 'streak', label: '连击', count: '8 / 20', active: true },
+    { id: 'social', label: '社交', count: '6 / 18' },
+    { id: 'boss', label: 'BOSS', count: '3 / 12' },
+    { id: 'season', label: '赛季', count: '4 / 8' },
+    { id: 'secret', label: '隐藏', count: '1 / ?' },
+  ];
+
+  const badges = [
+    { name: '初心者', tier: 'common', desc: '完成第一次训练', earned: true, date: '03.12' },
+    { name: '七日不辍', tier: 'rare', desc: '连续 7 天完成训练', earned: true, date: '03.19' },
+    { name: '黎明跑者', tier: 'rare', desc: '在 6:00 前完成晨跑 ×3', earned: true, date: '04.02' },
+    { name: '百日不辍', tier: 'epic', desc: '连续 100 天完成训练', earned: false, progress: '14 / 100' },
+    { name: '夜跑之王', tier: 'epic', desc: '夜跑总里程 ≥ 50km', earned: true, date: '04.18' },
+    { name: '室友之光', tier: 'rare', desc: '为公会贡献 ≥ 5000 步力', earned: true, date: '04.25' },
+    { name: '不夜城守卫', tier: 'legend', desc: '参与击败 10 个 BOSS', earned: false, progress: '3 / 10' },
+    { name: 'BOSS 终结者', tier: 'legend', desc: '一击 ≥ 30% BOSS HP', earned: false, progress: '0 / 1' },
+    { name: '宿舍战神', tier: 'legend', desc: '带领宿舍登顶赛季榜', earned: false, locked: true },
+    { name: '???', tier: 'secret', desc: '???', earned: false, locked: true, secret: true },
+  ];
+
+  const tierColors = {
+    common: 'var(--ink-3)', rare: 'var(--rare)', epic: 'var(--epic)', legend: 'var(--legend)', secret: '#888',
+  };
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <SectionHeader kicker="CODEX · 图鉴"
+        title="成就 · 徽章墙"
+        action={<div className="num" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+          已收集 <b className="display" style={{ fontSize: 24, color: 'var(--acid)' }}>34</b> / 96
+        </div>}/>
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {cats.map(c => (
+          <button key={c.id} className="panel tile" style={{
+            padding: '12px 18px',
+            borderColor: c.active ? 'rgba(182,255,60,.4)' : 'var(--line)',
+            background: c.active ? 'rgba(182,255,60,.08)' : '',
+            color: c.active ? 'var(--acid)' : 'var(--ink-2)',
+            cursor: 'pointer', border: c.active ? '1px solid rgba(182,255,60,.4)' : '1px solid var(--line)',
+            fontFamily: 'inherit',
+          }}>
+            <span style={{ fontSize: 13, fontWeight: 600 }}>{c.label}</span>
+            <span className="num" style={{ marginLeft: 10, fontSize: 11, color: 'var(--ink-3)' }}>{c.count}</span>
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
+        {badges.map((b, i) => {
+          const c = tierColors[b.tier];
+          return (
+            <div key={i} className="panel tile" style={{
+              padding: 18,
+              position: 'relative', overflow: 'hidden',
+              borderColor: b.earned ? `${c}55` : 'var(--line)',
+              background: b.earned ? `linear-gradient(180deg, ${c}10, transparent 60%)` : 'rgba(255,255,255,.01)',
+              opacity: b.earned ? 1 : 0.7,
+              textAlign: 'center',
+            }}>
+              <div style={{
+                position: 'relative', width: 80, height: 80, margin: '8px auto 14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="80" height="80" viewBox="0 0 80 80" style={{ position: 'absolute', inset: 0 }}>
+                  {b.earned ? (
+                    <>
+                      <circle cx="40" cy="40" r="36" fill="none" stroke={c} strokeWidth="1" opacity="0.4"/>
+                      <circle cx="40" cy="40" r="32" fill="none" stroke={c} strokeWidth="1.5"/>
+                      {Array.from({ length: 12 }).map((_, k) => (
+                        <line key={k} x1="40" y1="2" x2="40" y2="6"
+                          stroke={c} strokeWidth="1.2"
+                          transform={`rotate(${k * 30} 40 40)`} opacity="0.6"/>
+                      ))}
+                    </>
+                  ) : (
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--ink-4)" strokeWidth="1" strokeDasharray="3 4"/>
+                  )}
+                </svg>
+                <div style={{
+                  width: 56, height: 56, borderRadius: '50%',
+                  background: b.earned ? `radial-gradient(circle, ${c}30, ${c}05)` : 'rgba(255,255,255,.02)',
+                  border: `1px solid ${b.earned ? c + '55' : 'var(--line-2)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: b.earned ? c : 'var(--ink-4)',
+                  fontFamily: 'Bebas Neue', fontSize: 24,
+                }}>
+                  {b.secret ? '?' : b.locked ? <Icon name="lock" size={20}/> : (b.name[0])}
+                </div>
+              </div>
+              <div className="label-tiny" style={{ color: c, fontSize: 9, marginBottom: 4 }}>{b.tier.toUpperCase()}</div>
+              <div style={{ fontWeight: 700, fontSize: 13 }}>{b.name}</div>
+              <div style={{ fontSize: 10, color: 'var(--ink-3)', marginTop: 6, lineHeight: 1.4, minHeight: 28 }}>{b.desc}</div>
+              <div className="hr" style={{ margin: '10px 0 8px' }}/>
+              {b.earned ? (
+                <div className="num" style={{ fontSize: 10, color: 'var(--acid)' }}>
+                  ✓ 获得于 {b.date}
+                </div>
+              ) : b.progress ? (
+                <div className="num" style={{ fontSize: 10, color: 'var(--ink-3)' }}>
+                  进度 {b.progress}
+                </div>
+              ) : (
+                <div className="num" style={{ fontSize: 10, color: 'var(--ink-4)' }}>未解锁</div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// SHOP — 虚拟形象 / 装备
+// ════════════════════════════════════════════════════════════════════════════
+const ShopScreen = ({ navigate }) => {
+  const slots = [
+    { name: '头部', equipped: '影狼之牙·头巾', tier: 'legend' },
+    { name: '上衣', equipped: '速度感运动衫', tier: 'rare' },
+    { name: '下装', equipped: '无', tier: 'common' },
+    { name: '鞋履', equipped: '风刃跑鞋', tier: 'epic' },
+    { name: '徽章', equipped: '夜跑者称号', tier: 'rare' },
+  ];
+
+  const items = [
+    { name: '残夏限定 · 飞鸟外套', tier: 'epic', price: 1200, time: '剩 3 天' },
+    { name: '电流轨迹 · 头巾', tier: 'rare', price: 480 },
+    { name: '宿舍 405 队服', tier: 'legend', price: 0, locked: '需公会等级 5' },
+    { name: '幻影鸟 · 跑鞋', tier: 'rare', price: 800 },
+    { name: '凯旋徽章框', tier: 'epic', price: 950 },
+    { name: '夜光手环', tier: 'common', price: 200 },
+    { name: '电竞卫衣 联名', tier: 'epic', price: 1500, hot: true },
+    { name: '校园限定 · 围巾', tier: 'rare', price: 350 },
+  ];
+
+  const tierColors = { common: 'var(--ink-3)', rare: 'var(--rare)', epic: 'var(--epic)', legend: 'var(--legend)' };
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <SectionHeader kicker="LOCKER · 装备 / 形象"
+        title="我的形象 · 装备店"
+        action={<div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <span className="chip gold"><Icon name="coin" size={11}/> 3,240 ⊙</span>
+          <span className="chip cyan">体力券 ×4</span>
+        </div>}/>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: 24 }}>
+        <div className="panel elev" style={{
+          position: 'relative', overflow: 'hidden',
+          background: 'linear-gradient(180deg, #0e1426 0%, #0a0e1a 100%)',
+          padding: 24,
+        }}>
+          <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: .3 }}/>
+          <div className="label-tiny" style={{ marginBottom: 12 }}>CURRENT AVATAR · LV.27</div>
+          <div className="ph" style={{
+            height: 380, borderRadius: 12,
+            background: 'radial-gradient(circle at 50% 40%, rgba(182,255,60,.15), transparent 50%), repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 6px, rgba(255,255,255,.01) 6px 12px)',
+            color: 'var(--acid)', fontSize: 11,
+          }}>
+            CHARACTER · 3D MODEL<br/>
+            (placeholder)
+          </div>
+          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {slots.map((s, i) => {
+              const c = tierColors[s.tier];
+              return (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  padding: '10px 14px',
+                  background: 'rgba(255,255,255,.02)',
+                  border: '1px solid var(--line)', borderRadius: 8,
+                }}>
+                  <div style={{
+                    width: 28, height: 28, borderRadius: 6,
+                    background: `${c}15`, border: `1px solid ${c}55`,
+                  }}/>
+                  <div style={{ flex: 1 }}>
+                    <div className="label-tiny" style={{ fontSize: 9 }}>{s.name}</div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: c }}>{s.equipped}</div>
+                  </div>
+                  <Icon name="chevron" size={12} stroke={2}/>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            {['全部', '限定', '头部', '上衣', '鞋履', '徽章框', '动作'].map((t, i) => (
+              <button key={t} className="chip" style={{
+                background: i === 1 ? 'rgba(255,209,102,.15)' : 'rgba(255,255,255,.04)',
+                color: i === 1 ? 'var(--gold)' : 'var(--ink-2)',
+                cursor: 'pointer', padding: '6px 14px', border: 0, fontFamily: 'inherit',
+              }}>{t}</button>
+            ))}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
+            {items.map((it, i) => {
+              const c = tierColors[it.tier];
+              return (
+                <div key={i} className="panel tile" style={{
+                  padding: 14, position: 'relative', overflow: 'hidden',
+                  borderColor: `${c}33`,
+                }}>
+                  {it.hot && <span className="chip magenta" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, zIndex: 2 }}>HOT</span>}
+                  {it.time && <span className="chip gold" style={{ position: 'absolute', top: 10, right: 10, fontSize: 9, zIndex: 2 }}>{it.time}</span>}
+                  <div className="ph" style={{
+                    height: 130, borderRadius: 8, marginBottom: 12,
+                    borderColor: `${c}55`, color: c,
+                    background: `radial-gradient(circle at 50% 50%, ${c}15, transparent 70%), repeating-linear-gradient(135deg, rgba(255,255,255,.04) 0 6px, rgba(255,255,255,.01) 6px 12px)`,
+                  }}>ITEM · {it.tier.toUpperCase()}</div>
+                  <div className="label-tiny" style={{ color: c, fontSize: 9 }}>{it.tier.toUpperCase()}</div>
+                  <div style={{ fontWeight: 700, fontSize: 13, marginTop: 4, minHeight: 36, lineHeight: 1.3 }}>{it.name}</div>
+                  <div className="hr" style={{ margin: '10px 0' }}/>
+                  {it.locked ? (
+                    <button className="btn btn-ghost" style={{ width: '100%', padding: '6px', fontSize: 11, opacity: .6 }} disabled>
+                      <Icon name="lock" size={11}/> {it.locked}
+                    </button>
+                  ) : (
+                    <button className="btn btn-acid" style={{ width: '100%', padding: '6px', fontSize: 12 }}>
+                      <Icon name="coin" size={11}/> {it.price.toLocaleString()} ⊙
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// FEED — 好友动态
+// ════════════════════════════════════════════════════════════════════════════
+const FeedScreen = ({ navigate }) => {
+  const posts = [
+    {
+      seed: '苏', name: '苏锦', lv: 42, time: '12 分钟前', dorm: '404',
+      kind: 'workout',
+      stat: { dist: '5.42 km', time: '26:18', pace: "4'51''" },
+      title: '今天又是 PB 的一天 ⚡',
+      caption: '黄昏的西操场最适合冲刺。本周第 3 次破纪录！',
+      buffs: ['+ 580 XP', '解锁徽章「破风者」'],
+      likes: 24, comments: 8, kudos: ['林', '黄', '陆'],
+    },
+    {
+      seed: '陆', name: '陆星', lv: 19, time: '1 小时前', dorm: '405',
+      kind: 'pk',
+      title: '挑战书 · 应战！',
+      caption: '@陈思源 我看到你昨天 PB 了。深蹲挑战 50 个，60 秒内见胜负，押注 200 ⊙！',
+      tag: 'CHALLENGE',
+      likes: 9, comments: 12,
+    },
+    {
+      seed: '林', name: '林叶', lv: 31, time: '3 小时前', dorm: '405',
+      kind: 'badge',
+      title: '获得稀有徽章「百日不辍」',
+      caption: '从 1 月开始坚持，终于满 100 天。下个目标：黎明跑者 ×30。',
+      buffs: ['EPIC 徽章解锁'],
+      likes: 56, comments: 23, kudos: ['苏', '黄', '陈', '陆', '周'],
+    },
+    {
+      seed: '黄', name: '黄一鸣', lv: 28, time: '昨天', dorm: '405',
+      kind: 'guild',
+      title: '405 不夜城 · 公会战进度 87%！',
+      caption: '今晚 7 点全员出战，最后 1247 步力，谁来！🔥',
+      tag: 'GUILD',
+      likes: 18, comments: 6,
+    },
+  ];
+
+  return (
+    <div style={{ padding: 32, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <SectionHeader kicker="FEED · 动态"
+        title="好友 · 公会动态"
+        action={<button className="btn btn-acid" style={{ padding: '10px 16px', fontSize: 13 }}>
+          <Icon name="plus" size={14}/> 发布动态
+        </button>}/>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="panel tile" style={{ padding: 16, display: 'flex', gap: 12 }}>
+            <Avatar seed="陈" size={40} level={27}/>
+            <div style={{
+              flex: 1, padding: '10px 14px',
+              border: '1px solid var(--line)', borderRadius: 10,
+              background: 'rgba(255,255,255,.02)', color: 'var(--ink-3)', fontSize: 13,
+            }}>分享一次训练 · 发起对战 · 晒一晒徽章…</div>
+          </div>
+
+          {posts.map((p, i) => <PostCard key={i} {...p}/>)}
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <HudPanel label="谁刚关注了我" padding={0}>
+            {[
+              { seed: '吴', name: '吴语晴', lv: 35, mutual: 4 },
+              { seed: '何', name: '何深安', lv: 26, mutual: 1 },
+              { seed: '王', name: '王宥然', lv: 38, mutual: 7 },
+            ].map((f, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '12px 16px',
+                borderBottom: '1px solid var(--line)',
+              }}>
+                <Avatar seed={f.seed} size={36} level={f.lv}/>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{f.name}</div>
+                  <div className="num" style={{ fontSize: 10, color: 'var(--ink-3)', marginTop: 2 }}>{f.mutual} 位共同好友</div>
+                </div>
+                <button className="btn btn-ghost" style={{ padding: '4px 10px', fontSize: 11 }}>回关</button>
+              </div>
+            ))}
+          </HudPanel>
+
+          <HudPanel label="本周宿舍榜" padding={20}>
+            {[
+              { rank: 1, name: '404 学神窟', power: 28400, color: 'var(--gold)' },
+              { rank: 2, name: '405 不夜城', power: 24180, you: true, color: 'var(--acid)' },
+              { rank: 3, name: '212 八点起', power: 21100, color: 'var(--cyan)' },
+              { rank: 4, name: '317 摸鱼营', power: 18500, color: 'var(--ink-3)' },
+            ].map((d, i) => (
+              <div key={i} style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                padding: '8px 0',
+                borderBottom: i < 3 ? '1px solid var(--line)' : 0,
+              }}>
+                <span className="num" style={{ width: 22, color: d.color, fontWeight: 700 }}>#{d.rank}</span>
+                <div style={{ flex: 1, fontSize: 12, fontWeight: d.you ? 700 : 500, color: d.you ? 'var(--acid)' : 'var(--ink)' }}>
+                  {d.name}{d.you && <span style={{ color: 'var(--ink-3)', fontWeight: 400, fontSize: 10 }}> · 你的</span>}
+                </div>
+                <span className="num" style={{ fontSize: 11, color: 'var(--ink-2)' }}>{d.power.toLocaleString()}</span>
+              </div>
+            ))}
+          </HudPanel>
+
+          <HudPanel label="新手任务 · 引导" padding={20}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {[
+                { done: true, t: '完成第一次训练' },
+                { done: true, t: '加入或创建一个公会' },
+                { done: true, t: '获得第一个徽章' },
+                { done: false, t: '完成一次好友 PK', xp: 200 },
+                { done: false, t: '装备一件稀有装备', xp: 150 },
+              ].map((s, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{
+                    width: 18, height: 18, borderRadius: 4,
+                    background: s.done ? 'var(--acid)' : 'transparent',
+                    border: `1px solid ${s.done ? 'var(--acid)' : 'var(--line-2)'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#0a0e1a', flexShrink: 0,
+                  }}>{s.done && <Icon name="check" size={11} stroke={3}/>}</div>
+                  <span style={{
+                    flex: 1, fontSize: 12,
+                    color: s.done ? 'var(--ink-3)' : 'var(--ink)',
+                    textDecoration: s.done ? 'line-through' : 'none',
+                  }}>{s.t}</span>
+                  {!s.done && <span className="chip acid" style={{ fontSize: 9, padding: '1px 6px' }}>+{s.xp} XP</span>}
+                </div>
+              ))}
+            </div>
+          </HudPanel>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PostCard = ({ seed, name, lv, time, dorm, kind, stat, title, caption, buffs, likes, comments, kudos, tag }) => {
+  const tagColor = { CHALLENGE: 'var(--magenta)', GUILD: 'var(--cyan)' }[tag];
+  return (
+    <div className="panel tile" style={{ padding: 20 }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+        <Avatar seed={seed} size={44} level={lv}/>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>
+            {name} <span className="chip" style={{ marginLeft: 6, fontSize: 9, padding: '1px 6px' }}>{dorm}</span>
+            {tag && <span className="chip" style={{ marginLeft: 6, fontSize: 9, padding: '1px 6px',
+              background: `${tagColor}20`, color: tagColor }}>{tag}</span>}
+          </div>
+          <div className="num" style={{ fontSize: 11, color: 'var(--ink-3)', marginTop: 2 }}>{time} · LV.{lv}</div>
+        </div>
+      </div>
+
+      <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 8 }}>{title}</div>
+      <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.6, marginBottom: 14 }}>{caption}</div>
+
+      {stat && (
+        <div className="panel" style={{
+          padding: 16, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 14,
+          background: 'rgba(76,242,255,.03)', borderColor: 'rgba(76,242,255,.15)',
+        }}>
+          {Object.entries(stat).map(([k, v]) => (
+            <div key={k} style={{ textAlign: 'center' }}>
+              <div className="label-tiny" style={{ fontSize: 9 }}>{k.toUpperCase()}</div>
+              <div className="display" style={{ fontSize: 24, color: 'var(--cyan)', marginTop: 4 }}>{v}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {buffs && (
+        <div style={{ display: 'flex', gap: 6, marginBottom: 14, flexWrap: 'wrap' }}>
+          {buffs.map((b, i) => <span key={i} className="chip acid">{b}</span>)}
+        </div>
+      )}
+
+      <div className="hr" style={{ marginBottom: 12 }}/>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+        <button style={{ background: 'none', border: 0, color: 'var(--ink-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'inherit' }}>
+          <Icon name="bolt" size={14}/> 加油 ({likes})
+        </button>
+        <button style={{ background: 'none', border: 0, color: 'var(--ink-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'inherit' }}>
+          <Icon name="chat" size={14}/> 评论 ({comments})
+        </button>
+        {kind === 'pk' && <button className="btn btn-magenta" style={{ marginLeft: 'auto', padding: '6px 14px', fontSize: 11 }}>应战</button>}
+        {kudos && (
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
+            {kudos.slice(0, 3).map((k, i) => (
+              <div key={i} style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px solid #0a0e1a', marginLeft: i ? -8 : 0,
+                background: '#161e36', color: 'var(--acid)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{k}</div>
+            ))}
+            <span className="num" style={{ fontSize: 10, color: 'var(--ink-3)', marginLeft: 6 }}>等 {kudos.length} 人加油</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ════════════════════════════════════════════════════════════════════════════
+// MAIN APP — sidebar nav + topbar + screen routing
+// ════════════════════════════════════════════════════════════════════════════
+const NAV = [
+  { id: 'dashboard', icon: 'home', label: '主城',     desc: '今日任务' },
+  { id: 'sports',    icon: 'grid', label: '项目库',   desc: '26 种运动' },
+  { id: 'workout',   icon: 'play', label: '副本',     desc: '运动中' },
+  { id: 'loot',      icon: 'bag',  label: '战利品',   desc: '上次结算' },
+  { id: 'guild',     icon: 'shield', label: '公会战', desc: '宿舍战' },
+  { id: 'arena',     icon: 'sword', label: '排行榜',  desc: '三层榜 · PK' },
+  { id: 'codex',     icon: 'medal', label: '图鉴',    desc: '徽章墙' },
+  { id: 'shop',      icon: 'crown', label: '形象',    desc: '装备店' },
+  { id: 'feed',      icon: 'chat',  label: '动态',    desc: '好友圈' },
+];
+
+function Sidebar({ current, onNavigate }) {
+  return (
+    <aside className="sidebar">
+      <div style={{
+        padding: '20px 24px', borderBottom: '1px solid var(--line)',
+        display: 'flex', alignItems: 'center', gap: 12,
+      }}>
+        <div style={{
+          width: 36, height: 36, borderRadius: 9,
+          background: 'linear-gradient(135deg, var(--acid), var(--cyan))',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#0a0e1a', fontFamily: 'Bebas Neue', fontSize: 22,
+          boxShadow: '0 0 24px rgba(182,255,60,.4)',
+        }}>P</div>
+        <div>
+          <div className="display" style={{ fontSize: 22, lineHeight: 1, letterSpacing: '.06em' }}>PULSE</div>
+          <div className="label-tiny" style={{ fontSize: 9, marginTop: 2 }}>大学生运动公会</div>
+        </div>
+      </div>
+
+      <nav style={{ padding: 12, flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {NAV.map(n => {
+          const active = current === n.id;
+          return (
+            <button key={n.id} onClick={() => onNavigate(n.id)} style={{
+              appearance: 'none', border: 0, cursor: 'pointer', textAlign: 'left',
+              background: active ? 'rgba(182,255,60,.08)' : 'transparent',
+              padding: '12px 14px', borderRadius: 10,
+              display: 'flex', alignItems: 'center', gap: 14,
+              color: active ? 'var(--acid)' : 'var(--ink-2)',
+              position: 'relative', fontFamily: 'inherit',
+              borderLeft: active ? '2px solid var(--acid)' : '2px solid transparent',
+              transition: 'background .15s',
+            }}>
+              {active && <span style={{
+                position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                width: 4, height: 4, borderRadius: '50%', background: 'var(--acid)',
+                boxShadow: '0 0 8px var(--acid)',
+              }}/>}
+              <Icon name={n.icon} size={18}/>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>{n.label}</div>
+                <div className="label-tiny" style={{ fontSize: 9, marginTop: 1, color: active ? 'var(--acid)' : 'var(--ink-4)' }}>{n.desc}</div>
+              </div>
+            </button>
+          );
+        })}
+      </nav>
+
+      <div style={{ padding: 12, borderTop: '1px solid var(--line)' }}>
+        <div className="panel tile" style={{ padding: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Avatar seed="陈" size={36} level={27}/>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>陈思源</div>
+            <div className="num" style={{ fontSize: 10, color: 'var(--ink-3)' }}>4,820 / 6,000 XP</div>
+            <div style={{ marginTop: 4 }}>
+              <ProgressBar value={4820} max={6000} color="var(--acid)" height={3}/>
+            </div>
+          </div>
+          <button style={{
+            background: 'none', border: 0, color: 'var(--ink-3)', cursor: 'pointer',
+            padding: 4,
+          }}><Icon name="settings" size={16}/></button>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function Topbar({ current, navigate }) {
+  const cur = NAV.find(n => n.id === current);
+  return (
+    <header className="topbar">
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+        <span className="label-tiny">{cur?.desc?.toUpperCase() || ''}</span>
+        <span style={{ color: 'var(--ink-4)' }}>/</span>
+        <span style={{ fontSize: 14, fontWeight: 600 }}>{cur?.label}</span>
+        <span style={{ color: 'var(--ink-4)', marginLeft: 16 }}>·</span>
+        <span className="chip" style={{ background: 'rgba(76,242,255,.08)', color: 'var(--cyan)', border: '1px solid rgba(76,242,255,.2)' }}>
+          <Icon name="pin" size={11}/> 知行大学 · 计算机学院 · 405 寝
+        </span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '6px 14px', borderRadius: 999,
+          background: 'rgba(255,255,255,.03)', border: '1px solid var(--line)',
+        }}>
+          <Icon name="coin" size={14} stroke={1.6}/>
+          <span className="num" style={{ fontSize: 13, fontWeight: 700, color: 'var(--gold)' }}>3,240</span>
+          <span className="num" style={{ fontSize: 11, color: 'var(--ink-3)' }}>⊙</span>
+        </div>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '6px 14px', borderRadius: 999,
+          background: 'rgba(255,61,138,.08)', border: '1px solid rgba(255,61,138,.2)',
+        }}>
+          <Icon name="fire" size={14} stroke={1.6}/>
+          <span className="num" style={{ fontSize: 13, fontWeight: 700, color: 'var(--magenta)' }}>14</span>
+          <span className="label-tiny" style={{ color: 'var(--magenta)', fontSize: 9 }}>STREAK</span>
+        </div>
+        <button style={{
+          background: 'rgba(255,255,255,.03)', border: '1px solid var(--line)', color: 'var(--ink-2)',
+          width: 36, height: 36, borderRadius: 8, cursor: 'pointer', position: 'relative',
+        }}>
+          <Icon name="bell" size={16}/>
+          <span style={{
+            position: 'absolute', top: 6, right: 6, width: 6, height: 6,
+            borderRadius: '50%', background: 'var(--magenta)',
+          }}/>
+        </button>
+      </div>
+    </header>
+  );
+}
+
+function App() {
+  const [current, setCurrent] = useState(window.TWEAK_DEFAULTS.currentScreen || 'dashboard');
+  const [claimed, setClaimed] = useState(['q2']);
+
+  useEffect(() => {
+    const accent = window.TWEAK_DEFAULTS.accent;
+    if (accent && accent !== '#b6ff3c') {
+      document.documentElement.style.setProperty('--acid', accent);
+    }
+  }, []);
+
+  const navigate = (id) => {
+    setCurrent(id);
+    window.scrollTo({ top: 0 });
+  };
+
+  const onClaim = (id) => setClaimed(c => c.includes(id) ? c : [...c, id]);
+
+  const screens = {
+    dashboard: <DashboardScreen navigate={navigate} claimed={claimed} onClaim={onClaim}/>,
+    sports:    <SportsScreen navigate={navigate}/>,
+    workout:   <WorkoutScreen navigate={navigate}/>,
+    loot:      <LootScreen navigate={navigate}/>,
+    guild:     <GuildScreen navigate={navigate}/>,
+    arena:     <ArenaScreen navigate={navigate}/>,
+    codex:     <CodexScreen navigate={navigate}/>,
+    shop:      <ShopScreen navigate={navigate}/>,
+    feed:      <FeedScreen navigate={navigate}/>,
+  };
+
+  return (
+    <div className="shell">
+      <Sidebar current={current} onNavigate={navigate}/>
+      <main className="main">
+        <Topbar current={current} navigate={navigate}/>
+        {screens[current] || screens.dashboard}
+      </main>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
