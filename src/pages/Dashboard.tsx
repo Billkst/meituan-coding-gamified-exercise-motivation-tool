@@ -24,7 +24,7 @@ export default function Dashboard() {
       {/* Streak hero — memorable visual anchor */}
       <section className="bg-bg-secondary border border-white/10 rounded-card py-16 px-8 mb-8 text-center">
         <div className="font-mono text-base uppercase tracking-[0.1em] text-text-secondary mb-2">
-          {t('dashboard.streak_label', { n: streak })}
+          {t('dashboard.streak_label')}
         </div>
         <div
           className={

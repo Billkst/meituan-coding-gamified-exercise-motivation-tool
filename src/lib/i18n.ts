@@ -15,8 +15,8 @@ const dict = {
     // Dashboard
     'dashboard.section': '§ 01 · 主页',
     'dashboard.welcome': '欢迎回来，{name}',
-    'dashboard.streak_label': '连续 {n} 天',
-    'dashboard.streak_sub': '↑ 距离第 50 天奖励 · 4 秒呼吸 · 霓虹光晕',
+    'dashboard.streak_label': '连续天数',
+    'dashboard.streak_sub': '↑ 下一个里程碑 · 第 50 天',
     'dashboard.total_cards': '总卡牌',
     'dashboard.total_cards_sub': '共 120 张 · 39%',
     'dashboard.this_week': '本周',
@@ -94,8 +94,8 @@ const dict = {
     // Dashboard
     'dashboard.section': '§ 01 · Dashboard',
     'dashboard.welcome': 'Welcome back, {name}',
-    'dashboard.streak_label': 'Day {n} Streak',
-    'dashboard.streak_sub': '↑ next reward at day 50 · 4s breathing · hero glow',
+    'dashboard.streak_label': 'DAY STREAK',
+    'dashboard.streak_sub': '↑ next milestone · day 50',
     'dashboard.total_cards': 'Total Cards',
     'dashboard.total_cards_sub': 'of 120 · 39%',
     'dashboard.this_week': 'This Week',

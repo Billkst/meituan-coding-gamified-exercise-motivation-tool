@@ -10,11 +10,11 @@ import type { Intensity, Sport, Rarity } from '@/types/db'
 
 const INTENSITIES: Intensity[] = ['light', 'medium', 'high']
 
-const RARITY_TEXT_CLASS: Record<Rarity, string> = {
-  common: 'text-rarity-common',
-  rare: 'text-rarity-rare',
-  epic: 'text-rarity-epic',
-  legendary: 'text-rarity-legendary',
+const RARITY_BADGE_CLASS: Record<Rarity, string> = {
+  common: 'border-rarity-common text-rarity-common',
+  rare: 'border-rarity-rare text-rarity-rare',
+  epic: 'border-rarity-epic text-rarity-epic',
+  legendary: 'border-rarity-legendary text-rarity-legendary',
 }
 
 export default function Workout() {
@@ -167,8 +167,17 @@ export default function Workout() {
                 <span className="text-text-tertiary"> · {t('workout.streak_same_day')}</span>
               )}
             </div>
-            <div className={'font-mono text-sm ' + RARITY_TEXT_CLASS[result.card_drawn.rarity]}>
-              {t('workout.card_drawn')} · {result.card_drawn.id} [{result.card_drawn.rarity}]
+            <div className="font-mono text-sm flex items-center gap-2">
+              <span className="text-text-secondary">{t('workout.card_drawn')} ·</span>
+              <span className="text-text-primary">{result.card_drawn.id}</span>
+              <span
+                className={
+                  'inline-block px-2 py-0.5 text-[10px] uppercase tracking-widest rounded-full border ' +
+                  RARITY_BADGE_CLASS[result.card_drawn.rarity]
+                }
+              >
+                {result.card_drawn.rarity}
+              </span>
             </div>
           </div>
         </section>
