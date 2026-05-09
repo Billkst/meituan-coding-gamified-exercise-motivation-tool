@@ -1,4 +1,8 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { initAuth } from '@/lib/auth'
+import { useAuthStore } from '@/store/useAuthStore'
+import { useTranslation } from '@/lib/i18n'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import Sports from './pages/Sports'
@@ -10,6 +14,21 @@ import DeckBuilder from './pages/DeckBuilder'
 import Onboarding from './pages/Onboarding'
 
 export default function App() {
+  const isInitialized = useAuthStore((s) => s.isInitialized)
+  const initError = useAuthStore((s) => s.initError)
+  const { t } = useTranslation()
+
+  useEffect(() => {
+    void initAuth()
+  }, [])
+
+  if (!isInitialized) {
+    return <BootScreen message={t('auth.initializing')} />
+  }
+  if (initError) {
+    return <BootScreen message={t('auth.error', { msg: initError })} error />
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
@@ -26,6 +45,26 @@ export default function App() {
           <Route path="/onboarding" element={<Onboarding />} />
         </Routes>
       </main>
+    </div>
+  )
+}
+
+function BootScreen({ message, error }: { message: string; error?: boolean }) {
+  return (
+    <div className="min-h-screen flex items-center justify-center px-8">
+      <div className="text-center">
+        <div className="font-display font-black text-4xl text-accent-primary uppercase tracking-tight mb-4">
+          PULSE
+        </div>
+        <div
+          className={
+            'font-mono text-sm uppercase tracking-widest ' +
+            (error ? 'text-semantic-error' : 'text-text-secondary')
+          }
+        >
+          {message}
+        </div>
+      </div>
     </div>
   )
 }

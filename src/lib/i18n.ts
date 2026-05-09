@@ -37,6 +37,32 @@ const dict = {
     'sports.error': '加载失败：{msg}',
     'sports.retry': '重试',
     'sports.empty': '没数据。检查 Supabase 是否 seed 过。',
+
+    // Auth
+    'auth.initializing': '正在以匿名身份登录…',
+    'auth.error': '登录失败：{msg}',
+
+    // Dashboard data
+    'dashboard.zero_streak': '开始你的第一次训练 →',
+    'dashboard.username': '@{name}',
+
+    // Workout fields
+    'workout.field.sport': '运动项目',
+    'workout.field.duration': '时长 · {n} 分钟',
+    'workout.field.intensity': '强度',
+    'workout.intensity.light': '轻松',
+    'workout.intensity.medium': '中等',
+    'workout.intensity.high': '高强度',
+    'workout.submit': '完成训练',
+    'workout.submitting': '提交中…',
+    'workout.error': '提交失败：{msg}',
+    'workout.result': '本次结果',
+    'workout.streak_now': '当前 streak {n} 天',
+    'workout.streak_new': '新 streak 开启',
+    'workout.streak_continued': 'streak 延续',
+    'workout.streak_same_day': '同日训练，streak 不变',
+    'workout.card_drawn': '抽到一张',
+    'workout.xp_gained': '+{n} XP',
     'workout.section': '§ 03 · 打卡',
     'workout.title': '打卡 — 快速登记 / 真实计时',
     'loot.section': '§ 04 · 抽卡',
@@ -90,6 +116,32 @@ const dict = {
     'sports.error': 'Load failed: {msg}',
     'sports.retry': 'Retry',
     'sports.empty': 'No data. Check Supabase seed.',
+
+    // Auth
+    'auth.initializing': 'Signing in anonymously…',
+    'auth.error': 'Sign in failed: {msg}',
+
+    // Dashboard data
+    'dashboard.zero_streak': 'Start your first workout →',
+    'dashboard.username': '@{name}',
+
+    // Workout fields
+    'workout.field.sport': 'Sport',
+    'workout.field.duration': 'Duration · {n} min',
+    'workout.field.intensity': 'Intensity',
+    'workout.intensity.light': 'Light',
+    'workout.intensity.medium': 'Medium',
+    'workout.intensity.high': 'High',
+    'workout.submit': 'Submit workout',
+    'workout.submitting': 'Submitting…',
+    'workout.error': 'Submit failed: {msg}',
+    'workout.result': 'Result',
+    'workout.streak_now': 'Streak {n} days',
+    'workout.streak_new': 'new streak started',
+    'workout.streak_continued': 'streak continued',
+    'workout.streak_same_day': 'same day, streak unchanged',
+    'workout.card_drawn': 'Drew',
+    'workout.xp_gained': '+{n} XP',
     'workout.section': '§ 03 · Workout',
     'workout.title': 'Workout — Quick log / Real timer',
     'loot.section': '§ 04 · Loot',

@@ -1,8 +1,14 @@
 import { useTranslation } from '@/lib/i18n'
+import { useCurrentUser, useMyCardCount } from '@/api/users'
 
 export default function Dashboard() {
   const { t } = useTranslation()
-  const streak = 47
+  const { data: user, isLoading } = useCurrentUser()
+  const { data: cardCount } = useMyCardCount()
+
+  const streak = user?.current_streak ?? 0
+  const xp = user?.xp ?? 0
+  const username = user?.username ?? '...'
 
   return (
     <div className="max-w-container mx-auto px-8 py-12">
@@ -11,7 +17,7 @@ export default function Dashboard() {
           {t('dashboard.section')}
         </div>
         <h1 className="font-display font-bold text-3xl uppercase tracking-tight">
-          {t('dashboard.welcome', { name: '陈思源' })}
+          {t('dashboard.welcome', { name: username })}
         </h1>
       </header>
 
@@ -21,18 +27,25 @@ export default function Dashboard() {
           {t('dashboard.streak_label', { n: streak })}
         </div>
         <div
-          className="font-display font-black text-accent-primary leading-none animate-breathing"
+          className={
+            'font-display font-black leading-none ' +
+            (streak > 0
+              ? 'text-accent-primary animate-breathing'
+              : 'text-text-tertiary')
+          }
           style={{
             fontSize: 'clamp(80px, 14vh, 180px)',
             fontVariantNumeric: 'tabular-nums',
             textShadow:
-              '0 0 24px rgba(182,255,60,0.7), 0 0 48px rgba(182,255,60,0.3)',
+              streak > 0
+                ? '0 0 24px rgba(182,255,60,0.7), 0 0 48px rgba(182,255,60,0.3)'
+                : 'none',
           }}
         >
-          {streak}
+          {isLoading ? '—' : streak}
         </div>
         <div className="font-mono text-xs text-text-tertiary mt-4 uppercase tracking-wider">
-          {t('dashboard.streak_sub')}
+          {streak > 0 ? t('dashboard.streak_sub') : t('dashboard.zero_streak')}
         </div>
       </section>
 
@@ -40,17 +53,17 @@ export default function Dashboard() {
       <section className="grid grid-cols-3 gap-4">
         <StatCard
           label={t('dashboard.total_cards')}
-          value="47"
+          value={String(cardCount ?? 0)}
           sub={t('dashboard.total_cards_sub')}
         />
         <StatCard
           label={t('dashboard.this_week')}
-          value="286"
+          value={String(xp)}
           sub={t('dashboard.this_week_sub')}
         />
         <StatCard
           label={t('dashboard.rank')}
-          value="#12"
+          value={`L${user?.level ?? 1}`}
           sub={t('dashboard.rank_sub')}
         />
       </section>
