@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { IconSwords, IconSnowflake } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
@@ -7,16 +8,27 @@ import DashboardTourOverlay from '@/components/DashboardTourOverlay'
 import { DailyQuestsCard } from '@/components/dashboard/DailyQuestsCard'
 import { AchievementUnlockToast } from '@/components/AchievementUnlockToast'
 
+const TOUR_STORAGE_KEY = 'pulse.tour.seen'
+
 export default function Dashboard() {
   const { t } = useTranslation()
   const { data: user, isLoading } = useCurrentUser()
   const { data: cardCount } = useMyCardCount()
   const [searchParams, setSearchParams] = useSearchParams()
-  const showTour = searchParams.get('tour') === '1'
+  const [showTour, setShowTour] = useState(() => {
+    if (typeof window === 'undefined') return false
+    const fromQuery = new URLSearchParams(window.location.search).get('tour') === '1'
+    const seen = window.localStorage.getItem(TOUR_STORAGE_KEY)
+    return fromQuery || !seen
+  })
   const dismissTour = () => {
-    const next = new URLSearchParams(searchParams)
-    next.delete('tour')
-    setSearchParams(next, { replace: true })
+    window.localStorage.setItem(TOUR_STORAGE_KEY, '1')
+    setShowTour(false)
+    if (searchParams.get('tour') === '1') {
+      const next = new URLSearchParams(searchParams)
+      next.delete('tour')
+      setSearchParams(next, { replace: true })
+    }
   }
 
   const streak = user?.current_streak ?? 0

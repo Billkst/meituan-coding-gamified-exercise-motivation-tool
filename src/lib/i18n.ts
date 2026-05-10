@@ -279,6 +279,25 @@ const dict = {
     'leaderboard.empty': '榜单为空',
     'leaderboard.loading': '加载排行榜…',
 
+    // Welcome tour (Day 10)
+    'tour.progress': '{n} / {total}',
+    'tour.next': '下一步',
+    'tour.prev': '上一步',
+    'tour.skip': '跳过',
+    'tour.done': '开始体验',
+    'tour.step1.title': '欢迎来到 PULSE',
+    'tour.step1.body': '把"今天必须练"变成"今天能抽卡 + 上分"。6 步带你跑完核心循环（30 秒）。',
+    'tour.step2.title': '运动 → 拿 XP + 抽卡',
+    'tour.step2.body': '左侧导航 [打卡] 提交一次运动（26 项 / 5-150 分钟 / 三档强度）→ 入账 XP + 自动抽 1 张卡。',
+    'tour.step3.title': '抽卡 4 等级稀有度',
+    'tour.step3.body': '每次打卡掉 1 张：普通 / 稀有 / 史诗 / 传说。抽到的卡进 [卡库]，同卡叠加升星。',
+    'tour.step4.title': 'Arena PVE 对战',
+    'tour.step4.body': '在 [卡组] 选 8 张主力 → 进 [对战] 打 PVE 8 关阶梯，胜利拿 season_score。',
+    'tour.step5.title': '排行榜上分',
+    'tour.step5.body': 'season_score 进 [排行榜]，跟 8 名 demo 用户对比。Week / Month / All-time 三种 period。',
+    'tour.step6.title': '成就 + 每日任务',
+    'tour.step6.body': '18 静态成就 + 每日 3 任务 + 每日 bonus，去 [成就] 页 claim 拿额外 XP。',
+
     // Placeholder
     'placeholder.day': 'Day {n} 实现',
     'placeholder.day_advisor': 'Day 12 实现（含完整 advisor）',
@@ -560,6 +579,25 @@ const dict = {
     'leaderboard.self.percentile': 'Top {n}% (beat {n}% of players)',
     'leaderboard.empty': 'No entries yet',
     'leaderboard.loading': 'Loading leaderboard…',
+
+    // Welcome tour (Day 10)
+    'tour.progress': '{n} / {total}',
+    'tour.next': 'Next',
+    'tour.prev': 'Prev',
+    'tour.skip': 'Skip',
+    'tour.done': 'Start',
+    'tour.step1.title': 'Welcome to PULSE',
+    'tour.step1.body': 'Turn "I have to work out" into "I get to draw a card and climb the rank." 6 steps in 30 seconds.',
+    'tour.step2.title': 'Workout → XP + card',
+    'tour.step2.body': 'Left nav → [Workout]. Log one session (26 sports / 5-150 min / 3 intensities) → instant XP + a free card pull.',
+    'tour.step3.title': 'Pulls — 4 rarities',
+    'tour.step3.body': 'Each workout drops 1 card: common / rare / epic / legendary. Cards land in [Library] and stack into stars.',
+    'tour.step4.title': 'Arena PVE',
+    'tour.step4.body': 'Pick 8 main cards in [Deck] → fight 8 PVE tiers in [Arena]. Wins net season_score.',
+    'tour.step5.title': 'Climb the leaderboard',
+    'tour.step5.body': 'season_score lands you in [Leaderboard], head to head with 8 demo players. Week / Month / All-time tabs.',
+    'tour.step6.title': 'Achievements + daily quests',
+    'tour.step6.body': '18 static achievements + 3 daily quests + a daily bonus. Claim from [Achievements] for extra XP.',
 
     // Placeholder
     'placeholder.day': 'Day {n} implementation',
