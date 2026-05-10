@@ -7,6 +7,7 @@ import { useClashState } from '@/clash/api/clashState'
 import { useOpenChest, useUnlockChestNow } from '@/clash/api/clashChests'
 import { useDevStore } from '@/store/useDevStore'
 import { useState } from 'react'
+import NextBestActionClash from '@/clash/components/NextBestActionClash'
 
 export default function ClashHome() {
   const { t } = useTranslation()
@@ -67,6 +68,9 @@ export default function ClashHome() {
           {t('clash.home.subtitle' as never)}
         </div>
       </header>
+
+      {/* Next-best-action — surfaces the workout-to-cards-to-battle loop */}
+      <NextBestActionClash state={state} />
 
       {/* Currency strip */}
       <section className="grid grid-cols-3 gap-3 mb-8">
