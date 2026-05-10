@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { IconLock, IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
+import { IconLock, IconArrowRight, IconInfoCircle, IconChevronDown } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useNpcOpponents } from '@/api/npcs'
 import { useActiveDeck } from '@/api/deck'
 import { useStartBattle } from '@/api/battles'
 import { useCurrentUser } from '@/api/users'
 import BattleRulesModal from '@/components/battle/BattleRulesModal'
+import NpcDeckPreview from '@/components/arena/NpcDeckPreview'
 
 export default function Arena() {
   const { t, lang } = useTranslation()
@@ -16,6 +17,7 @@ export default function Arena() {
   const { data: user } = useCurrentUser()
   const startBattle = useStartBattle()
   const [rulesOpen, setRulesOpen] = useState(false)
+  const [expandedNpcId, setExpandedNpcId] = useState<string | null>(null)
 
   const deckReady = !!deck && deck.card_ids.length === 8
   const isStarting = startBattle.isPending
@@ -76,15 +78,14 @@ export default function Arena() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {npcs.map((n) => {
           const locked = !n.is_unlocked
+          const expanded = expandedNpcId === n.id
+          const disabled = locked || !deckReady || isStarting
           return (
-            <button
-              type="button"
+            <div
               key={n.id}
-              onClick={() => onPickNpc(n.id)}
-              disabled={locked || !deckReady || isStarting}
               className={
-                'text-left bg-bg-secondary border border-white/10 rounded-card p-5 transition-all ' +
-                (locked || !deckReady ? 'opacity-50 cursor-not-allowed ' : 'hover:border-accent-primary hover:shadow-glow-subtle cursor-pointer ')
+                'bg-bg-secondary border border-white/10 rounded-card p-5 transition-all ' +
+                (locked || !deckReady ? 'opacity-50 ' : 'hover:border-accent-primary hover:shadow-glow-subtle ')
               }
             >
               <div className="flex items-center justify-between mb-2">
@@ -99,7 +100,7 @@ export default function Arena() {
               <div className="font-body text-xs text-text-secondary mb-3 italic">
                 {lang === 'zh' ? n.flavor_zh : n.flavor_en}
               </div>
-              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest">
+              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-widest mb-3">
                 <span className="text-rarity-legendary">
                   {t('arena.npc.reward', { xp: n.reward_xp })}
                 </span>
@@ -109,7 +110,44 @@ export default function Arena() {
                   </span>
                 )}
               </div>
-            </button>
+
+              {/* expand toggle (always shown for unlocked, even without deck — helps planning) */}
+              {!locked && n.deck_card_ids && n.deck_card_ids.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setExpandedNpcId(expanded ? null : n.id)}
+                  className="w-full font-mono text-[10px] uppercase tracking-widest text-text-secondary hover:text-accent-primary py-1.5 inline-flex items-center justify-center gap-1 border border-white/5 rounded-button hover:border-accent-primary/40 mb-2"
+                >
+                  <IconChevronDown
+                    size={12}
+                    className={'transition-transform ' + (expanded ? 'rotate-180' : '')}
+                  />
+                  {expanded ? t('arena.npc.collapse') : t('arena.npc.expand')}
+                </button>
+              )}
+
+              {expanded && n.deck_card_ids && (
+                <NpcDeckPreview npcDeckIds={n.deck_card_ids} />
+              )}
+
+              {/* primary CTA — start battle */}
+              {!locked && (
+                <button
+                  type="button"
+                  onClick={() => onPickNpc(n.id)}
+                  disabled={disabled}
+                  className={
+                    'mt-2 w-full font-display font-bold uppercase tracking-wider py-2 px-3 rounded-button text-xs transition-all ' +
+                    (disabled
+                      ? 'bg-bg-primary border border-white/5 text-text-tertiary cursor-not-allowed '
+                      : 'bg-accent-primary text-bg-primary shadow-glow-subtle hover:shadow-glow-standard hover:scale-[1.01] cursor-pointer ')
+                  }
+                >
+                  {t('arena.lobby.title')}
+                  <IconArrowRight size={12} className="inline ml-1.5" />
+                </button>
+              )}
+            </div>
           )
         })}
       </div>
