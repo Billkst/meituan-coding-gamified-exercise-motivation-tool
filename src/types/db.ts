@@ -44,6 +44,9 @@ export interface Card {
   ability_text_zh: string | null
   ability_text_en: string | null
   synergy_with: string[]
+  ability_kind: 'damage_buff' | 'defense_buff' | 'heal' | 'shield' | 'pierce' | 'reflect' | 'first_strike' | 'xp_bonus' | null
+  ability_value: number
+  ability_trigger: 'on_play' | 'on_attack' | 'on_defend' | 'on_battle_end' | 'passive' | null
   flavor_zh: string | null
   flavor_en: string | null
 }
@@ -100,6 +103,25 @@ export interface Battle {
   created_at: string
 }
 
+export type AbilityKind =
+  | 'damage_buff' | 'defense_buff' | 'heal' | 'shield'
+  | 'pierce' | 'reflect' | 'first_strike' | 'xp_bonus'
+
+export type AbilityTrigger =
+  | 'on_play' | 'on_attack' | 'on_defend' | 'on_battle_end' | 'passive'
+
+export interface NpcOpponent {
+  id: string
+  name_zh: string
+  name_en: string
+  level: number
+  deck_card_ids: string[]
+  reward_xp: number
+  unlock_at_level: number
+  flavor_zh: string | null
+  flavor_en: string | null
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -134,6 +156,7 @@ export interface Database {
         }
         Update: Partial<Battle>
       }
+      npc_opponents: { Row: NpcOpponent; Insert: NpcOpponent; Update: Partial<NpcOpponent> }
     }
   }
 }
