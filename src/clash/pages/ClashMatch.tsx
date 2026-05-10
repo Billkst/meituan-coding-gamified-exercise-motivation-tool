@@ -123,8 +123,12 @@ export default function ClashMatch() {
   }, [aiBanner])
 
   // Auto-finalize when match ends — show big banner for ~1.8s, then RPC + navigate.
+  // The timer is tracked via ref so subsequent renders (which re-run the effect due
+  // to `state` ref dep) don't cancel it via the cleanup return.
+  const finalizeTimerRef = useRef<number | null>(null)
   useEffect(() => {
     if (!state || phase !== 'ended' || finalized || !state.result) return
+    if (finalizeTimerRef.current !== null) return
     setFinalized(true)
     setEndBanner(state.result)
     const startTs = startTimeRef.current ?? Date.now()
@@ -134,7 +138,7 @@ export default function ClashMatch() {
     const aiTowersLost = state.enemy.towersLost
     const tickCount = state.tick
 
-    const delay = window.setTimeout(() => {
+    finalizeTimerRef.current = window.setTimeout(() => {
       finalize.mutate(
         {
           result: matchResult,
@@ -177,9 +181,16 @@ export default function ClashMatch() {
         },
       )
     }, 1800)
-
-    return () => window.clearTimeout(delay)
   }, [state, phase, finalized, finalize, navigate, difficulty])
+
+  useEffect(() => {
+    return () => {
+      if (finalizeTimerRef.current !== null) {
+        window.clearTimeout(finalizeTimerRef.current)
+        finalizeTimerRef.current = null
+      }
+    }
+  }, [])
 
   if (isLoading || !clashState) {
     return (
