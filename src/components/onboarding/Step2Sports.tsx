@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { IconCheck } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useSports } from '@/api/sports'
-import { tablerClass, CATEGORY_GRADIENT, CATEGORY_ACCENT_BORDER, CATEGORY_GLOW } from '@/lib/sportIcon'
+import { sportEmoji, CATEGORY_GRADIENT, CATEGORY_ACCENT_BORDER, CATEGORY_GLOW } from '@/lib/sportIcon'
 
 interface Props {
   onNext: (selected: string[]) => void
@@ -65,7 +65,13 @@ export default function Step2Sports({ onNext, onPrev }: Props) {
                   (on ? 'scale-110 shadow-lg' : 'shadow-md')
                 }
               >
-                <i className={tablerClass(sp.icon) + ' text-3xl text-white'} />
+                <span
+                  className="text-3xl leading-none select-none"
+                  style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}
+                  aria-hidden
+                >
+                  {sportEmoji(sp.id)}
+                </span>
               </div>
 
               {/* Name */}

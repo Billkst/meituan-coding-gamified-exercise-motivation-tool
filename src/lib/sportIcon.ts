@@ -2,14 +2,52 @@ import type { SportCategory } from '@/types/db'
 
 // Tabler webfont icons use kebab-case class names. The DB stores PascalCase
 // component names ("IconRun"), so we strip the "Icon" prefix and lowercase.
-//   IconRun        → ti ti-run
-//   IconBallTennis → ti ti-ball-tennis
+// Kept for legacy callers; new code should prefer sportEmoji() because tabler
+// v3 doesn't ship icons for several names we seeded (boxing-glove, climbing,
+// karate, yoga, etc.) and they render as blank glyphs.
 export function tablerClass(componentName: string): string {
   const kebab = componentName
     .replace(/^Icon/, '')
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .toLowerCase()
   return `ti ti-${kebab}`
+}
+
+// Emoji per sport id — Unicode-standard, every browser ships color glyphs,
+// 100% coverage by construction (one entry per row in sports_seed.sql).
+// Indexed by sports.id, NOT by sports.icon (which is the deprecated tabler
+// component name that may not exist in the webfont).
+const SPORT_EMOJI: Record<string, string> = {
+  running: '🏃',
+  cycling: '🚴',
+  swimming: '🏊',
+  jump_rope: '🪢',
+  hiit: '🔥',
+  rowing: '🚣',
+  weightlifting: '🏋️',
+  boxing: '🥊',
+  climbing: '🧗',
+  calisthenics: '💪',
+  basketball: '🏀',
+  football: '⚽',
+  badminton: '🏸',
+  pingpong: '🏓',
+  tennis: '🎾',
+  volleyball: '🏐',
+  frisbee: '🥏',
+  yoga: '🧘',
+  pilates: '🤸',
+  dance: '💃',
+  taichi: '☯️',
+  martial_arts: '🥋',
+  judo: '🤼',
+  hiking: '🥾',
+  skateboarding: '🛹',
+  skiing: '⛷️',
+}
+
+export function sportEmoji(id: string): string {
+  return SPORT_EMOJI[id] ?? '🏅'
 }
 
 // Visual identity per sport category. Used for the icon "tile" background

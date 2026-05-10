@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
 import { useSubmitWorkout } from '@/api/submitWorkout'
+import { sportEmoji } from '@/lib/sportIcon'
 import type { Intensity, Sport } from '@/types/db'
 
 const INTENSITIES: Intensity[] = ['light', 'medium', 'high']
@@ -66,7 +67,7 @@ export default function Workout() {
           >
             {sports?.map((s) => (
               <option key={s.id} value={s.id}>
-                {lang === 'zh' ? s.name_zh : s.name_en} ×{s.base_xp_multiplier}
+                {sportEmoji(s.id)}  {lang === 'zh' ? s.name_zh : s.name_en} ×{s.base_xp_multiplier}
               </option>
             ))}
           </select>

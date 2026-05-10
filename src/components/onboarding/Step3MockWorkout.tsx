@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from '@/lib/i18n'
 import { useSports } from '@/api/sports'
+import { sportEmoji } from '@/lib/sportIcon'
 
 interface Props {
   onNext: () => void
@@ -40,7 +41,7 @@ export default function Step3MockWorkout({ onNext, onPrev, defaultSportId }: Pro
           >
             {sports.map((s) => (
               <option key={s.id} value={s.id}>
-                {lang === 'zh' ? s.name_zh : s.name_en}
+                {sportEmoji(s.id)}  {lang === 'zh' ? s.name_zh : s.name_en}
               </option>
             ))}
           </select>

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
-import { tablerClass, CATEGORY_GRADIENT } from '@/lib/sportIcon'
+import { sportEmoji, CATEGORY_GRADIENT } from '@/lib/sportIcon'
 import type { Sport, SportCategory } from '@/types/db'
 
 const CATEGORY_ORDER: SportCategory[] = [
@@ -94,7 +94,13 @@ export default function Sports() {
                         CATEGORY_GRADIENT[s.category]
                       }
                     >
-                      <i className={`${tablerClass(s.icon)} text-2xl text-white`} />
+                      <span
+                        className="text-2xl leading-none select-none"
+                        style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}
+                        aria-hidden
+                      >
+                        {sportEmoji(s.id)}
+                      </span>
                     </div>
                     <div className="font-display font-bold text-sm uppercase tracking-tight">
                       {lang === 'zh' ? s.name_zh : s.name_en}
