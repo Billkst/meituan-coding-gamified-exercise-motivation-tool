@@ -9,6 +9,8 @@ import Sports from './pages/Sports'
 import Workout from './pages/Workout'
 import Loot from './pages/Loot'
 import Arena from './pages/Arena'
+import ArenaBattle from './pages/ArenaBattle'
+import ArenaResult from './pages/ArenaResult'
 import CardLibrary from './pages/CardLibrary'
 import DeckBuilder from './pages/DeckBuilder'
 import Onboarding from './pages/Onboarding'
@@ -40,6 +42,8 @@ export default function App() {
           <Route path="/workout" element={<Workout />} />
           <Route path="/loot" element={<Loot />} />
           <Route path="/arena" element={<Arena />} />
+          <Route path="/arena/battle/:battleId" element={<ArenaBattle />} />
+          <Route path="/arena/result/:battleId" element={<ArenaResult />} />
           <Route path="/library" element={<CardLibrary />} />
           <Route path="/deck" element={<DeckBuilder />} />
           <Route path="/onboarding" element={<Onboarding />} />
