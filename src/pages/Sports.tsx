@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
+import { tablerClass, CATEGORY_GRADIENT } from '@/lib/sportIcon'
 import type { Sport, SportCategory } from '@/types/db'
 
 const CATEGORY_ORDER: SportCategory[] = [
@@ -11,15 +12,6 @@ const CATEGORY_ORDER: SportCategory[] = [
   'martial',
   'outdoor',
 ]
-
-// Tabler webfont icons use kebab-case class names; convert IconRun → ti-run
-function tablerClass(componentName: string): string {
-  const kebab = componentName
-    .replace(/^Icon/, '')
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .toLowerCase()
-  return `ti ti-${kebab}`
-}
 
 export default function Sports() {
   const { t, lang } = useTranslation()
@@ -94,11 +86,16 @@ export default function Sports() {
                 {grouped[cat].map((s) => (
                   <div
                     key={s.id}
-                    className="bg-bg-secondary border border-white/10 rounded-card p-4 hover:border-accent-primary hover:bg-bg-tertiary transition-colors duration-150 ease-enter cursor-pointer group"
+                    className="bg-bg-secondary border border-white/10 rounded-card p-4 hover:border-accent-primary hover:bg-bg-tertiary transition-all duration-150 ease-enter cursor-pointer group"
                   >
-                    <i
-                      className={`${tablerClass(s.icon)} text-3xl text-text-secondary group-hover:text-accent-primary block mb-3`}
-                    />
+                    <div
+                      className={
+                        'w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center mb-3 shadow-md group-hover:scale-105 transition-transform ' +
+                        CATEGORY_GRADIENT[s.category]
+                      }
+                    >
+                      <i className={`${tablerClass(s.icon)} text-2xl text-white`} />
+                    </div>
                     <div className="font-display font-bold text-sm uppercase tracking-tight">
                       {lang === 'zh' ? s.name_zh : s.name_en}
                     </div>
