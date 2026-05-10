@@ -23,6 +23,7 @@ export default function ClashCards() {
   const unlock = useUnlockCard()
   const upgrade = useUpgradeCard()
   const [error, setError] = useState<string | null>(null)
+  const [flash, setFlash] = useState<string | null>(null)
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center font-mono text-xs animate-pulse">loading…</div>
@@ -52,6 +53,12 @@ export default function ClashCards() {
         </div>
       )}
 
+      {flash && (
+        <div className="fixed top-6 right-6 bg-accent-primary text-bg-primary font-display font-bold uppercase px-4 py-3 rounded-card shadow-glow-standard z-50 animate-pulse">
+          {flash}
+        </div>
+      )}
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {CR_CARDS.map((cardDef) => {
           const userCard = byId.get(cardDef.id)
@@ -65,12 +72,20 @@ export default function ClashCards() {
               onUnlock={() => {
                 setError(null)
                 unlock.mutate(cardDef.id, {
+                  onSuccess: () => {
+                    setFlash(`🔓 ${cardDef.name_zh} 解锁成功`)
+                    window.setTimeout(() => setFlash(null), 2000)
+                  },
                   onError: (e) => setError(e instanceof Error ? e.message : String(e)),
                 })
               }}
               onUpgrade={() => {
                 setError(null)
                 upgrade.mutate(cardDef.id, {
+                  onSuccess: (r) => {
+                    setFlash(`⬆️ ${cardDef.name_zh} 升至 Lv ${r.level}`)
+                    window.setTimeout(() => setFlash(null), 2000)
+                  },
                   onError: (e) => setError(e instanceof Error ? e.message : String(e)),
                 })
               }}
