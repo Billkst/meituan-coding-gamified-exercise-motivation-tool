@@ -92,46 +92,42 @@ begin
 
   -- ===== 4. compute new streak (含保护卡消耗) =====
   if v_user.last_workout_date is null then
-    v_gap := 999;  -- treat null as huge gap
-  else
-    v_gap := v_today - v_user.last_workout_date;
-  end if;
-
-  if v_gap = 0 then
-    -- 同日重复
-    v_new_streak := v_user.current_streak;
-    v_streak_status := 'same_day';
-  elsif v_gap = 1 then
-    -- 昨日 → 连续
-    v_new_streak := v_user.current_streak + 1;
-    v_streak_status := 'continued';
-    update streaks set length = v_new_streak
-      where user_id = v_user_id and status = 'active';
-  else
-    -- gap > 1: 优先消耗保护卡
-    if v_user.protect_cards >= 1 then
-      v_protect_consumed := true;
-      v_new_streak := v_user.current_streak + 1;
-      v_streak_status := 'protected';
-      update streaks set length = v_new_streak
-        where user_id = v_user_id and status = 'active';
-    else
-      v_new_streak := 1;
-      v_streak_status := 'broken';
-      update streaks
-        set status = 'broken', end_date = v_user.last_workout_date
-        where user_id = v_user_id and status = 'active';
-      insert into streaks (user_id, start_date, length, status)
-        values (v_user_id, v_today, 1, 'active');
-    end if;
-  end if;
-
-  -- first workout (no prior streak active row)
-  if v_user.last_workout_date is null then
+    -- first workout ever — no prior active row
     v_new_streak := 1;
     v_streak_status := 'new';
     insert into streaks (user_id, start_date, length, status)
       values (v_user_id, v_today, 1, 'active');
+  else
+    v_gap := v_today - v_user.last_workout_date;
+
+    if v_gap = 0 then
+      -- 同日重复
+      v_new_streak := v_user.current_streak;
+      v_streak_status := 'same_day';
+    elsif v_gap = 1 then
+      -- 昨日 → 连续
+      v_new_streak := v_user.current_streak + 1;
+      v_streak_status := 'continued';
+      update streaks set length = v_new_streak
+        where user_id = v_user_id and status = 'active';
+    else
+      -- gap > 1: 优先消耗保护卡
+      if v_user.protect_cards >= 1 then
+        v_protect_consumed := true;
+        v_new_streak := v_user.current_streak + 1;
+        v_streak_status := 'protected';
+        update streaks set length = v_new_streak
+          where user_id = v_user_id and status = 'active';
+      else
+        v_new_streak := 1;
+        v_streak_status := 'broken';
+        update streaks
+          set status = 'broken', end_date = v_user.last_workout_date
+          where user_id = v_user_id and status = 'active';
+        insert into streaks (user_id, start_date, length, status)
+          values (v_user_id, v_today, 1, 'active');
+      end if;
+    end if;
   end if;
 
   -- ===== 5. 周发保护卡 =====
