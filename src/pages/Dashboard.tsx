@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { IconSwords } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useCurrentUser, useMyCardCount } from '@/api/users'
 
@@ -50,7 +52,7 @@ export default function Dashboard() {
       </section>
 
       {/* Secondary stats */}
-      <section className="grid grid-cols-3 gap-4">
+      <section className="grid grid-cols-3 gap-4 mb-8">
         <StatCard
           label={t('dashboard.total_cards')}
           value={String(cardCount ?? 0)}
@@ -67,6 +69,17 @@ export default function Dashboard() {
           sub={t('dashboard.rank_sub')}
         />
       </section>
+
+      {/* Arena CTA */}
+      <div className="text-center">
+        <Link
+          to="/arena"
+          className="inline-flex items-center gap-2 bg-accent-primary text-bg-primary font-display font-bold uppercase tracking-wider py-3 px-8 rounded-button shadow-glow-standard hover:shadow-glow-hero hover:scale-[1.02] transition-all duration-150 ease-enter"
+        >
+          <IconSwords size={18} />
+          {t('arena.lobby.title')}
+        </Link>
+      </div>
     </div>
   )
 }
