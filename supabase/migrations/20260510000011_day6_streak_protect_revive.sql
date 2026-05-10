@@ -203,3 +203,63 @@ end;
 $$;
 
 grant execute on function public.submit_workout(text, int, text) to anon, authenticated;
+
+-- ============================================================
+-- 3. revive_streak — 7-day window, 50% restore, 24h XP freeze
+-- ============================================================
+create or replace function public.revive_streak()
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_user users%rowtype;
+  v_last_streak_len int;
+  v_revived int;
+  v_freeze_until timestamptz;
+  v_today date := (now() at time zone 'utc')::date;
+begin
+  if v_user_id is null then
+    raise exception 'unauthorized' using errcode = '28000';
+  end if;
+
+  select * into v_user from users where id = v_user_id for update;
+  if not found then raise exception 'user not found' using errcode = '22023'; end if;
+
+  -- 防止反复复活 (freeze 期内)
+  if v_user.freeze_xp_until is not null and v_user.freeze_xp_until > now() then
+    raise exception 'already revived' using errcode = '28000';
+  end if;
+
+  -- 7 天窗口
+  if v_user.last_workout_date is null
+     or v_user.last_workout_date < (v_today - 7) then
+    raise exception 'revive window closed' using errcode = '22023';
+  end if;
+
+  if v_user.current_streak <> 0 then
+    raise exception 'streak not broken' using errcode = '22023';
+  end if;
+
+  -- 取上次 broken streak 的长度
+  select length into v_last_streak_len
+    from streaks
+    where user_id = v_user_id and status = 'broken'
+    order by start_date desc limit 1;
+
+  v_revived := floor(coalesce(v_last_streak_len, 0) / 2.0);
+  v_freeze_until := now() + interval '24 hours';
+
+  update users set
+    current_streak = v_revived,
+    freeze_xp_until = v_freeze_until
+    where id = v_user_id;
+
+  insert into streaks (user_id, start_date, length, status)
+    values (v_user_id, v_today, v_revived, 'active');
+
+  return jsonb_build_object(
+    'revived_streak', v_revived,
+    'freeze_until', v_freeze_until
+  );
+end; $$;
+
+grant execute on function public.revive_streak() to authenticated;
