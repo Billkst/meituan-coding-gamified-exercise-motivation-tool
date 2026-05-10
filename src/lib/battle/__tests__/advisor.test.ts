@@ -1,20 +1,25 @@
 import { describe, it, expect } from 'vitest'
 import { recommendDeck } from '@/lib/battle/advisor'
 import type { OwnedCard } from '@/api/cards'
+import type { Card } from '@/types/db'
 import { mkCard } from './fixtures'
 
-function mkOwnedCard(cardId: string, opts: Partial<OwnedCard> = {}): OwnedCard {
-  const { card: cardOverrides, ...rest } = opts
+interface MkOwnedOpts {
+  star_level?: number
+  copies?: number
+  card?: Partial<Card>
+}
+
+function mkOwnedCard(cardId: string, opts: MkOwnedOpts = {}): OwnedCard {
   return {
     id: 0,
     user_id: 'u',
     card_id: cardId,
-    star_level: 1,
-    copies: 1,
+    star_level: opts.star_level ?? 1,
+    copies: opts.copies ?? 1,
     acquired_at: '2026-05-10T00:00:00Z',
-    card: mkCard({ id: cardId, ...(cardOverrides ?? {}) }),
-    ...rest,
-  } as OwnedCard
+    card: mkCard({ id: cardId, ...(opts.card ?? {}) }),
+  }
 }
 
 describe('recommendDeck', () => {

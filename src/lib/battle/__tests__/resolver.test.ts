@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { resolveAttack, effectiveDefense } from '@/lib/battle/resolver'
 import {
   mkCard, mkBattleCard, mkState,
-  C_BASIC, C_PIERCE, C_REFLECT, C_FIRST, C_SHIELD, C_HEAL, C_DMG, C_PULSE, C_XP,
+  C_BASIC, C_PIERCE, C_REFLECT, C_FIRST, C_DMG, C_PULSE, C_XP,
 } from './fixtures'
 
 describe('resolveAttack', () => {
