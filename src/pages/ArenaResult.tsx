@@ -11,7 +11,7 @@ export default function ArenaResult() {
   const { data: battle, isLoading } = useBattle(id)
 
   if (isLoading || !battle) {
-    return <div className="max-w-container mx-auto px-8 py-12 font-mono text-sm uppercase tracking-widest text-text-tertiary">…</div>
+    return <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12 font-mono text-sm uppercase tracking-widest text-text-tertiary">…</div>
   }
 
   const won = battle.winner_id != null
@@ -22,7 +22,7 @@ export default function ArenaResult() {
   const finalDefHp = lastTurn?.defender_hp_after ?? 100
 
   return (
-    <div className="max-w-container mx-auto px-8 py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
       <div className="text-center mb-12">
         <div
           className={

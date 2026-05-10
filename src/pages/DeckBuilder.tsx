@@ -68,7 +68,7 @@ export default function DeckBuilder() {
   }
 
   return (
-    <div className="max-w-container mx-auto px-8 py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
       <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
         {t('deck.section')}
       </div>

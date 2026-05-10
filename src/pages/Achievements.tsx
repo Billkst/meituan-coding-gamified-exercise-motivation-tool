@@ -11,7 +11,7 @@ export default function Achievements() {
 
   if (isLoading) {
     return (
-      <div className="max-w-container mx-auto px-8 py-12">
+      <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
         <div className="font-mono text-sm text-text-tertiary">{t('achievements.loading')}</div>
       </div>
     )
@@ -20,7 +20,7 @@ export default function Achievements() {
   if (!data) return null
 
   return (
-    <div className="max-w-container mx-auto px-8 py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
       <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
         {t('achievements.section')}
       </div>

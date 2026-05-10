@@ -88,7 +88,7 @@ export default function ArenaBattle() {
 
   if (!startResult || !state) {
     return (
-      <div className="max-w-container mx-auto px-8 py-12 text-center">
+      <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12 text-center">
         <div className="font-mono text-sm uppercase tracking-widest text-text-tertiary">
           {t('arena.battle.phase.ai_thinking')}
         </div>

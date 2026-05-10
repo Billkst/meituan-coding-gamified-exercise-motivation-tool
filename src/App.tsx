@@ -57,7 +57,7 @@ export default function App() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 ml-[240px]">
+      <main className="flex-1 md:ml-[240px]">
         <OnboardingGate>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

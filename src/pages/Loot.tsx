@@ -66,7 +66,7 @@ export default function Loot() {
   // No recent loot — direct visit to /loot
   if (!state) {
     return (
-      <div className="max-w-container mx-auto px-8 py-12">
+      <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
         <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
           {t('loot.section')}
         </div>
@@ -93,7 +93,7 @@ export default function Loot() {
   const r = result.card_drawn.rarity
 
   return (
-    <div className="max-w-container mx-auto px-8 py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
       <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
         {t('loot.section')}
       </div>
