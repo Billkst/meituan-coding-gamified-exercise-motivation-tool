@@ -6,8 +6,17 @@ import { useTranslation } from '@/lib/i18n'
 import { useClashState } from '@/clash/api/clashState'
 import { useOpenChest, useUnlockChestNow } from '@/clash/api/clashChests'
 import { useDevStore } from '@/store/useDevStore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import NextBestActionClash from '@/clash/components/NextBestActionClash'
+import SpotlightTour, { type TourStep } from '@/components/SpotlightTour'
+
+const HOME_TOUR_KEY = 'pulse.clash.home.tour_seen'
+const HOME_TOUR_STEPS: TourStep[] = [
+  { titleKey: 'clash.home.tour.welcome.title', bodyKey: 'clash.home.tour.welcome.body' },
+  { target: 'clash.home.nba', titleKey: 'clash.home.tour.nba.title', bodyKey: 'clash.home.tour.nba.body' },
+  { target: 'clash.home.battle', titleKey: 'clash.home.tour.battle.title', bodyKey: 'clash.home.tour.battle.body' },
+  { target: 'clash.home.chests', titleKey: 'clash.home.tour.chests.title', bodyKey: 'clash.home.tour.chests.body' },
+]
 
 export default function ClashHome() {
   const { t } = useTranslation()
@@ -17,6 +26,18 @@ export default function ClashHome() {
   const unlockNow = useUnlockChestNow()
   const isDev = useDevStore((s) => s.isDevMode)
   const [openedRewards, setOpenedRewards] = useState<{ gold: number; shards: number } | null>(null)
+  const [showTour, setShowTour] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const seen = window.localStorage.getItem(HOME_TOUR_KEY)
+    if (!seen) setShowTour(true)
+  }, [])
+
+  const dismissTour = () => {
+    window.localStorage.setItem(HOME_TOUR_KEY, '1')
+    setShowTour(false)
+  }
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center font-mono text-xs uppercase tracking-widest text-text-secondary animate-pulse">loading clash…</div>
@@ -70,7 +91,9 @@ export default function ClashHome() {
       </header>
 
       {/* Next-best-action — surfaces the workout-to-cards-to-battle loop */}
-      <NextBestActionClash state={state} />
+      <div data-tour="clash.home.nba">
+        <NextBestActionClash state={state} />
+      </div>
 
       {/* Currency strip */}
       <section className="grid grid-cols-3 gap-3 mb-8">
@@ -104,6 +127,7 @@ export default function ClashHome() {
       {/* Battle CTA */}
       <section className="text-center mb-8">
         <button
+          data-tour="clash.home.battle"
           onClick={() => navigate('/clash/match')}
           className="inline-flex items-center gap-3 bg-accent-primary text-bg-primary font-display font-black uppercase tracking-wider py-4 px-12 rounded-button shadow-glow-hero hover:scale-[1.02] transition-all duration-150 ease-enter text-xl"
         >
@@ -120,7 +144,7 @@ export default function ClashHome() {
       </section>
 
       {/* Chest queue */}
-      <section className="mb-8">
+      <section data-tour="clash.home.chests" className="mb-8">
         <div className="font-mono text-[11px] uppercase tracking-widest text-text-tertiary mb-3">
           {t('clash.chests.title' as never)} · {state.chests.length}/4
         </div>
@@ -183,6 +207,9 @@ export default function ClashHome() {
           +{openedRewards.gold} 💰 · +{openedRewards.shards} 💎
         </div>
       )}
+
+      {/* First-time spotlight tour */}
+      <SpotlightTour steps={HOME_TOUR_STEPS} open={showTour} onClose={dismissTour} />
     </div>
   )
 }

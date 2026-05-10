@@ -576,6 +576,15 @@ const dict = {
     'clash.tour.hand.title': '拖卡部署',
     'clash.tour.hand.body': '按住手牌拖到战场你方半区（绿色高亮）→ 抬手部署。先打哪路看你。',
 
+    'clash.home.tour.welcome.title': 'Clash 是怎么运作的',
+    'clash.home.tour.welcome.body': '运动打卡赚金币，金币解锁/升级 12 张卡，组队 8 张去打 AI。一局 3 分钟。',
+    'clash.home.tour.nba.title': '下一步建议',
+    'clash.home.tour.nba.body': '系统会根据你当前金币和卡片解锁状态，告诉你最有性价比的下一步。点这条卡片直接跳过去。',
+    'clash.home.tour.battle.title': '点这里开战',
+    'clash.home.tour.battle.body': '选难度（简单/普通/困难） → 进战场 → 拖手牌部署 → 3 分钟分胜负。胜利可得宝箱。',
+    'clash.home.tour.chests.title': '宝箱队列',
+    'clash.home.tour.chests.body': '胜场掉宝箱（最多 4 个并行解锁）。Dev 模式可秒解锁 — 评审快进体验全流程。',
+
     // Placeholder
     'placeholder.clash_under_construction': 'Clash 模式建造中 · Day {n} 完工',
   },
@@ -1153,6 +1162,15 @@ const dict = {
     'clash.tour.elixir.body': '+1 every 2.8s · cap 10. Each card has a cost (top-right of the card). Need enough elixir to play.',
     'clash.tour.hand.title': 'Drag to deploy',
     'clash.tour.hand.body': 'Press a hand card and drag onto your half (highlighted green) → release to deploy. Pick your lane.',
+
+    'clash.home.tour.welcome.title': 'How Clash works',
+    'clash.home.tour.welcome.body': 'Workouts earn gold → gold unlocks/levels 12 cards → an 8-card deck duels AI. Each match is 3 minutes.',
+    'clash.home.tour.nba.title': 'Next-best action',
+    'clash.home.tour.nba.body': 'Based on your gold + locked cards, this card always shows the highest-leverage next move. Tap to jump there.',
+    'clash.home.tour.battle.title': 'Tap here to battle',
+    'clash.home.tour.battle.body': 'Pick difficulty (easy/normal/hard) → drag cards to deploy → 3-minute match. Wins drop a chest.',
+    'clash.home.tour.chests.title': 'Chest queue',
+    'clash.home.tour.chests.body': 'Wins drop chests (up to 4 unlock in parallel). Dev mode insta-unlocks — handy for review fast-forward.',
 
     // Placeholder
     'placeholder.clash_under_construction': 'Clash mode under construction · ETA Day {n}',
