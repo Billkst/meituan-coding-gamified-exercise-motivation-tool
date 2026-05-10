@@ -181,6 +181,12 @@ export default function Loot() {
               <div className="font-mono text-xs text-text-tertiary uppercase tracking-widest mt-1">
                 {t(streakStatusKey(result.streak_status))} · {t('workout.streak_now', { n: result.streak })}
               </div>
+              {result.gold_earned > 0 && (
+                <div className="mt-4 inline-flex items-center gap-2 bg-accent-primary/10 border border-accent-primary/40 rounded-full px-4 py-1.5 font-mono text-xs uppercase tracking-widest text-accent-primary">
+                  <span className="text-base">💰</span>
+                  +{result.gold_earned} {t('clash.workout.gold_flash' as never)}
+                </div>
+              )}
             </div>
 
             {/* continue */}

@@ -9,6 +9,10 @@ export type DevAction =
   | 'reset_progress'
   | 'grant_protect'
   | 'reset_onboarding'
+  | 'grant_gold'
+  | 'unlock_all_cr_cards'
+  | 'instant_open_chests'
+  | 'reset_clash'
 
 export interface DevDispatchInput {
   action: DevAction

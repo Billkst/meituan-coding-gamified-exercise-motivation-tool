@@ -15,6 +15,11 @@ export interface SubmitWorkoutResult {
   card_drawn: { id: string; rarity: Rarity }
   streak: number
   streak_status: StreakStatus
+  gold_earned: number
+}
+
+function computeGoldEarned(xp: number): number {
+  return Math.min(500, 100 + xp * 5)
 }
 
 export function useSubmitWorkout() {
@@ -28,12 +33,14 @@ export function useSubmitWorkout() {
         p_intensity: input.intensity,
       } as never)
       if (error) throw error
-      return data as unknown as SubmitWorkoutResult
+      const raw = data as unknown as Omit<SubmitWorkoutResult, 'gold_earned'>
+      return { ...raw, gold_earned: computeGoldEarned(raw.xp_gained) }
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['users', 'me'] })
       qc.invalidateQueries({ queryKey: ['user_cards'] })
       qc.invalidateQueries({ queryKey: ['workouts'] })
+      qc.invalidateQueries({ queryKey: ['clash', 'state'] })
     },
   })
 }
