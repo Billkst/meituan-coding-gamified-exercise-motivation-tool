@@ -5,6 +5,7 @@ import { useTranslation } from '@/lib/i18n'
 import { useCurrentUser, useMyCardCount } from '@/api/users'
 import ReviveBanner from '@/components/ReviveBanner'
 import DashboardTourOverlay from '@/components/DashboardTourOverlay'
+import NextBestActionCard from '@/components/dashboard/NextBestActionCard'
 import { DailyQuestsCard } from '@/components/dashboard/DailyQuestsCard'
 import { AchievementUnlockToast } from '@/components/AchievementUnlockToast'
 
@@ -53,6 +54,8 @@ export default function Dashboard() {
       </header>
 
       <ReviveBanner />
+
+      <NextBestActionCard />
 
       <DailyQuestsCard />
 
