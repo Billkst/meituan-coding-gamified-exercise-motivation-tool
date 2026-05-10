@@ -83,7 +83,7 @@ const dict = {
 
     // Arena lobby
     'arena.lobby.title': '对战 — PVE 阶梯',
-    'arena.lobby.your_segment': '段位',
+    'arena.lobby.your_segment': '赛季分',
     'arena.lobby.win_loss': '{w}W {l}L',
     'arena.lobby.deck_button': '我的卡组 →',
     'arena.lobby.empty_deck': '需先构筑 8 张主卡组',
@@ -127,6 +127,7 @@ const dict = {
     // Deck builder
     'deck.title_n': '卡组 — {n} / 8',
     'deck.empty_slot': '+ 选卡',
+    'deck.cards_insufficient': '你只有 {have} 张卡，至少需要 8 张才能保存。先去 [抽卡] 攒够。',
     'deck.advisor': 'ADVISOR 推荐',
     'deck.advisor_modal.title': '推荐卡组',
     'deck.advisor_modal.reasoning': '理由 · {r}',
@@ -384,7 +385,7 @@ const dict = {
 
     // Arena lobby
     'arena.lobby.title': 'ARENA — PVE LADDER',
-    'arena.lobby.your_segment': 'SEGMENT',
+    'arena.lobby.your_segment': 'SEASON SCORE',
     'arena.lobby.win_loss': '{w}W {l}L',
     'arena.lobby.deck_button': 'MY DECK →',
     'arena.lobby.empty_deck': 'Build an 8-card deck first',
@@ -428,6 +429,7 @@ const dict = {
     // Deck builder
     'deck.title_n': 'Deck — {n} / 8',
     'deck.empty_slot': '+ Pick',
+    'deck.cards_insufficient': 'You only have {have} cards. Need 8 to save — go pull more in [Loot].',
     'deck.advisor': 'ADVISOR',
     'deck.advisor_modal.title': 'Recommended Deck',
     'deck.advisor_modal.reasoning': 'Why · {r}',

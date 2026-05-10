@@ -100,6 +100,12 @@ export default function DeckBuilder() {
         </div>
       )}
 
+      {myCards.length < 8 && (
+        <div className="mb-6 bg-rarity-rare/20 border-l-2 border-rarity-rare px-4 py-3 font-mono text-sm uppercase tracking-widest">
+          {t('deck.cards_insufficient', { have: myCards.length })}
+        </div>
+      )}
+
       <section className="mb-10">
         <DeckSlots slots={slotCards} onRemove={remove} />
       </section>
