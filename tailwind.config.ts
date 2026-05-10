@@ -62,6 +62,7 @@ export default {
         'shuffle': 'shuffle 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards',
         'reveal-flip': 'reveal-flip 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'halo-pulse': 'halo-pulse 2s ease-in-out infinite',
+        'fade-up': 'fade-up 800ms ease-out forwards',
       },
       keyframes: {
         breathing: {
@@ -91,6 +92,11 @@ export default {
         'halo-pulse': {
           '0%, 100%': { filter: 'brightness(1.0)' },
           '50%':      { filter: 'brightness(1.25)' },
+        },
+        'fade-up': {
+          '0%':   { opacity: '0', transform: 'translateY(0px)' },
+          '20%':  { opacity: '1' },
+          '100%': { opacity: '0', transform: 'translateY(-40px)' },
         },
       },
     },
