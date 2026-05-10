@@ -94,9 +94,8 @@ export function resolveAttack(
     triggers.push({ card_id: def.card.id, kind: 'reflect', effect: `reflect ${def.card.ability_value}% = ${reflectDmg}` })
   }
 
-  // 7. mark cards as played
+  // 7. mark attacker as played (defenders are targets, can be picked multiple times)
   atk.is_played = true
-  def.is_played = true
 
   // 8. write log entry
   const entry: BattleLogEntry = {

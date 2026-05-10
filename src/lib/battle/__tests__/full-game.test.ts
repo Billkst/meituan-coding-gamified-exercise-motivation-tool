@@ -14,30 +14,23 @@ function mkDeck(prefix: string, n = 8): BattleCard[] {
 }
 
 function runFullGame(initial: BattleState): BattleState {
-  // resolver marks BOTH attacker and defender is_played each call.
-  // With 8 cards per side, 4 rounds × (1 player attack + 1 AI attack) = 8 attacks
-  // consume all 16 card slots: each card appears exactly once (as attacker or target).
-  // Round k: player p[2k] → n[2k], AI n[2k+1] → p[2k+1].
   let state = applyOnPlayTriggers(initial)
-
-  for (let turn = 1; turn <= 4; turn++) {
+  for (let turn = 1; turn <= 8; turn++) {
     state = { ...state, turn }
-
-    // player attack: first unplayed attacker vs first unplayed defender
-    const pAtk = state.attacker_cards.find(c => !c.is_played)!
-    const pTgt = state.defender_cards.find(c => !c.is_played)!
-    state = resolveAttack(state, 'attacker', pAtk.card.id, pTgt.card.id)
-
-    // ai attack: next unplayed defender as attacker vs next unplayed attacker as target
-    const aiAtk = state.defender_cards.find(c => !c.is_played)!
-    const aiTgt = state.attacker_cards.find(c => !c.is_played)!
-    state = resolveAttack(state, 'defender', aiAtk.card.id, aiTgt.card.id)
+    // player picks: attacker = first unplayed card on player side, target = any opponent card (defenders can be hit multiple times)
+    const playerAttacker = state.attacker_cards.find(c => !c.is_played)!.card.id
+    const playerTarget = state.defender_cards[0].card.id
+    state = resolveAttack(state, 'attacker', playerAttacker, playerTarget)
+    // ai picks
+    const aiAtk = aiPickAttacker(state)
+    const aiTgt = aiPickTarget(state, aiAtk)
+    state = resolveAttack(state, 'defender', aiAtk, aiTgt)
   }
   return state
 }
 
 describe('full game smoke', () => {
-  it('runs 4 rounds with all-common decks, log length = 8 (4 player + 4 AI), all cards played', () => {
+  it('runs 8 turns with all-common decks, log length = 16 (8 player + 8 AI)', () => {
     const initial: BattleState = {
       battle_id: 1,
       turn: 1,
@@ -51,7 +44,7 @@ describe('full game smoke', () => {
       passive_buffs: [],
     }
     const final = runFullGame(initial)
-    expect(final.log).toHaveLength(8)
+    expect(final.log).toHaveLength(16)
     expect(final.attacker_cards.every(c => c.is_played)).toBe(true)
     expect(final.defender_cards.every(c => c.is_played)).toBe(true)
   })

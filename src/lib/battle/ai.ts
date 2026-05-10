@@ -17,9 +17,9 @@ export function aiPickAttacker(state: BattleState): string {
 }
 
 export function aiPickTarget(state: BattleState, _attackerId: string): string {
-  const candidates = state.attacker_cards.filter(c => !c.is_played)
+  const candidates = state.attacker_cards
   if (candidates.length === 0) {
-    throw new Error('aiPickTarget: no unplayed cards')
+    throw new Error('aiPickTarget: no cards')
   }
   return candidates
     .map(c => ({
