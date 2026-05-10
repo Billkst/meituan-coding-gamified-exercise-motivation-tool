@@ -1,6 +1,9 @@
 import { useTranslation } from '@/lib/i18n'
 import { useAchievements } from '@/api/achievements'
 import { AchievementCategorySection } from '@/components/achievements/AchievementCategorySection'
+import type { AchievementCategory } from '@/types/db'
+
+const CATEGORY_ORDER: AchievementCategory[] = ['workout', 'streak', 'cards', 'arena', 'special']
 
 export default function Achievements() {
   const { t } = useTranslation()
@@ -33,13 +36,15 @@ export default function Achievements() {
         )}
       </div>
       <div className="space-y-12">
-        {data.categories.map((cat) => (
-          <AchievementCategorySection
-            key={cat.key}
-            categoryKey={cat.key}
-            achievements={cat.achievements}
-          />
-        ))}
+        {[...data.categories]
+          .sort((a, b) => CATEGORY_ORDER.indexOf(a.key) - CATEGORY_ORDER.indexOf(b.key))
+          .map((cat) => (
+            <AchievementCategorySection
+              key={cat.key}
+              categoryKey={cat.key}
+              achievements={cat.achievements}
+            />
+          ))}
       </div>
     </div>
   )
