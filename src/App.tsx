@@ -14,6 +14,7 @@ import ArenaBattle from './pages/ArenaBattle'
 import ArenaResult from './pages/ArenaResult'
 import CardLibrary from './pages/CardLibrary'
 import DeckBuilder from './pages/DeckBuilder'
+import Achievements from './pages/Achievements'
 import Onboarding from './pages/Onboarding'
 import DevDrawer from './components/DevDrawer'
 import OnboardingGate from './components/OnboardingGate'
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="/arena/result/:battleId" element={<ArenaResult />} />
             <Route path="/library" element={<CardLibrary />} />
             <Route path="/deck" element={<DeckBuilder />} />
+            <Route path="/achievements" element={<Achievements />} />
             <Route path="/onboarding" element={<Onboarding />} />
           </Routes>
         </OnboardingGate>

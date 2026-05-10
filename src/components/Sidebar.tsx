@@ -10,6 +10,7 @@ const NAV: { to: string; key: TranslationKey; icon: string }[] = [
   { to: '/arena', key: 'nav.arena', icon: 'ti-swords' },
   { to: '/library', key: 'nav.library', icon: 'ti-books' },
   { to: '/deck', key: 'nav.deck', icon: 'ti-layout-grid' },
+  { to: '/achievements', key: 'nav.achievements', icon: 'ti-trophy' },
 ]
 
 export default function Sidebar() {
