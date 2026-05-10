@@ -1,9 +1,83 @@
 import type { OwnedCard } from '@/api/cards'
 import type { Rarity } from '@/types/db'
+import type { BattleState } from './types'
+import { previewDamage } from './simulator'
 
 const RARITY_BONUS: Record<Rarity, number> = {
   common: 0, rare: 5, epic: 12, legendary: 25,
 }
+
+// ============================================================
+// In-battle next-move recommendation
+// ============================================================
+
+export interface NextMoveRec {
+  phase: 'pick_attacker' | 'pick_target' | 'none'
+  attacker_id: string | null
+  target_id: string | null
+  expected_damage: number | null
+}
+
+const NONE: NextMoveRec = {
+  phase: 'none',
+  attacker_id: null,
+  target_id: null,
+  expected_damage: null,
+}
+
+// Recommend the next move based on the current battle state.
+// pick_attacker → search all (atk, def) pairs for max damage; suggest the
+// attacker side of the winning pair (target previewed but not enforced).
+// pick_target → fix the already-selected attacker; pick the target it would
+// hurt most. Falls back to 'none' when there's nothing to attack with.
+export function recommendNextMove(state: BattleState): NextMoveRec {
+  if (state.current_phase === 'pick_attacker') {
+    const myUsable = state.attacker_cards.filter(c => !c.is_played && c.is_alive)
+    if (myUsable.length === 0) return NONE
+
+    let best = { atkId: '', defId: '', dmg: -1 }
+    for (const a of myUsable) {
+      for (const d of state.defender_cards) {
+        if (!d.is_alive) continue
+        const p = previewDamage(state, a.card.id, d.card.id)
+        if (p.actualDamage > best.dmg) {
+          best = { atkId: a.card.id, defId: d.card.id, dmg: p.actualDamage }
+        }
+      }
+    }
+    if (best.dmg < 0) return NONE
+    return {
+      phase: 'pick_attacker',
+      attacker_id: best.atkId,
+      target_id: best.defId,
+      expected_damage: best.dmg,
+    }
+  }
+
+  if (state.current_phase === 'pick_target' && state.selected_attacker_id) {
+    let best = { defId: '', dmg: -1 }
+    for (const d of state.defender_cards) {
+      if (!d.is_alive) continue
+      const p = previewDamage(state, state.selected_attacker_id, d.card.id)
+      if (p.actualDamage > best.dmg) {
+        best = { defId: d.card.id, dmg: p.actualDamage }
+      }
+    }
+    if (best.dmg < 0) return NONE
+    return {
+      phase: 'pick_target',
+      attacker_id: state.selected_attacker_id,
+      target_id: best.defId,
+      expected_damage: best.dmg,
+    }
+  }
+
+  return NONE
+}
+
+// ============================================================
+// Pre-battle deck composer (Day 5 — kept as-is)
+// ============================================================
 
 export interface RecommendResult {
   deck: string[]

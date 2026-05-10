@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { recommendDeck } from '@/lib/battle/advisor'
+import { recommendDeck, recommendNextMove } from '@/lib/battle/advisor'
 import type { OwnedCard } from '@/api/cards'
 import type { Card } from '@/types/db'
-import { mkCard } from './fixtures'
+import { mkCard, mkBattleCard, mkState, C_BASIC, C_PIERCE, C_SHIELD } from './fixtures'
 
 interface MkOwnedOpts {
   star_level?: number
@@ -52,5 +52,49 @@ describe('recommendDeck', () => {
     // sanity: reasoning string non-empty
     expect(r.reasoning_zh.length).toBeGreaterThan(0)
     expect(r.reasoning_en.length).toBeGreaterThan(0)
+  })
+})
+
+describe('recommendNextMove', () => {
+  it('pick_attacker: returns the (atk,def) pair with max preview damage', () => {
+    const state = mkState({
+      attacker_cards: [mkBattleCard(C_BASIC), mkBattleCard(C_PIERCE)],
+      defender_cards: [mkBattleCard(C_SHIELD), mkBattleCard(C_BASIC)],
+      current_phase: 'pick_attacker',
+    })
+    const rec = recommendNextMove(state)
+    expect(rec.phase).toBe('pick_attacker')
+    expect(rec.attacker_id).toBeTruthy()
+    expect(rec.target_id).toBeTruthy()
+    expect(rec.expected_damage).toBeGreaterThan(0)
+  })
+
+  it('pick_target: uses already-selected attacker, picks best target', () => {
+    const state = mkState({
+      attacker_cards: [mkBattleCard(C_BASIC)],
+      defender_cards: [mkBattleCard(C_SHIELD), mkBattleCard(C_BASIC)],
+      current_phase: 'pick_target',
+      selected_attacker_id: C_BASIC.id,
+    })
+    const rec = recommendNextMove(state)
+    expect(rec.phase).toBe('pick_target')
+    expect(rec.attacker_id).toBe(C_BASIC.id)
+    // C_BASIC (def 8) is softer than C_SHIELD (def 10) → pick basic
+    expect(rec.target_id).toBe(C_BASIC.id)
+  })
+
+  it('all friend cards played: returns phase=none', () => {
+    const a = mkBattleCard(C_BASIC); a.is_played = true
+    const state = mkState({
+      attacker_cards: [a],
+      defender_cards: [mkBattleCard(C_BASIC)],
+      current_phase: 'pick_attacker',
+    })
+    expect(recommendNextMove(state).phase).toBe('none')
+  })
+
+  it('non-decision phase: returns none', () => {
+    const state = mkState({ current_phase: 'animating_player' })
+    expect(recommendNextMove(state).phase).toBe('none')
   })
 })
