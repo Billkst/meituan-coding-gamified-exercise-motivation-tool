@@ -246,6 +246,9 @@ begin
     order by start_date desc limit 1;
 
   v_revived := floor(coalesce(v_last_streak_len, 0) / 2.0);
+  if v_revived < 1 then
+    raise exception 'no streak to revive (previous too short)' using errcode = '22023';
+  end if;
   v_freeze_until := now() + interval '24 hours';
 
   update users set
