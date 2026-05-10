@@ -22,7 +22,6 @@ export type BattlePhase =
   | 'pick_target'
   | 'animating_player'
   | 'ai_thinking'
-  | 'pick_ai'
   | 'animating_ai'
   | 'finalizing'
   | 'ended'
