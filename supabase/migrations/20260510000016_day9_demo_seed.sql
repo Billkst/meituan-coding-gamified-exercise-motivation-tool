@@ -1,39 +1,60 @@
 -- 20260510000016_day9_demo_seed.sql
 -- Day 9: 8 demo users with rich progression data, for leaderboard / social-feel scenarios.
 -- These users do NOT log in (no auth.identities, empty encrypted_password).
+--
+-- IMPORTANT: schema 1 has a `handle_new_user()` trigger on auth.users that auto-creates
+-- public.users (with username = 'user_' || substr(id::text, 1, 8)) + decks. So:
+--   - demo UUIDs MUST have distinct first 8 hex chars (else trigger violates username UNIQUE)
+--   - we let the trigger create the public.users row, then UPDATE the columns we want
+--   - we do NOT insert into public.users directly
 
 -- ============================================================
--- SECTION 1: auth.users (minimal seed; needed to satisfy public.users → auth.users FK)
+-- SECTION 1: auth.users (8 distinct prefixes 00000001 .. 00000008)
 -- ============================================================
 insert into auth.users (id, instance_id, email, aud, role, encrypted_password, email_confirmed_at, created_at, updated_at, raw_app_meta_data, raw_user_meta_data)
 values
-  ('11111111-1111-4111-8111-111111111101'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo01@pulse.test', 'authenticated', 'authenticated', '', now() - interval '60 days', now() - interval '60 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111102'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo02@pulse.test', 'authenticated', 'authenticated', '', now() - interval '45 days', now() - interval '45 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111103'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo03@pulse.test', 'authenticated', 'authenticated', '', now() - interval '40 days', now() - interval '40 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111104'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo04@pulse.test', 'authenticated', 'authenticated', '', now() - interval '50 days', now() - interval '50 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111105'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo05@pulse.test', 'authenticated', 'authenticated', '', now() - interval '30 days', now() - interval '30 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111106'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo06@pulse.test', 'authenticated', 'authenticated', '', now() - interval '35 days', now() - interval '35 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111107'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo07@pulse.test', 'authenticated', 'authenticated', '', now() - interval '20 days', now() - interval '20 days', now(), '{}'::jsonb, '{}'::jsonb),
-  ('11111111-1111-4111-8111-111111111108'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo08@pulse.test', 'authenticated', 'authenticated', '', now() - interval '90 days', now() - interval '90 days', now(), '{}'::jsonb, '{}'::jsonb)
+  ('00000001-0001-4001-8001-000000000001'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo01@pulse.test', 'authenticated', 'authenticated', '', now() - interval '60 days', now() - interval '60 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000002-0002-4002-8002-000000000002'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo02@pulse.test', 'authenticated', 'authenticated', '', now() - interval '45 days', now() - interval '45 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000003-0003-4003-8003-000000000003'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo03@pulse.test', 'authenticated', 'authenticated', '', now() - interval '40 days', now() - interval '40 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000004-0004-4004-8004-000000000004'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo04@pulse.test', 'authenticated', 'authenticated', '', now() - interval '50 days', now() - interval '50 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000005-0005-4005-8005-000000000005'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo05@pulse.test', 'authenticated', 'authenticated', '', now() - interval '30 days', now() - interval '30 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000006-0006-4006-8006-000000000006'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo06@pulse.test', 'authenticated', 'authenticated', '', now() - interval '35 days', now() - interval '35 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000007-0007-4007-8007-000000000007'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo07@pulse.test', 'authenticated', 'authenticated', '', now() - interval '20 days', now() - interval '20 days', now(), '{}'::jsonb, '{}'::jsonb),
+  ('00000008-0008-4008-8008-000000000008'::uuid, '00000000-0000-0000-0000-000000000000'::uuid, 'demo08@pulse.test', 'authenticated', 'authenticated', '', now() - interval '90 days', now() - interval '90 days', now(), '{}'::jsonb, '{}'::jsonb)
 on conflict (id) do nothing;
 
--- ============================================================
--- SECTION 2: public.users
--- ============================================================
-insert into public.users (id, username, level, xp, total_workouts, current_streak, longest_streak, last_workout_date, season_score, exploration_buffs, protect_cards, created_at, updated_at, last_protect_grant_at, onboarded_at)
-values
-  ('11111111-1111-4111-8111-111111111101'::uuid, 'speedster_777',  14, 5800, 92,  18, 25, current_date,         1450, '{"running":0.30,"hiit":0.25}'::jsonb,    2, now() - interval '60 days', now(), now() - interval '2 days', now() - interval '60 days'),
-  ('11111111-1111-4111-8111-111111111102'::uuid, 'iron_will_42',   11, 3900, 68,  12, 18, current_date,          980, '{"strength":0.20,"boxing":0.15}'::jsonb, 1, now() - interval '45 days', now(), now() - interval '4 days', now() - interval '45 days'),
-  ('11111111-1111-4111-8111-111111111103'::uuid, 'flexible_jane',   9, 2700, 45,   7, 14, current_date,          720, '{"yoga":0.20,"flex":0.15}'::jsonb,       1, now() - interval '40 days', now(), now() - interval '5 days', now() - interval '40 days'),
-  ('11111111-1111-4111-8111-111111111104'::uuid, 'hiit_demon',     13, 4500, 78,  21, 21, current_date,         1180, '{"hiit":0.30,"running":0.20}'::jsonb,    3, now() - interval '50 days', now(), now() - interval '1 day',  now() - interval '50 days'),
-  ('11111111-1111-4111-8111-111111111105'::uuid, 'yoga_panda',      6, 1400, 28,   5, 10, current_date,          410, '{"yoga":0.25}'::jsonb,                   0, now() - interval '30 days', now(), now() - interval '6 days', now() - interval '30 days'),
-  ('11111111-1111-4111-8111-111111111106'::uuid, 'basket_king',     8, 2200, 36,   0, 11, current_date - 5,      580, '{"basketball":0.20}'::jsonb,             0, now() - interval '35 days', now(), now() - interval '7 days', now() - interval '35 days'),
-  ('11111111-1111-4111-8111-111111111107'::uuid, 'climber_mary',    4,  850, 18,   3,  8, current_date,          240, '{"climbing":0.20}'::jsonb,               0, now() - interval '20 days', now(), now() - interval '3 days', now() - interval '20 days'),
-  ('11111111-1111-4111-8111-111111111108'::uuid, 'cardio_lord',    16, 7200,120,  30, 45, current_date,         1800, '{"running":0.40,"swimming":0.30}'::jsonb, 3, now() - interval '90 days', now(), now() - interval '1 day',  now() - interval '90 days')
-on conflict (id) do nothing;
+-- handle_new_user trigger has now created public.users + decks rows for each demo with auto-username 'user_00000001' etc.
 
 -- ============================================================
--- SECTION 3: workouts (spread across last 30 days, varying counts per user)
+-- SECTION 2: update public.users with real progression data
+-- ============================================================
+update public.users set
+  username = 'speedster_777', level = 14, xp = 5800, total_workouts = 92,  current_streak = 18, longest_streak = 25, last_workout_date = current_date,     season_score = 1450, exploration_buffs = '{"running":0.30,"hiit":0.25}'::jsonb,    protect_cards = 2, created_at = now() - interval '60 days', last_protect_grant_at = now() - interval '2 days', onboarded_at = now() - interval '60 days'
+  where id = '00000001-0001-4001-8001-000000000001'::uuid;
+update public.users set
+  username = 'iron_will_42', level = 11, xp = 3900, total_workouts = 68,  current_streak = 12, longest_streak = 18, last_workout_date = current_date,     season_score = 980,  exploration_buffs = '{"strength":0.20,"boxing":0.15}'::jsonb, protect_cards = 1, created_at = now() - interval '45 days', last_protect_grant_at = now() - interval '4 days', onboarded_at = now() - interval '45 days'
+  where id = '00000002-0002-4002-8002-000000000002'::uuid;
+update public.users set
+  username = 'flexible_jane', level = 9,  xp = 2700, total_workouts = 45,  current_streak = 7,  longest_streak = 14, last_workout_date = current_date,     season_score = 720,  exploration_buffs = '{"yoga":0.20,"flex":0.15}'::jsonb,      protect_cards = 1, created_at = now() - interval '40 days', last_protect_grant_at = now() - interval '5 days', onboarded_at = now() - interval '40 days'
+  where id = '00000003-0003-4003-8003-000000000003'::uuid;
+update public.users set
+  username = 'hiit_demon',    level = 13, xp = 4500, total_workouts = 78,  current_streak = 21, longest_streak = 21, last_workout_date = current_date,     season_score = 1180, exploration_buffs = '{"hiit":0.30,"running":0.20}'::jsonb,   protect_cards = 3, created_at = now() - interval '50 days', last_protect_grant_at = now() - interval '1 day',  onboarded_at = now() - interval '50 days'
+  where id = '00000004-0004-4004-8004-000000000004'::uuid;
+update public.users set
+  username = 'yoga_panda',    level = 6,  xp = 1400, total_workouts = 28,  current_streak = 5,  longest_streak = 10, last_workout_date = current_date,     season_score = 410,  exploration_buffs = '{"yoga":0.25}'::jsonb,                   protect_cards = 0, created_at = now() - interval '30 days', last_protect_grant_at = now() - interval '6 days', onboarded_at = now() - interval '30 days'
+  where id = '00000005-0005-4005-8005-000000000005'::uuid;
+update public.users set
+  username = 'basket_king',   level = 8,  xp = 2200, total_workouts = 36,  current_streak = 0,  longest_streak = 11, last_workout_date = current_date - 5, season_score = 580,  exploration_buffs = '{"basketball":0.20}'::jsonb,             protect_cards = 0, created_at = now() - interval '35 days', last_protect_grant_at = now() - interval '7 days', onboarded_at = now() - interval '35 days'
+  where id = '00000006-0006-4006-8006-000000000006'::uuid;
+update public.users set
+  username = 'climber_mary',  level = 4,  xp = 850,  total_workouts = 18,  current_streak = 3,  longest_streak = 8,  last_workout_date = current_date,     season_score = 240,  exploration_buffs = '{"climbing":0.20}'::jsonb,               protect_cards = 0, created_at = now() - interval '20 days', last_protect_grant_at = now() - interval '3 days', onboarded_at = now() - interval '20 days'
+  where id = '00000007-0007-4007-8007-000000000007'::uuid;
+update public.users set
+  username = 'cardio_lord',   level = 16, xp = 7200, total_workouts = 120, current_streak = 30, longest_streak = 45, last_workout_date = current_date,     season_score = 1800, exploration_buffs = '{"running":0.40,"swimming":0.30}'::jsonb, protect_cards = 3, created_at = now() - interval '90 days', last_protect_grant_at = now() - interval '1 day',  onboarded_at = now() - interval '90 days'
+  where id = '00000008-0008-4008-8008-000000000008'::uuid;
+
+-- ============================================================
+-- SECTION 3: workouts (spread across last 30 days)
 -- ============================================================
 do $$
 declare
@@ -49,10 +70,8 @@ declare
 begin
   for v_demo in
     select id, total_workouts from public.users
-    where id::text like '11111111-1111-4111-8111-111111111%'
+    where id::text like '0000000_-000_-400_-800_-%'
   loop
-    -- spread roughly half of total_workouts across the last 30 days as actual rows
-    -- (the user's total_workouts column already reflects lifetime, we just need recent rows for period leaderboards)
     v_n := least(v_demo.total_workouts, 5 + (random() * 12)::int);
     for i in 1..v_n loop
       v_sport     := v_sports[1 + (random() * (array_length(v_sports, 1) - 1))::int];
@@ -77,7 +96,7 @@ declare
 begin
   for v_demo in
     select id, level from public.users
-    where id::text like '11111111-1111-4111-8111-111111111%'
+    where id::text like '0000000_-000_-400_-800_-%'
   loop
     v_n_cards := least(35, 3 + v_demo.level * 2);
 
@@ -102,11 +121,11 @@ end $$;
 -- ============================================================
 insert into public.streaks (user_id, start_date, length, status)
 values
-  ('11111111-1111-4111-8111-111111111101'::uuid, current_date - 17, 18, 'active'),
-  ('11111111-1111-4111-8111-111111111102'::uuid, current_date - 11, 12, 'active'),
-  ('11111111-1111-4111-8111-111111111103'::uuid, current_date - 6,   7, 'active'),
-  ('11111111-1111-4111-8111-111111111104'::uuid, current_date - 20, 21, 'active'),
-  ('11111111-1111-4111-8111-111111111105'::uuid, current_date - 4,   5, 'active'),
-  ('11111111-1111-4111-8111-111111111106'::uuid, current_date - 16, 11, 'broken'),
-  ('11111111-1111-4111-8111-111111111107'::uuid, current_date - 2,   3, 'active'),
-  ('11111111-1111-4111-8111-111111111108'::uuid, current_date - 29, 30, 'active');
+  ('00000001-0001-4001-8001-000000000001'::uuid, current_date - 17, 18, 'active'),
+  ('00000002-0002-4002-8002-000000000002'::uuid, current_date - 11, 12, 'active'),
+  ('00000003-0003-4003-8003-000000000003'::uuid, current_date - 6,   7, 'active'),
+  ('00000004-0004-4004-8004-000000000004'::uuid, current_date - 20, 21, 'active'),
+  ('00000005-0005-4005-8005-000000000005'::uuid, current_date - 4,   5, 'active'),
+  ('00000006-0006-4006-8006-000000000006'::uuid, current_date - 16, 11, 'broken'),
+  ('00000007-0007-4007-8007-000000000007'::uuid, current_date - 2,   3, 'active'),
+  ('00000008-0008-4008-8008-000000000008'::uuid, current_date - 29, 30, 'active');
