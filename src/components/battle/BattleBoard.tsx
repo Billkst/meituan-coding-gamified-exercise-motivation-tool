@@ -1,6 +1,10 @@
+import { useMemo } from 'react'
 import type { BattleState } from '@/lib/battle/types'
 import CardSlot from './CardSlot'
+import RecommendationHint from './RecommendationHint'
 import { useTranslation } from '@/lib/i18n'
+import { previewDamage } from '@/lib/battle/simulator'
+import { recommendNextMove } from '@/lib/battle/advisor'
 
 interface Props {
   state: BattleState
@@ -14,8 +18,25 @@ export default function BattleBoard({ state, onPickAttacker, onPickTarget, npcNa
   const playerSelectable = state.current_phase === 'pick_attacker'
   const targetSelectable = state.current_phase === 'pick_target'
 
+  // Pre-compute damage preview for every alive enemy, only during pick_target.
+  const previewMap = useMemo(() => {
+    if (!targetSelectable || !state.selected_attacker_id) return new Map<string, number>()
+    const map = new Map<string, number>()
+    for (const d of state.defender_cards) {
+      if (!d.is_alive) continue
+      const p = previewDamage(state, state.selected_attacker_id, d.card.id)
+      map.set(d.card.id, p.actualDamage)
+    }
+    return map
+  }, [state, targetSelectable])
+
+  // Highlight the recommended attacker (pick_attacker) or target (pick_target).
+  const rec = useMemo(() => recommendNextMove(state), [state])
+
   return (
     <div className="flex flex-col gap-6">
+      <RecommendationHint state={state} />
+
       {/* opponent header */}
       <div>
         <div className="flex items-baseline justify-between mb-1">
@@ -35,6 +56,8 @@ export default function BattleBoard({ state, onPickAttacker, onPickTarget, npcNa
             card={c}
             side="opponent"
             selectable={targetSelectable}
+            damagePreview={previewMap.get(c.card.id) ?? null}
+            recommended={targetSelectable && rec.target_id === c.card.id}
             onClick={() => targetSelectable && onPickTarget(c.card.id)}
           />
         ))}
@@ -49,6 +72,7 @@ export default function BattleBoard({ state, onPickAttacker, onPickTarget, npcNa
             side="player"
             selectable={playerSelectable}
             selected={state.selected_attacker_id === c.card.id}
+            recommended={playerSelectable && rec.attacker_id === c.card.id}
             onClick={() => playerSelectable && onPickAttacker(c.card.id)}
           />
         ))}
