@@ -34,15 +34,28 @@ supabase/migrations/  # 累积式 schema migration（编号递增）
 
 每天交付物：`docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` + `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`。
 
-## 操作 gotchas（Day 1-6 踩出来的坑）
+## 操作 gotchas（Day 1-7 踩出来的坑）
 
 ### Supabase migration push（WSL2 IPv4 问题）
-直连 `db.<ref>.supabase.co` 走 IPv6，WSL2 拒接。改走 pooler：
+直连 `db.<ref>.supabase.co` 走 IPv6，WSL2 拒接。**唯一稳定的姿势**：用 raw 密码 prompt → URL-encode → 嵌进完整 Session Pooler URL，整串当 `--db-url`：
 ```bash
-SUPABASE_DB_PASSWORD='<url-encoded-pwd>' bunx supabase db push --include-all \
-  --db-url "$(cat supabase/.temp/pooler-url)"
+read -r -s -p "DB password: " SUPABASE_DB_PASSWORD
+echo
+export SUPABASE_DB_PASSWORD
+
+ENC_PASS=$(python3 - <<'PY'
+import os
+from urllib.parse import quote
+print(quote(os.environ["SUPABASE_DB_PASSWORD"], safe=""))
+PY
+)
+
+SUPABASE_DB_URL="postgresql://postgres.hahxjtddwnqpklgftsgj:${ENC_PASS}@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres"
+
+bunx supabase db push --include-all --db-url "$SUPABASE_DB_URL"
 ```
-密码含特殊字符必须 URL-encode。pooler URL 在 `supabase/.temp/pooler-url`（`supabase link` 生成）。
+
+**踩过的坑（Day 7 验证）：** `SUPABASE_DB_PASSWORD='<encoded>' --db-url "$(cat supabase/.temp/pooler-url)"` 这种"env 给（已 encode 或 raw）密码 + URL 不带密码"的混合姿势 SASL 都会拒——`supabase` CLI 不会用 env 的 password 去填空 pooler URL 中缺失的密码段。**密码必须直接嵌进 db-url** 里（且嵌进去时一定要 URL-encode）。`supabase/.temp/pooler-url` 只是 host/user 模板参考，别直接当 `--db-url` 用。
 
 ### Toast / 全局通知
 项目**没有 toast lib**（不要 import sonner / react-hot-toast）。用 inline state 模式：
