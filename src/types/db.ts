@@ -32,6 +32,9 @@ export interface UserRow {
   season_score: number
   created_at: string
   updated_at: string
+  freeze_xp_until: string | null
+  last_protect_grant_at: string | null
+  onboarded_at: string | null
 }
 
 export interface Card {
