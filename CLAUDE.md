@@ -4,9 +4,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-美团编程游戏化练习激励工具 (Meituan Coding Gamified Exercise Motivation Tool).
+美团编程游戏化练习激励工具 (PULSE — Meituan Coding Gamified Exercise Motivation Tool).
 
-This is a greenfield project — no build, lint, or test infrastructure exists yet. When setting up the project, choose conventions appropriate to the tech stack selected.
+测评作业项目（不是上线产品）。评判维度 = 产品思考完整度 + 评审在线亲自体验。
+
+## Stack
+
+- **Frontend:** Vite 5 + React 18 + TypeScript (strict) + Tailwind v3
+- **State:** Zustand (`src/store/*`) + @tanstack/react-query
+- **Routing:** react-router-dom v6
+- **Backend:** Supabase (Postgres + anon auth + RPC)，schema 在 `supabase/migrations/`
+- **Tests:** Vitest + @testing-library/react + jsdom（命令：`bun run test`）
+- **Build:** `bun run build`，类型检查：`bunx tsc --noEmit`
+- **Package mgr:** Bun
+
+## 文件组织
+
+```
+src/
+├── pages/            # 路由级页面（Dashboard、Onboarding、Loot、Arena 等）
+├── components/       # 复用 UI（Sidebar、ReviveBanner、DevDrawer、cards/、onboarding/、battle/、deck/）
+├── api/              # Supabase RPC + React Query hook（每个 RPC 一个文件）
+├── store/            # Zustand stores（useAuthStore、useDevStore）
+├── lib/              # 纯函数（i18n、supabase client、streak/* 助手）
+└── types/db.ts       # 数据库行类型（UserRow、CardRow、SportRow…）
+
+supabase/migrations/  # 累积式 schema migration（编号递增）
+```
+
+每天交付物：`docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` + `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`。
+
+## 操作 gotchas（Day 1-6 踩出来的坑）
+
+### Supabase migration push（WSL2 IPv4 问题）
+直连 `db.<ref>.supabase.co` 走 IPv6，WSL2 拒接。改走 pooler：
+```bash
+SUPABASE_DB_PASSWORD='<url-encoded-pwd>' bunx supabase db push --include-all \
+  --db-url "$(cat supabase/.temp/pooler-url)"
+```
+密码含特殊字符必须 URL-encode。pooler URL 在 `supabase/.temp/pooler-url`（`supabase link` 生成）。
+
+### Toast / 全局通知
+项目**没有 toast lib**（不要 import sonner / react-hot-toast）。用 inline state 模式：
+```tsx
+const [flash, setFlash] = useState<{kind, msg} | null>(null)
+useEffect(() => { if (flash) setTimeout(() => setFlash(null), 5000) }, [flash])
+```
+参考 `DevDrawer.tsx` / `ReviveBanner.tsx`。
+
+### 评审 / Dev 模式
+URL 加 `?dev=1` 激活 dev mode（sessionStorage 持久化，关 tab 失效）。Sidebar 显示红色 DEV chip，点击或 `Cmd/Ctrl+Shift+D` 打开 drawer。Drawer 走 `dev_dispatch` RPC，7 个 action：set_streak / grant_legendary / level_up / break_streak / grant_protect / reset_onboarding / reset_progress。
+
+### Supabase RPC + TypeScript
+`Database` 类型不导出 `Functions`，所以 `supabase.rpc(name, args)` 推断 args 为 undefined。复用既有模式：
+```ts
+const { data, error } = await supabase.rpc('rpc_name' as never, { ... } as never)
+```
+参考 `src/api/submitWorkout.ts`。
+
+### main 分支直接开发
+Day 1-N 都在 `main` 上累积式提交（小步、可回退）。新功能不开 feature branch。Brainstorming → spec → plan → subagent-driven implement 流程见 `docs/superpowers/`。
 
 ## Superpowers Skills
 
