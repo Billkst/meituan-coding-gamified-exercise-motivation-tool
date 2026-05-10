@@ -13,6 +13,7 @@ const dict = {
     'nav.deck': '卡组',
     'nav.achievements': '成就',
     'nav.stats': '数据',
+    'nav.friends': '好友',
     'nav.leaderboard': '排行榜',
 
     // Dashboard
@@ -110,6 +111,9 @@ const dict = {
     'arena.result.dashboard': '回主页',
     'arena.result.score_change': '段位 {old} → {new}',
     'arena.result.replay_title': '战斗回放',
+    'arena.result.pvp_badge': 'PVP 对战',
+    'arena.result.pvp_score_win': '+30 赛季分',
+    'arena.result.pvp_score_loss': '-5 赛季分',
 
     'library.section': '§ 06 · 卡库',
     'library.title': '卡库',
@@ -279,6 +283,33 @@ const dict = {
     'leaderboard.self.percentile': '超越了 {n}% 的玩家',
     'leaderboard.empty': '榜单为空',
     'leaderboard.loading': '加载排行榜…',
+    'leaderboard.add_friend': '加好友',
+    'leaderboard.invite_pending': '等待…',
+    'leaderboard.invite_incoming': '接受',
+    'leaderboard.is_friend': '✓ 朋友',
+
+    // Friends (Day 11)
+    'friends.section': '§ 11 · 好友',
+    'friends.title': '好友 — 邀请 · 对战 · 上分',
+    'friends.tabs.active': '我的朋友',
+    'friends.tabs.incoming': '收到',
+    'friends.tabs.outgoing': '发出',
+    'friends.score_unit': '赛季分',
+    'friends.trained_today': '今日已练',
+    'friends.pvp_cta': '发起 PVP',
+    'friends.accept': '接受',
+    'friends.decline': '拒绝',
+    'friends.cancel': '撤回',
+    'friends.unfriend': '删除朋友',
+    'friends.unfriend_confirm': '确定删除朋友 {name}？',
+    'friends.loading': '加载中…',
+    'friends.empty.active.title': '还没有朋友',
+    'friends.empty.active.hint': '在排行榜上对其他玩家点 + 加好友',
+    'friends.empty.incoming.title': '没有待处理邀请',
+    'friends.empty.incoming.hint': '等别人发邀请来…或主动出击',
+    'friends.empty.outgoing.title': '没有发出邀请',
+    'friends.empty.outgoing.hint': '排行榜上 + 加朋友 → 等对方接受',
+    'friends.empty.cta_leaderboard': '去排行榜加朋友',
 
     // Welcome tour (Day 10)
     'tour.progress': '{n} / {total}',
@@ -315,6 +346,7 @@ const dict = {
     'nav.deck': 'Deck',
     'nav.achievements': 'Achievements',
     'nav.stats': 'Stats',
+    'nav.friends': 'Friends',
     'nav.leaderboard': 'Leaderboard',
 
     // Dashboard
@@ -412,6 +444,9 @@ const dict = {
     'arena.result.dashboard': 'TO DASHBOARD',
     'arena.result.score_change': 'segment {old} → {new}',
     'arena.result.replay_title': 'BATTLE LOG',
+    'arena.result.pvp_badge': 'PVP MATCH',
+    'arena.result.pvp_score_win': '+30 PTS',
+    'arena.result.pvp_score_loss': '-5 PTS',
 
     'library.section': '§ 06 · Card Library',
     'library.title': 'Library',
@@ -581,6 +616,33 @@ const dict = {
     'leaderboard.self.percentile': 'Top {n}% (beat {n}% of players)',
     'leaderboard.empty': 'No entries yet',
     'leaderboard.loading': 'Loading leaderboard…',
+    'leaderboard.add_friend': 'Add',
+    'leaderboard.invite_pending': 'Sent…',
+    'leaderboard.invite_incoming': 'Accept',
+    'leaderboard.is_friend': '✓ Friend',
+
+    // Friends (Day 11)
+    'friends.section': '§ 11 · FRIENDS',
+    'friends.title': 'FRIENDS — invite · battle · climb',
+    'friends.tabs.active': 'Friends',
+    'friends.tabs.incoming': 'Incoming',
+    'friends.tabs.outgoing': 'Outgoing',
+    'friends.score_unit': 'pts',
+    'friends.trained_today': 'trained today',
+    'friends.pvp_cta': 'PVP',
+    'friends.accept': 'Accept',
+    'friends.decline': 'Decline',
+    'friends.cancel': 'Cancel',
+    'friends.unfriend': 'Unfriend',
+    'friends.unfriend_confirm': 'Unfriend {name}?',
+    'friends.loading': 'Loading…',
+    'friends.empty.active.title': 'No friends yet',
+    'friends.empty.active.hint': 'Add players from the leaderboard',
+    'friends.empty.incoming.title': 'No incoming invites',
+    'friends.empty.incoming.hint': 'Wait for others, or send your own',
+    'friends.empty.outgoing.title': 'No outgoing invites',
+    'friends.empty.outgoing.hint': 'Tap + on the leaderboard to send invites',
+    'friends.empty.cta_leaderboard': 'Open leaderboard',
 
     // Welcome tour (Day 10)
     'tour.progress': '{n} / {total}',

@@ -1,7 +1,8 @@
 import { Link, useParams } from 'react-router-dom'
-import { IconArrowRight, IconArrowLeft } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowLeft, IconUsers } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useBattle } from '@/api/battles'
+import { useAuthStore } from '@/store/useAuthStore'
 import type { BattleLogEntry } from '@/lib/battle/types'
 
 export default function ArenaResult() {
@@ -9,12 +10,14 @@ export default function ArenaResult() {
   const { t } = useTranslation()
   const id = battleId ? parseInt(battleId) : null
   const { data: battle, isLoading } = useBattle(id)
+  const authUser = useAuthStore((s) => s.user)
 
   if (isLoading || !battle) {
     return <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12 font-mono text-sm uppercase tracking-widest text-text-tertiary">…</div>
   }
 
-  const won = battle.winner_id != null
+  const isPvp = battle.npc_id === null && battle.defender_id !== null
+  const won = battle.winner_id !== null && battle.winner_id === authUser?.id
   const xpGained = battle.attacker_xp_delta
   const log = (battle.log as BattleLogEntry[] | null) ?? []
   const lastTurn: BattleLogEntry | undefined = log[log.length - 1]
@@ -24,6 +27,12 @@ export default function ArenaResult() {
   return (
     <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
       <div className="text-center mb-12">
+        {isPvp && (
+          <div className="font-mono text-[10px] uppercase tracking-widest text-accent-primary mb-2 inline-flex items-center gap-1">
+            <IconUsers size={12} />
+            {t('arena.result.pvp_badge')}
+          </div>
+        )}
         <div
           className={
             'font-display text-6xl md:text-8xl font-black uppercase tracking-tight ' +
@@ -32,9 +41,14 @@ export default function ArenaResult() {
         >
           {won ? t('arena.result.victory') : t('arena.result.defeat')}
         </div>
-        {won && (
+        {won && !isPvp && (
           <div className="font-display text-3xl font-bold text-accent-primary tabular-nums mt-4">
             {t('arena.result.xp_gained', { xp: xpGained })}
+          </div>
+        )}
+        {isPvp && (
+          <div className="font-display text-2xl font-bold text-accent-primary tabular-nums mt-4">
+            {won ? t('arena.result.pvp_score_win') : t('arena.result.pvp_score_loss')}
           </div>
         )}
         <div className="font-mono text-xs uppercase tracking-widest text-text-tertiary mt-2">

@@ -202,6 +202,41 @@ export interface NpcOpponent {
   flavor_en: string | null
 }
 
+// Day 11: friendships + PVP
+export type FriendshipStatus = 'pending' | 'active'
+
+export interface FriendshipRow {
+  user_id: string
+  friend_id: string
+  status: FriendshipStatus
+  created_at: string
+}
+
+export interface FriendListItem {
+  user_id: string
+  username: string
+  level: number
+  season_score: number
+  current_streak?: number
+  last_workout_date?: string | null
+}
+
+export interface FriendList {
+  active: FriendListItem[]
+  incoming: FriendListItem[]
+  outgoing: FriendListItem[]
+}
+
+export interface PvpStartResult {
+  battle_id: number
+  attacker_deck_ids: string[]
+  defender_deck_ids: string[]
+  opponent_user_id: string
+  opponent_username: string
+  opponent_level: number
+  kind: 'pvp'
+}
+
 export interface Database {
   public: {
     Tables: {

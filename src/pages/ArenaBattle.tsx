@@ -7,10 +7,15 @@ import BattleBoard from '@/components/battle/BattleBoard'
 import TurnIndicator from '@/components/battle/TurnIndicator'
 import BattlePhaseBanner from '@/components/battle/BattlePhaseBanner'
 import type { StartBattleResult } from '@/api/battles'
+import type { PvpStartResult } from '@/types/db'
 import type { BattleCard } from '@/lib/battle/types'
 
 interface LocationState {
-  startResult?: StartBattleResult
+  startResult?: StartBattleResult | PvpStartResult
+}
+
+function isPvpStart(s: StartBattleResult | PvpStartResult): s is PvpStartResult {
+  return (s as PvpStartResult).kind === 'pvp'
 }
 
 export default function ArenaBattle() {
@@ -96,7 +101,9 @@ export default function ArenaBattle() {
     )
   }
 
-  const npcName = lang === 'zh' ? startResult.npc_name_zh : startResult.npc_name_en
+  const opponentName = isPvpStart(startResult)
+    ? startResult.opponent_username
+    : (lang === 'zh' ? startResult.npc_name_zh : startResult.npc_name_en)
 
   return (
     <div className="max-w-container mx-auto px-8 py-8">
@@ -106,7 +113,7 @@ export default function ArenaBattle() {
       </div>
       <BattleBoard
         state={state}
-        npcName={npcName}
+        npcName={opponentName}
         onPickAttacker={selectAttacker}
         onPickTarget={selectTarget}
       />

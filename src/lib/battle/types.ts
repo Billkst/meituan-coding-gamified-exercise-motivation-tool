@@ -67,5 +67,7 @@ export interface FinalizeResult {
   final_defender_hp: number
   new_season_score: number
   score_milestone_crossed: boolean
+  is_pvp?: boolean
+  opponent_new_season_score?: number | null
   idempotent?: boolean
 }

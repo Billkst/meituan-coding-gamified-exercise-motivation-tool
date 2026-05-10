@@ -14,6 +14,7 @@ const NAV: { to: string; key: TranslationKey; icon: string; tour?: string }[] = 
   { to: '/deck', key: 'nav.deck', icon: 'ti-layout-grid' },
   { to: '/achievements', key: 'nav.achievements', icon: 'ti-trophy', tour: 'achievements' },
   { to: '/stats', key: 'nav.stats', icon: 'ti-chart-bar' },
+  { to: '/friends', key: 'nav.friends', icon: 'ti-users', tour: 'friends' },
   { to: '/leaderboard', key: 'nav.leaderboard', icon: 'ti-medal', tour: 'leaderboard' },
 ]
 

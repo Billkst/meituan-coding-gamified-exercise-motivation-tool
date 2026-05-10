@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
 import { useLeaderboard, type LeaderboardPeriod } from '@/api/leaderboard'
-import { LeaderboardRow } from '@/components/leaderboard/LeaderboardRow'
+import {
+  useFriendsList,
+  useSendFriendRequest,
+  useAcceptFriendRequest,
+} from '@/api/friends'
+import { LeaderboardRow, type FriendStatus } from '@/components/leaderboard/LeaderboardRow'
 
 const PERIODS: LeaderboardPeriod[] = ['all', 'month', 'week']
 
@@ -9,6 +14,19 @@ export default function Leaderboard() {
   const { t } = useTranslation()
   const [period, setPeriod] = useState<LeaderboardPeriod>('all')
   const { data, isLoading } = useLeaderboard(period)
+  const { data: friends } = useFriendsList()
+  const sendInvite = useSendFriendRequest()
+  const acceptInvite = useAcceptFriendRequest()
+  const isMutating = sendInvite.isPending || acceptInvite.isPending
+
+  const statusByUserId = useMemo(() => {
+    const m = new Map<string, FriendStatus>()
+    if (!friends) return m
+    for (const f of friends.active)   m.set(f.user_id, 'active')
+    for (const f of friends.incoming) m.set(f.user_id, 'incoming')
+    for (const f of friends.outgoing) m.set(f.user_id, 'outgoing')
+    return m
+  }, [friends])
 
   return (
     <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
@@ -70,9 +88,21 @@ export default function Leaderboard() {
             </div>
           ) : (
             <div className="bg-bg-secondary border border-white/10 rounded-card p-2">
-              {data.entries.map((entry) => (
-                <LeaderboardRow key={entry.user_id} entry={entry} />
-              ))}
+              {data.entries.map((entry) => {
+                const status: FriendStatus = entry.is_self
+                  ? 'self'
+                  : statusByUserId.get(entry.user_id) ?? 'none'
+                return (
+                  <LeaderboardRow
+                    key={entry.user_id}
+                    entry={entry}
+                    friendStatus={status}
+                    onAdd={(id) => sendInvite.mutate(id)}
+                    onAccept={(id) => acceptInvite.mutate(id)}
+                    isMutating={isMutating}
+                  />
+                )
+              })}
             </div>
           )}
         </>
