@@ -8,7 +8,7 @@ export interface SubmitWorkoutInput {
   intensity: Intensity
 }
 
-export type StreakStatus = 'new' | 'continued' | 'same_day'
+export type StreakStatus = 'new' | 'continued' | 'same_day' | 'protected' | 'broken'
 
 export interface SubmitWorkoutResult {
   xp_gained: number

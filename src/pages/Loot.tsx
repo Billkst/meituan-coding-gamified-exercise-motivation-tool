@@ -40,9 +40,11 @@ const RARITY_TEXT: Record<Rarity, string> = {
   legendary: 'text-rarity-legendary',
 }
 
-function streakStatusKey(s: StreakStatus): 'workout.streak_new' | 'workout.streak_continued' | 'workout.streak_same_day' {
+function streakStatusKey(s: StreakStatus): 'workout.streak_new' | 'workout.streak_continued' | 'workout.streak_same_day' | 'workout.streak_protected' | 'workout.streak_broken' {
   if (s === 'new') return 'workout.streak_new'
   if (s === 'continued') return 'workout.streak_continued'
+  if (s === 'protected') return 'workout.streak_protected'
+  if (s === 'broken') return 'workout.streak_broken'
   return 'workout.streak_same_day'
 }
 
