@@ -1,24 +1,22 @@
 import type { PropsWithChildren } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useCurrentUser } from '@/api/users'
-import { useDevStore } from '@/store/useDevStore'
 
 export default function OnboardingGate({ children }: PropsWithChildren) {
   const { data: user, isLoading } = useCurrentUser()
   const location = useLocation()
-  const { isDevMode } = useDevStore()
 
   if (isLoading || !user) return <>{children}</>
 
   const isOnboarded = user.onboarded_at != null
   const onOnboardingPath = location.pathname === '/onboarding'
-  const forceParam = new URLSearchParams(location.search).get('force') === '1'
 
+  // Only push unboarded users INTO the flow. Once a user is on /onboarding we
+  // let the flow control its own exit (Step4LootReveal navigates to /dashboard
+  // when the user clicks CTA). Otherwise grant_onboarding_pack flipping
+  // onboarded_at mid-reveal would yank Step4 unmount before cards finish.
   if (!isOnboarded && !onOnboardingPath) {
     return <Navigate to="/onboarding" replace />
-  }
-  if (isOnboarded && onOnboardingPath && !(isDevMode && forceParam)) {
-    return <Navigate to="/dashboard" replace />
   }
   return <>{children}</>
 }
