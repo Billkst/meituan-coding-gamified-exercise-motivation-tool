@@ -92,6 +92,26 @@ export interface DailyQuestRow {
   claimed_at: string | null
 }
 
+export interface UserStats {
+  summary: {
+    joined_days: number
+    total_workouts: number
+    total_minutes: number
+    total_xp: number
+    level: number
+    card_count: number
+    card_total_pool: number
+    arena_wins: number
+    arena_losses: number
+    current_streak: number
+    longest_streak: number
+  }
+  xp_trend: Array<{ date: string; xp: number }>
+  sport_breakdown: Array<{ sport_id: string; count: number; total_minutes: number }>
+  arena: { wins: number; losses: number; battles_total: number; win_rate_pp: number }
+  card_collection: Array<{ rarity: Rarity; owned: number; total: number }>
+}
+
 export interface Card {
   id: string
   name_zh: string

@@ -11,6 +11,7 @@ const NAV: { to: string; key: TranslationKey; icon: string }[] = [
   { to: '/library', key: 'nav.library', icon: 'ti-books' },
   { to: '/deck', key: 'nav.deck', icon: 'ti-layout-grid' },
   { to: '/achievements', key: 'nav.achievements', icon: 'ti-trophy' },
+  { to: '/stats', key: 'nav.stats', icon: 'ti-chart-bar' },
 ]
 
 export default function Sidebar() {

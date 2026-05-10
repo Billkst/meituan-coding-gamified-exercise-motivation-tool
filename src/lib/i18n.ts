@@ -12,6 +12,7 @@ const dict = {
     'nav.library': '卡库',
     'nav.deck': '卡组',
     'nav.achievements': '成就',
+    'nav.stats': '数据',
 
     // Dashboard
     'dashboard.section': '§ 01 · 主页',
@@ -237,6 +238,33 @@ const dict = {
     'toast.achievement_unlocked': '解锁成就',
     'toast.achievement_unlocked_cta': '前往领取',
 
+    // Day 8: stats
+    'stats.section': '§ 09 · 数据',
+    'stats.title': 'Stats',
+    'stats.subline': '加入 {days} 天 · 当前连击 {cur} 天 · 历史最长 {max} 天',
+    'stats.loading': '加载数据…',
+    'stats.summary.workouts': '训练次数',
+    'stats.summary.minutes': '总分钟',
+    'stats.summary.xp': '总 XP',
+    'stats.summary.level': '段位',
+    'stats.summary.cards': '卡牌',
+    'stats.summary.arena': 'Arena',
+    'stats.xp_trend.title': '30 天 XP 趋势',
+    'stats.xp_trend.avg_label': '平均',
+    'stats.xp_trend.empty': '你最近 30 天没训练。打卡试试 →',
+    'stats.sport_breakdown.title': '运动多样性 TOP 10',
+    'stats.sport_breakdown.empty': '还没运动记录',
+    'stats.sport_breakdown.minutes_suffix': '分钟',
+    'stats.arena.title': 'Arena 战绩',
+    'stats.arena.empty': '还没出战',
+    'stats.arena.battles': '出战 {n}',
+    'stats.arena.wins_losses': '{w}W / {l}L',
+    'stats.card_collection.title': '卡牌收集',
+    'stats.rarity.common': '普通',
+    'stats.rarity.rare': '稀有',
+    'stats.rarity.epic': '史诗',
+    'stats.rarity.legendary': '传说',
+
     // Placeholder
     'placeholder.day': 'Day {n} 实现',
     'placeholder.day_advisor': 'Day 12 实现（含完整 advisor）',
@@ -252,6 +280,7 @@ const dict = {
     'nav.library': 'Library',
     'nav.deck': 'Deck',
     'nav.achievements': 'Achievements',
+    'nav.stats': 'Stats',
 
     // Dashboard
     'dashboard.section': '§ 01 · Dashboard',
@@ -476,6 +505,33 @@ const dict = {
     'dashboard.daily_quests.bonus_locked': 'Locked',
     'toast.achievement_unlocked': 'Unlocked',
     'toast.achievement_unlocked_cta': 'View',
+
+    // Day 8: stats
+    'stats.section': '§ 09 · STATS',
+    'stats.title': 'Stats',
+    'stats.subline': 'Joined {days}d · current streak {cur}d · best {max}d',
+    'stats.loading': 'Loading stats…',
+    'stats.summary.workouts': 'Workouts',
+    'stats.summary.minutes': 'Minutes',
+    'stats.summary.xp': 'Total XP',
+    'stats.summary.level': 'Level',
+    'stats.summary.cards': 'Cards',
+    'stats.summary.arena': 'Arena',
+    'stats.xp_trend.title': '30-DAY XP TREND',
+    'stats.xp_trend.avg_label': 'avg',
+    'stats.xp_trend.empty': 'No workouts in the last 30 days. Try one →',
+    'stats.sport_breakdown.title': 'SPORT DIVERSITY · TOP 10',
+    'stats.sport_breakdown.empty': 'No workout history',
+    'stats.sport_breakdown.minutes_suffix': 'min',
+    'stats.arena.title': 'ARENA RECORD',
+    'stats.arena.empty': 'No battles yet',
+    'stats.arena.battles': '{n} battles',
+    'stats.arena.wins_losses': '{w}W / {l}L',
+    'stats.card_collection.title': 'CARD COLLECTION',
+    'stats.rarity.common': 'Common',
+    'stats.rarity.rare': 'Rare',
+    'stats.rarity.epic': 'Epic',
+    'stats.rarity.legendary': 'Legendary',
 
     // Placeholder
     'placeholder.day': 'Day {n} implementation',
