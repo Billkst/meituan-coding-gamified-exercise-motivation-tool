@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { IconArrowRight, IconArrowLeft, IconUsers } from '@tabler/icons-react'
+import { IconArrowRight, IconArrowLeft, IconUsers, IconChevronDown } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useBattle } from '@/api/battles'
 import { useAuthStore } from '@/store/useAuthStore'
+import BattleHighlights from '@/components/battle/BattleHighlights'
 import type { BattleLogEntry } from '@/lib/battle/types'
 
 export default function ArenaResult() {
@@ -11,6 +13,7 @@ export default function ArenaResult() {
   const id = battleId ? parseInt(battleId) : null
   const { data: battle, isLoading } = useBattle(id)
   const authUser = useAuthStore((s) => s.user)
+  const [showLog, setShowLog] = useState(false)
 
   if (isLoading || !battle) {
     return <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12 font-mono text-sm uppercase tracking-widest text-text-tertiary">…</div>
@@ -56,20 +59,34 @@ export default function ArenaResult() {
         </div>
       </div>
 
-      <section className="bg-bg-secondary border border-white/10 rounded-card p-6 mb-8">
-        <div className="font-mono text-[10px] uppercase tracking-widest text-accent-primary mb-3">
-          {t('arena.result.replay_title')}
-        </div>
-        <div className="space-y-1 font-mono text-[11px] tabular-nums">
-          {log.map((entry, i) => (
-            <div key={i} className="flex justify-between text-text-secondary">
-              <span>T{entry.turn} {entry.side === 'attacker' ? '→' : '←'}</span>
-              <span>
-                {entry.attacker_card_id} → {entry.defender_card_id} (-{entry.actual_damage})
-              </span>
-            </div>
-          ))}
-        </div>
+      <BattleHighlights log={log} />
+
+      <section className="bg-bg-secondary border border-white/10 rounded-card mb-8 overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowLog((v) => !v)}
+          className="w-full flex items-center justify-between gap-3 px-5 py-3 hover:bg-bg-primary/30"
+        >
+          <span className="font-mono text-[10px] uppercase tracking-widest text-accent-primary">
+            {t('arena.result.replay_title')} · {t('battle.highlights.toggle_log')}
+          </span>
+          <IconChevronDown
+            size={14}
+            className={'text-text-tertiary transition-transform ' + (showLog ? 'rotate-180' : '')}
+          />
+        </button>
+        {showLog && (
+          <div className="border-t border-white/10 p-5 space-y-1 font-mono text-[11px] tabular-nums">
+            {log.map((entry, i) => (
+              <div key={i} className="flex justify-between text-text-secondary">
+                <span>T{entry.turn} {entry.side === 'attacker' ? '→' : '←'}</span>
+                <span>
+                  {entry.attacker_card_id} → {entry.defender_card_id} (-{entry.actual_damage})
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <div className="flex flex-wrap gap-3 justify-center">
