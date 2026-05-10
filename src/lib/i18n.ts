@@ -146,6 +146,65 @@ const dict = {
     'onboarding.section': '§ 00 · 引导',
     'onboarding.title': '引导 — 5 步流程',
 
+    // === Day 6: onboarding ===
+    'onboarding.prev': '上一步',
+    'onboarding.step1.title': '准备好了吗？',
+    'onboarding.step1.subtitle': '练得越久，奖励越值得肝',
+    'onboarding.step1.cta': '开始',
+    'onboarding.step2.title': '你想从哪些运动开始？',
+    'onboarding.step2.cta': '继续',
+    'onboarding.step2.cta_disabled': '请选择 1-3 项',
+    'onboarding.step2.selected': '已选 {n}/3',
+    'onboarding.step3.title': '提交你的第 1 次运动',
+    'onboarding.step3.sport': '运动',
+    'onboarding.step3.duration': '时长（分钟）',
+    'onboarding.step3.intensity_label': '强度',
+    'onboarding.step3.intensity.light': '轻',
+    'onboarding.step3.intensity.medium': '中',
+    'onboarding.step3.intensity.high': '强',
+    'onboarding.step3.cta': '提交',
+    'onboarding.step4.title': '你的开局卡组',
+    'onboarding.step4.subtitle': '系统保底 1 张稀有卡',
+    'onboarding.step4.cta': '继续',
+    'onboarding.step4.loading': '正在生成卡组...',
+    'onboarding.step4.error_retry': '网络错误',
+    'onboarding.step4.retry': '重试',
+    'onboarding.step5.tip1': '这是你的连续打卡天数（streak）',
+    'onboarding.step5.tip2': '断了就要复活，连了越久奖励越好',
+    'onboarding.step5.tip3': '去 Arena 用卡组挑战',
+    'onboarding.step5.cta': '完成',
+
+    // === Day 6: revive ===
+    'revive.banner.title': 'STREAK 已断 · {days} 天前',
+    'revive.banner.subtitle': '复活恢复到上次的一半 · 代价 50% XP 冻结 24h',
+    'revive.cta': '复活',
+    'revive.success.toast': '已复活到 {n} 天',
+    'revive.error.already_revived': '已经复活过 · 24h 后再试',
+    'revive.error.window_closed': '复活窗口已关闭（断 7 天后失效）',
+    'revive.error.too_short': '上次 streak 太短，无法复活',
+    'revive.error.generic': '复活失败：{msg}',
+
+    // === Day 6: freeze ===
+    'freeze.tooltip': 'XP 冻结至 {time}',
+
+    // === Day 6: protect ===
+    'protect.consumed.toast': '保护卡续命 · 剩余 {n}',
+    'protect.granted.toast': '+1 保护卡 · 库存 {n}/3',
+
+    // === Day 6: dev ===
+    'dev.chip': 'DEV',
+    'dev.title': 'DEV MODE · 测评菜单',
+    'dev.actions.set_streak': '设 Streak N',
+    'dev.actions.grant_legendary': '抽 1 张传说',
+    'dev.actions.level_up': '升 1 级',
+    'dev.actions.break_streak': '断 Streak',
+    'dev.actions.grant_protect': '+1 保护卡',
+    'dev.actions.reset_onboarding': '重看引导',
+    'dev.actions.reset_progress': '重置全部',
+    'dev.actions.exit': '退出 DEV 模式',
+    'dev.confirm.reset_progress': '确定重置全部数据？此操作不可逆',
+    'dev.error.unknown_action': '未知 action: {action}',
+
     // Placeholder
     'placeholder.day': 'Day {n} 实现',
     'placeholder.day_advisor': 'Day 12 实现（含完整 advisor）',
@@ -294,6 +353,65 @@ const dict = {
 
     'onboarding.section': '§ 00 · Onboarding',
     'onboarding.title': 'Onboarding — 5 step guide',
+
+    // === Day 6: onboarding ===
+    'onboarding.prev': 'Back',
+    'onboarding.step1.title': 'Ready?',
+    'onboarding.step1.subtitle': 'The longer you train, the better the loot',
+    'onboarding.step1.cta': 'Start',
+    'onboarding.step2.title': 'Which sports do you want to start with?',
+    'onboarding.step2.cta': 'Continue',
+    'onboarding.step2.cta_disabled': 'Pick 1-3',
+    'onboarding.step2.selected': 'Selected {n}/3',
+    'onboarding.step3.title': 'Submit your first workout',
+    'onboarding.step3.sport': 'Sport',
+    'onboarding.step3.duration': 'Duration (min)',
+    'onboarding.step3.intensity_label': 'Intensity',
+    'onboarding.step3.intensity.light': 'Light',
+    'onboarding.step3.intensity.medium': 'Medium',
+    'onboarding.step3.intensity.high': 'High',
+    'onboarding.step3.cta': 'Submit',
+    'onboarding.step4.title': 'Your starter deck',
+    'onboarding.step4.subtitle': 'Guaranteed 1 epic',
+    'onboarding.step4.cta': 'Continue',
+    'onboarding.step4.loading': 'Generating cards...',
+    'onboarding.step4.error_retry': 'Network error',
+    'onboarding.step4.retry': 'Retry',
+    'onboarding.step5.tip1': 'Your streak day count',
+    'onboarding.step5.tip2': 'Break it to revive — the longer the better',
+    'onboarding.step5.tip3': 'Battle in Arena with your deck',
+    'onboarding.step5.cta': 'Done',
+
+    // === Day 6: revive ===
+    'revive.banner.title': 'STREAK BROKEN · {days}d ago',
+    'revive.banner.subtitle': 'Revive to half · cost 50% XP frozen 24h',
+    'revive.cta': 'Revive',
+    'revive.success.toast': 'Revived to {n} days',
+    'revive.error.already_revived': 'Already revived · retry in 24h',
+    'revive.error.window_closed': 'Revive window closed (after 7 days)',
+    'revive.error.too_short': 'Previous streak too short to revive',
+    'revive.error.generic': 'Revive failed: {msg}',
+
+    // === Day 6: freeze ===
+    'freeze.tooltip': 'XP frozen until {time}',
+
+    // === Day 6: protect ===
+    'protect.consumed.toast': 'Protect card consumed · {n} left',
+    'protect.granted.toast': '+1 Protect card · stock {n}/3',
+
+    // === Day 6: dev ===
+    'dev.chip': 'DEV',
+    'dev.title': 'DEV MODE · Reviewer Menu',
+    'dev.actions.set_streak': 'Set Streak N',
+    'dev.actions.grant_legendary': 'Grant Legendary',
+    'dev.actions.level_up': 'Level Up',
+    'dev.actions.break_streak': 'Break Streak',
+    'dev.actions.grant_protect': '+1 Protect Card',
+    'dev.actions.reset_onboarding': 'Reset Onboarding',
+    'dev.actions.reset_progress': 'Reset All',
+    'dev.actions.exit': 'Exit DEV',
+    'dev.confirm.reset_progress': 'Reset all data? This is irreversible.',
+    'dev.error.unknown_action': 'Unknown action: {action}',
 
     // Placeholder
     'placeholder.day': 'Day {n} implementation',
