@@ -13,6 +13,7 @@ const dict = {
     'nav.deck': '卡组',
     'nav.achievements': '成就',
     'nav.stats': '数据',
+    'nav.leaderboard': '排行榜',
 
     // Dashboard
     'dashboard.section': '§ 01 · 主页',
@@ -265,6 +266,19 @@ const dict = {
     'stats.rarity.epic': '史诗',
     'stats.rarity.legendary': '传说',
 
+    // Day 9: leaderboard
+    'leaderboard.section': '§ 10 · 排行榜',
+    'leaderboard.title': 'LEADERBOARD',
+    'leaderboard.tabs.all': '总榜',
+    'leaderboard.tabs.month': '本月',
+    'leaderboard.tabs.week': '本周',
+    'leaderboard.summary.total_users': '名玩家',
+    'leaderboard.self.title': '我的排名',
+    'leaderboard.self.your_rank': '第 {n} 名',
+    'leaderboard.self.percentile': '超越了 {n}% 的玩家',
+    'leaderboard.empty': '榜单为空',
+    'leaderboard.loading': '加载排行榜…',
+
     // Placeholder
     'placeholder.day': 'Day {n} 实现',
     'placeholder.day_advisor': 'Day 12 实现（含完整 advisor）',
@@ -281,6 +295,7 @@ const dict = {
     'nav.deck': 'Deck',
     'nav.achievements': 'Achievements',
     'nav.stats': 'Stats',
+    'nav.leaderboard': 'Leaderboard',
 
     // Dashboard
     'dashboard.section': '§ 01 · Dashboard',
@@ -532,6 +547,19 @@ const dict = {
     'stats.rarity.rare': 'Rare',
     'stats.rarity.epic': 'Epic',
     'stats.rarity.legendary': 'Legendary',
+
+    // Day 9: leaderboard
+    'leaderboard.section': '§ 10 · LEADERBOARD',
+    'leaderboard.title': 'LEADERBOARD',
+    'leaderboard.tabs.all': 'All-time',
+    'leaderboard.tabs.month': 'Month',
+    'leaderboard.tabs.week': 'Week',
+    'leaderboard.summary.total_users': 'players',
+    'leaderboard.self.title': 'YOUR RANK',
+    'leaderboard.self.your_rank': '#{n}',
+    'leaderboard.self.percentile': 'Top {n}% (beat {n}% of players)',
+    'leaderboard.empty': 'No entries yet',
+    'leaderboard.loading': 'Loading leaderboard…',
 
     // Placeholder
     'placeholder.day': 'Day {n} implementation',

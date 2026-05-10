@@ -16,6 +16,7 @@ import CardLibrary from './pages/CardLibrary'
 import DeckBuilder from './pages/DeckBuilder'
 import Achievements from './pages/Achievements'
 import Stats from './pages/Stats'
+import Leaderboard from './pages/Leaderboard'
 import Onboarding from './pages/Onboarding'
 import DevDrawer from './components/DevDrawer'
 import OnboardingGate from './components/OnboardingGate'
@@ -71,6 +72,7 @@ export default function App() {
             <Route path="/deck" element={<DeckBuilder />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/stats" element={<Stats />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/onboarding" element={<Onboarding />} />
           </Routes>
         </OnboardingGate>
