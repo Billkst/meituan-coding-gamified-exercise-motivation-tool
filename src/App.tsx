@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { initAuth } from '@/lib/auth'
 import { useAuthStore } from '@/store/useAuthStore'
+import { useDevStore } from '@/store/useDevStore'
 import { useTranslation } from '@/lib/i18n'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
@@ -22,6 +23,23 @@ export default function App() {
 
   useEffect(() => {
     void initAuth()
+  }, [])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('dev') === '1') {
+      useDevStore.getState().enableDevMode()
+    }
+
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+        e.preventDefault()
+        const { isDevMode, togglePanel } = useDevStore.getState()
+        if (isDevMode) togglePanel()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
   }, [])
 
   if (!isInitialized) {
