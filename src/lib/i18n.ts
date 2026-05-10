@@ -75,6 +75,37 @@ const dict = {
     'loot.go_workout': '→ 去打卡',
     'arena.section': '§ 05 · 对战',
     'arena.title': '对战 — 战斗 / 胜利 / 败北',
+
+    // Arena lobby
+    'arena.lobby.title': '对战 — PVE 阶梯',
+    'arena.lobby.your_segment': '段位',
+    'arena.lobby.win_loss': '{w}W {l}L',
+    'arena.lobby.deck_button': '我的卡组 →',
+    'arena.lobby.empty_deck': '需先构筑 8 张主卡组',
+    'arena.npc.locked': '🔒 等级 {n} 解锁',
+    'arena.npc.reward': '+{xp} XP',
+    'arena.npc.level': 'Lv {n}',
+
+    // Arena battle
+    'arena.battle.turn_indicator': '回合 {n} / 8',
+    'arena.battle.phase.pick_attacker': '选攻击者',
+    'arena.battle.phase.pick_target': '选目标',
+    'arena.battle.phase.ai_thinking': 'AI 思考…',
+    'arena.battle.phase.ended': '结算中…',
+    'arena.battle.exit_confirm': '退出战斗？进度会丢失。',
+    'arena.battle.your_hp': '你 HP',
+    'arena.battle.npc_hp': '对手 HP',
+
+    // Arena result
+    'arena.result.victory': '胜利',
+    'arena.result.defeat': '败北',
+    'arena.result.xp_gained': '+{xp} XP',
+    'arena.result.again': '再战',
+    'arena.result.lobby': '回大厅',
+    'arena.result.dashboard': '回主页',
+    'arena.result.score_change': '段位 {old} → {new}',
+    'arena.result.replay_title': '战斗回放',
+
     'library.section': '§ 06 · 卡库',
     'library.title': '卡库',
     'library.title_n': '卡库 — {n} / {total}',
@@ -87,6 +118,31 @@ const dict = {
     'library.need': '还差 {cost} 张',
     'deck.section': '§ 07 · 卡组',
     'deck.title': '卡组 — 主卡组 8 张 + 智能助手',
+
+    // Deck builder
+    'deck.title_n': '卡组 — {n} / 8',
+    'deck.empty_slot': '+ 选卡',
+    'deck.advisor': 'ADVISOR 推荐',
+    'deck.advisor_modal.title': '推荐卡组',
+    'deck.advisor_modal.reasoning': '理由 · {r}',
+    'deck.advisor_modal.accept': '采用',
+    'deck.advisor_modal.cancel': '取消',
+    'deck.save': '保存',
+    'deck.save_disabled': '需 8 张',
+    'deck.saved_toast': '✓ 已保存',
+    'deck.filter.all': '全部',
+    'deck.filter.owned': '已拥有',
+
+    // Skill labels
+    'skill.kind.damage_buff': '伤害 +{v}',
+    'skill.kind.defense_buff': '防御 +{v}',
+    'skill.kind.heal': '回血 +{v}',
+    'skill.kind.shield': '护盾 +{v}',
+    'skill.kind.pierce': '穿透',
+    'skill.kind.reflect': '反弹 {v}%',
+    'skill.kind.first_strike': '首发 +{v}',
+    'skill.kind.xp_bonus': 'XP +{v}%',
+
     'onboarding.section': '§ 00 · 引导',
     'onboarding.title': '引导 — 5 步流程',
 
@@ -168,6 +224,37 @@ const dict = {
     'loot.go_workout': '→ Workout',
     'arena.section': '§ 05 · Arena',
     'arena.title': 'Arena — Battle / Victory / Defeat',
+
+    // Arena lobby
+    'arena.lobby.title': 'ARENA — PVE LADDER',
+    'arena.lobby.your_segment': 'SEGMENT',
+    'arena.lobby.win_loss': '{w}W {l}L',
+    'arena.lobby.deck_button': 'MY DECK →',
+    'arena.lobby.empty_deck': 'Build an 8-card deck first',
+    'arena.npc.locked': '🔒 Level {n} required',
+    'arena.npc.reward': '+{xp} XP',
+    'arena.npc.level': 'Lv {n}',
+
+    // Arena battle
+    'arena.battle.turn_indicator': 'TURN {n} / 8',
+    'arena.battle.phase.pick_attacker': 'PICK ATTACKER',
+    'arena.battle.phase.pick_target': 'PICK TARGET',
+    'arena.battle.phase.ai_thinking': 'AI THINKING…',
+    'arena.battle.phase.ended': 'RESOLVING…',
+    'arena.battle.exit_confirm': 'Exit battle? Progress lost.',
+    'arena.battle.your_hp': 'YOU HP',
+    'arena.battle.npc_hp': 'OPPONENT HP',
+
+    // Arena result
+    'arena.result.victory': 'VICTORY',
+    'arena.result.defeat': 'DEFEAT',
+    'arena.result.xp_gained': '+{xp} XP',
+    'arena.result.again': 'REMATCH',
+    'arena.result.lobby': 'TO LOBBY',
+    'arena.result.dashboard': 'TO DASHBOARD',
+    'arena.result.score_change': 'segment {old} → {new}',
+    'arena.result.replay_title': 'BATTLE LOG',
+
     'library.section': '§ 06 · Card Library',
     'library.title': 'Library',
     'library.title_n': 'Library — {n} / {total}',
@@ -180,6 +267,31 @@ const dict = {
     'library.need': 'need {cost} more',
     'deck.section': '§ 07 · Deck Builder',
     'deck.title': 'Deck — 8 main cards + advisor',
+
+    // Deck builder
+    'deck.title_n': 'Deck — {n} / 8',
+    'deck.empty_slot': '+ Pick',
+    'deck.advisor': 'ADVISOR',
+    'deck.advisor_modal.title': 'Recommended Deck',
+    'deck.advisor_modal.reasoning': 'Why · {r}',
+    'deck.advisor_modal.accept': 'ACCEPT',
+    'deck.advisor_modal.cancel': 'CANCEL',
+    'deck.save': 'SAVE',
+    'deck.save_disabled': 'Need 8',
+    'deck.saved_toast': '✓ Saved',
+    'deck.filter.all': 'ALL',
+    'deck.filter.owned': 'OWNED',
+
+    // Skill labels
+    'skill.kind.damage_buff': 'DMG +{v}',
+    'skill.kind.defense_buff': 'DEF +{v}',
+    'skill.kind.heal': 'HEAL +{v}',
+    'skill.kind.shield': 'SHIELD +{v}',
+    'skill.kind.pierce': 'PIERCE',
+    'skill.kind.reflect': 'REFLECT {v}%',
+    'skill.kind.first_strike': 'FIRST {v}',
+    'skill.kind.xp_bonus': 'XP +{v}%',
+
     'onboarding.section': '§ 00 · Onboarding',
     'onboarding.title': 'Onboarding — 5 step guide',
 
