@@ -94,11 +94,13 @@ export interface Battle {
   id: number
   attacker_id: string
   defender_id: string | null
+  npc_id: string | null
   attacker_deck_ids: string[]
   defender_deck_ids: string[]
   winner_id: string | null
   attacker_xp_delta: number
   defender_xp_delta: number
+  log: Record<string, unknown>[] | null
   season: string
   created_at: string
 }

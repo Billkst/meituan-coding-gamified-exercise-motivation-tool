@@ -34,7 +34,7 @@ export function useSaveDeck() {
       if (cardIds.length !== 8) throw new Error(`deck must have 8 cards, got ${cardIds.length}`)
       const { data, error } = await supabase
         .from('decks')
-        .update({ card_ids: cardIds })
+        .update({ card_ids: cardIds } as never)
         .eq('user_id', authUser.id)
         .eq('is_active', true)
         .select()
