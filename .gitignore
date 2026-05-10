@@ -37,3 +37,16 @@ coverage/
 
 # Vite
 .vite/
+.gstack/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Compiled config artifacts (tsc --build emits these for tsconfig.node.json refs)
+vite.config.d.ts
+vite.config.js
+vitest.config.d.ts
+vitest.config.js
+
+# gstack agent cache
+.agents/
