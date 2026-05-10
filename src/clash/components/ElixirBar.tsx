@@ -15,7 +15,7 @@ export default function ElixirBar({ elixir, phase }: Props) {
   const isOvertime = phase === 'overtime'
 
   return (
-    <div className="px-3 py-1.5 bg-bg-primary border-t border-white/10">
+    <div data-tour="clash.elixir" className="px-3 py-1.5 bg-bg-primary border-t border-white/10">
       <div className="flex items-center gap-2">
         <span className="font-mono text-[10px] uppercase tracking-widest text-rarity-epic">
           {Math.floor(elixir.current)}/10

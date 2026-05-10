@@ -18,7 +18,7 @@ export default function Hand({ pile, elixir, draggingHandIndex, onDragStart }: P
   const next = pile[4]
 
   return (
-    <div className="flex items-end gap-2 px-3 py-2 bg-bg-secondary/80 backdrop-blur border-t border-white/10 select-none">
+    <div data-tour="clash.hand" className="flex items-end gap-2 px-3 py-2 bg-bg-secondary/80 backdrop-blur border-t border-white/10 select-none">
       {/* 4 hand cards */}
       <div className="flex-1 flex gap-2">
         {handCards.map((cardId, i) => (

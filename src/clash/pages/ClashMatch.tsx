@@ -16,15 +16,27 @@ import Battlefield from '@/clash/components/Battlefield'
 import Hand from '@/clash/components/Hand'
 import ElixirBar from '@/clash/components/ElixirBar'
 import TimerBar from '@/clash/components/TimerBar'
+import SpotlightTour, { type TourStep } from '@/components/SpotlightTour'
+
+const CLASH_TOUR_KEY = 'pulse.clash.tour_seen'
+const CLASH_TOUR_STEPS: TourStep[] = [
+  { titleKey: 'clash.tour.welcome.title', bodyKey: 'clash.tour.welcome.body' },
+  { target: 'clash.timer', titleKey: 'clash.tour.timer.title', bodyKey: 'clash.tour.timer.body' },
+  { target: 'clash.elixir', titleKey: 'clash.tour.elixir.title', bodyKey: 'clash.tour.elixir.body' },
+  { target: 'clash.hand', titleKey: 'clash.tour.hand.title', bodyKey: 'clash.tour.hand.body' },
+]
 
 export default function ClashMatch() {
-  const { t } = useTranslation()
+  const { t, lang } = useTranslation()
   const navigate = useNavigate()
   const { data: clashState, isLoading } = useClashState()
   const finalize = useFinalizeMatch()
   const [difficulty, setDifficulty] = useState<AiDifficulty>('normal')
   const [hasStarted, setHasStarted] = useState(false)
   const [finalized, setFinalized] = useState(false)
+  const [showTour, setShowTour] = useState(false)
+  const [aiBanner, setAiBanner] = useState<{ cardId: CrCardId; until: number } | null>(null)
+  const [endBanner, setEndBanner] = useState<'win' | 'loss' | 'draw' | null>(null)
 
   const startInput = useMemo<StartMatchInput | null>(() => {
     if (!clashState || !hasStarted) return null
@@ -61,54 +73,112 @@ export default function ClashMatch() {
     }
   }, [hasStarted])
 
-  // Auto-finalize when match ends
+  // First-time spotlight tour: show on first match start; pause engine while open.
+  useEffect(() => {
+    if (!hasStarted) return
+    if (typeof window === 'undefined') return
+    const seen = window.localStorage.getItem(CLASH_TOUR_KEY)
+    if (!seen) setShowTour(true)
+  }, [hasStarted])
+
+  useEffect(() => {
+    if (!engine) return
+    if (showTour) engine.pause()
+    else engine.resume()
+  }, [showTour, engine])
+
+  const dismissTour = () => {
+    window.localStorage.setItem(CLASH_TOUR_KEY, '1')
+    setShowTour(false)
+  }
+
+  // AI deploy hint: scan log tail for newest enemy deploy → show 1.5s banner.
+  const lastSeenEnemyDeployTickRef = useRef(-1)
+  useEffect(() => {
+    if (!state) return
+    for (let i = state.log.length - 1; i >= 0; i--) {
+      const entry = state.log[i]
+      if (entry.t !== 'deploy') {
+        if (entry.t === 'spell') break
+        continue
+      }
+      if (entry.side === 'enemy' && entry.tick > lastSeenEnemyDeployTickRef.current) {
+        lastSeenEnemyDeployTickRef.current = entry.tick
+        const cid = entry.cardId
+        queueMicrotask(() => setAiBanner({ cardId: cid, until: Date.now() + 1500 }))
+      }
+      break
+    }
+  })
+
+  useEffect(() => {
+    if (!aiBanner) return
+    const remaining = aiBanner.until - Date.now()
+    if (remaining <= 0) {
+      setAiBanner(null)
+      return
+    }
+    const id = window.setTimeout(() => setAiBanner(null), remaining)
+    return () => window.clearTimeout(id)
+  }, [aiBanner])
+
+  // Auto-finalize when match ends — show big banner for ~1.8s, then RPC + navigate.
   useEffect(() => {
     if (!state || phase !== 'ended' || finalized || !state.result) return
     setFinalized(true)
+    setEndBanner(state.result)
     const startTs = startTimeRef.current ?? Date.now()
     const duration = Math.round((Date.now() - startTs) / 1000)
-    finalize.mutate(
-      {
-        result: state.result,
-        duration,
-        player_towers_lost: state.player.towersLost,
-        ai_towers_lost: state.enemy.towersLost,
-        difficulty,
-        replay: { tickCount: state.tick },
-      },
-      {
-        onSuccess: (r) => {
-          navigate('/clash/result', {
-            state: {
-              result: state.result,
-              gold_earned: r.gold_earned,
-              chest_id: r.chest_id,
-              chest_type: r.chest_type,
-              win_streak: r.win_streak,
-              player_towers_lost: state.player.towersLost,
-              ai_towers_lost: state.enemy.towersLost,
-              duration,
-            },
-          })
+    const matchResult = state.result
+    const playerTowersLost = state.player.towersLost
+    const aiTowersLost = state.enemy.towersLost
+    const tickCount = state.tick
+
+    const delay = window.setTimeout(() => {
+      finalize.mutate(
+        {
+          result: matchResult,
+          duration,
+          player_towers_lost: playerTowersLost,
+          ai_towers_lost: aiTowersLost,
+          difficulty,
+          replay: { tickCount },
         },
-        onError: () => {
-          // Navigate even if RPC failed — show local result
-          navigate('/clash/result', {
-            state: {
-              result: state.result,
-              gold_earned: 0,
-              chest_id: null,
-              chest_type: null,
-              win_streak: 0,
-              player_towers_lost: state.player.towersLost,
-              ai_towers_lost: state.enemy.towersLost,
-              duration,
-              degraded: true,
-            },
-          })
+        {
+          onSuccess: (r) => {
+            navigate('/clash/result', {
+              state: {
+                result: matchResult,
+                gold_earned: r.gold_earned,
+                chest_id: r.chest_id,
+                chest_type: r.chest_type,
+                win_streak: r.win_streak,
+                player_towers_lost: playerTowersLost,
+                ai_towers_lost: aiTowersLost,
+                duration,
+              },
+            })
+          },
+          onError: () => {
+            navigate('/clash/result', {
+              state: {
+                result: matchResult,
+                gold_earned: 0,
+                chest_id: null,
+                chest_type: null,
+                win_streak: 0,
+                player_towers_lost: playerTowersLost,
+                ai_towers_lost: aiTowersLost,
+                duration,
+                degraded: true,
+              },
+            })
+          },
         },
-      },
-    )
+      )
+    }, 1800)
+
+    return () => window.clearTimeout(delay)
   }, [state, phase, finalized, finalize, navigate, difficulty])
 
   if (isLoading || !clashState) {
@@ -264,6 +334,60 @@ export default function ClashMatch() {
         draggingHandIndex={dragHandIndex}
         onDragStart={handleDragStart}
       />
+
+      {/* AI deploy hint banner */}
+      {aiBanner && (
+        <div
+          key={aiBanner.until}
+          className="fixed top-14 left-1/2 -translate-x-1/2 bg-semantic-error/90 text-white font-display font-bold uppercase tracking-wider text-xs px-4 py-1.5 rounded-button shadow-glow-standard pointer-events-none z-40 animate-pulse"
+        >
+          {(() => {
+            const card = CR_CARDS_BY_ID[aiBanner.cardId]
+            const name = card ? (lang === 'zh' ? card.name_zh : card.name_en) : aiBanner.cardId
+            return t('clash.match.ai_deploys' as never, { card: `${card?.emoji ?? ''} ${name}` })
+          })()}
+        </div>
+      )}
+
+      {/* Match end banner — shown for ~1.8s before navigating to result */}
+      {endBanner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm pointer-events-none">
+          <div className="text-center">
+            <div className="text-8xl mb-4">
+              {endBanner === 'win' ? '👑' : endBanner === 'loss' ? '💀' : '🤝'}
+            </div>
+            <div
+              className={
+                'font-display font-black uppercase tracking-tight text-6xl ' +
+                (endBanner === 'win'
+                  ? 'text-accent-primary animate-halo-pulse'
+                  : endBanner === 'loss'
+                  ? 'text-semantic-error'
+                  : 'text-text-secondary')
+              }
+              style={{
+                textShadow:
+                  endBanner === 'win'
+                    ? '0 0 32px rgba(182,255,60,0.7), 0 0 64px rgba(182,255,60,0.3)'
+                    : endBanner === 'loss'
+                    ? '0 0 24px rgba(255,70,70,0.7)'
+                    : 'none',
+              }}
+            >
+              {t(
+                endBanner === 'win'
+                  ? 'clash.match.banner_win'
+                  : endBanner === 'loss'
+                  ? 'clash.match.banner_loss'
+                  : 'clash.match.banner_draw',
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* First-time spotlight tour */}
+      <SpotlightTour steps={CLASH_TOUR_STEPS} open={showTour} onClose={dismissTour} />
     </div>
   )
 }

@@ -562,6 +562,20 @@ const dict = {
 
     'clash.workout.gold_flash': '已存入 Clash 钱包',
 
+    'clash.match.ai_deploys': '对手部署 {card}',
+    'clash.match.banner_win': '胜利',
+    'clash.match.banner_loss': '失败',
+    'clash.match.banner_draw': '平局',
+
+    'clash.tour.welcome.title': '欢迎进入 PULSE Clash',
+    'clash.tour.welcome.body': '一局 3 分钟 · 拖卡部署部队 · 摧毁对方塔获胜。AI 已就位。',
+    'clash.tour.timer.title': '比赛计时',
+    'clash.tour.timer.body': '主战 3 分钟 · 加时 1 分钟（圣水回复速度翻倍）。',
+    'clash.tour.elixir.title': '圣水（出牌资源）',
+    'clash.tour.elixir.body': '每 2.8 秒涨 1 点 · 上限 10。卡片左上角是 cost — 圣水够才能出。',
+    'clash.tour.hand.title': '拖卡部署',
+    'clash.tour.hand.body': '按住手牌拖到战场你方半区（绿色高亮）→ 抬手部署。先打哪路看你。',
+
     // Placeholder
     'placeholder.clash_under_construction': 'Clash 模式建造中 · Day {n} 完工',
   },
@@ -1125,6 +1139,20 @@ const dict = {
     'clash.result.score': '{me} - {them}',
 
     'clash.workout.gold_flash': 'added to Clash wallet',
+
+    'clash.match.ai_deploys': 'Opponent deploys {card}',
+    'clash.match.banner_win': 'Victory',
+    'clash.match.banner_loss': 'Defeat',
+    'clash.match.banner_draw': 'Draw',
+
+    'clash.tour.welcome.title': 'Welcome to PULSE Clash',
+    'clash.tour.welcome.body': '3-minute matches · drag cards to deploy troops · destroy enemy towers to win. AI standing by.',
+    'clash.tour.timer.title': 'Match timer',
+    'clash.tour.timer.body': '3 minutes main + 1 minute overtime (double-speed elixir).',
+    'clash.tour.elixir.title': 'Elixir',
+    'clash.tour.elixir.body': '+1 every 2.8s · cap 10. Each card has a cost (top-right of the card). Need enough elixir to play.',
+    'clash.tour.hand.title': 'Drag to deploy',
+    'clash.tour.hand.body': 'Press a hand card and drag onto your half (highlighted green) → release to deploy. Pick your lane.',
 
     // Placeholder
     'placeholder.clash_under_construction': 'Clash mode under construction · ETA Day {n}',

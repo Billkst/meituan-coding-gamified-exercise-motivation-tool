@@ -22,7 +22,7 @@ export default function TimerBar({ elapsed, phase }: Props) {
     : ARENA.matchSeconds + ARENA.overtimeSeconds - elapsed
 
   return (
-    <div className="text-center">
+    <div data-tour="clash.timer" className="text-center">
       <div className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary">
         {isMain ? t('clash.match.timer_main' as never, { time: '' }) : t('clash.match.timer_overtime' as never, { time: '' })}
       </div>
