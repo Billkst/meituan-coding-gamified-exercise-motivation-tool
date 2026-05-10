@@ -16,6 +16,7 @@ import CardLibrary from './pages/CardLibrary'
 import DeckBuilder from './pages/DeckBuilder'
 import Onboarding from './pages/Onboarding'
 import DevDrawer from './components/DevDrawer'
+import OnboardingGate from './components/OnboardingGate'
 
 export default function App() {
   const isInitialized = useAuthStore((s) => s.isInitialized)
@@ -54,19 +55,21 @@ export default function App() {
     <div className="flex min-h-screen">
       <Sidebar />
       <main className="flex-1 ml-[240px]">
-        <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/sports" element={<Sports />} />
-          <Route path="/workout" element={<Workout />} />
-          <Route path="/loot" element={<Loot />} />
-          <Route path="/arena" element={<Arena />} />
-          <Route path="/arena/battle/:battleId" element={<ArenaBattle />} />
-          <Route path="/arena/result/:battleId" element={<ArenaResult />} />
-          <Route path="/library" element={<CardLibrary />} />
-          <Route path="/deck" element={<DeckBuilder />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-        </Routes>
+        <OnboardingGate>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/sports" element={<Sports />} />
+            <Route path="/workout" element={<Workout />} />
+            <Route path="/loot" element={<Loot />} />
+            <Route path="/arena" element={<Arena />} />
+            <Route path="/arena/battle/:battleId" element={<ArenaBattle />} />
+            <Route path="/arena/result/:battleId" element={<ArenaResult />} />
+            <Route path="/library" element={<CardLibrary />} />
+            <Route path="/deck" element={<DeckBuilder />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+          </Routes>
+        </OnboardingGate>
       </main>
       <DevDrawer />
     </div>
