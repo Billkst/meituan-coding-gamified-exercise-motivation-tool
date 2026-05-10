@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from '@/lib/i18n'
+import { cardEmoji } from '@/lib/cardArt'
 import type { OwnedCard } from '@/api/cards'
 import type { Rarity } from '@/types/db'
 
@@ -56,11 +57,16 @@ export default function CardPicker({ ownedCards, selectedIds, onPick }: Props) {
                 (picked ? 'opacity-40 cursor-not-allowed ' : 'hover:scale-[1.02] cursor-pointer ')
               }
             >
-              <div className="font-display font-bold text-sm">
-                {lang === 'zh' ? oc.card.name_zh : oc.card.name_en}
-              </div>
-              <div className="font-mono text-[10px] tabular-nums text-text-secondary mt-1">
-                ATK {oc.card.base_attack} · DEF {oc.card.base_defense} · ★{oc.star_level}
+              <div className="flex items-center gap-2">
+                <span className="text-xl flex-shrink-0" aria-hidden>{cardEmoji(oc.card)}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-display font-bold text-sm truncate">
+                    {lang === 'zh' ? oc.card.name_zh : oc.card.name_en}
+                  </div>
+                  <div className="font-mono text-[10px] tabular-nums text-text-secondary mt-0.5">
+                    ATK {oc.card.base_attack} · DEF {oc.card.base_defense} · ★{oc.star_level}
+                  </div>
+                </div>
               </div>
             </button>
           )

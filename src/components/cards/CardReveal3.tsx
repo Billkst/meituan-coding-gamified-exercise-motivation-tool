@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from '@/lib/i18n'
 import { useCardById } from '@/api/cards'
+import { cardEmoji } from '@/lib/cardArt'
 import type { Rarity } from '@/types/db'
 
 interface CardSlot {
@@ -88,6 +89,11 @@ function CardSlotView({ card, revealed, isCenter }: { card: CardSlot; revealed: 
             <span className="font-mono text-[9px] text-text-tertiary uppercase">{card.id}</span>
           </div>
           <div className="flex-1 flex flex-col justify-center text-center">
+            {cardData && (
+              <div className={'mb-2 ' + (isCenter ? 'text-4xl' : 'text-3xl')} aria-hidden>
+                {cardEmoji(cardData)}
+              </div>
+            )}
             <div className="font-display font-bold text-xl text-text-primary mb-2">
               {cardData ? (lang === 'zh' ? cardData.name_zh : cardData.name_en) : '...'}
             </div>

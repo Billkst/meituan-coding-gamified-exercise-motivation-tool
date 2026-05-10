@@ -1,5 +1,6 @@
 import { IconStar, IconStarFilled, IconArrowUpRight } from '@tabler/icons-react'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
+import { cardEmoji } from '@/lib/cardArt'
 import {
   useMyCards,
   useAllCards,
@@ -178,9 +179,12 @@ function CardTile({ owned, lang, t, onUpgrade, upgrading }: CardTileProps) {
         </span>
       </div>
 
-      {/* name */}
-      <div className="font-display font-bold text-xl text-text-primary">
-        {lang === 'zh' ? c.name_zh : c.name_en}
+      {/* art + name */}
+      <div className="flex items-center gap-2">
+        <span className="text-2xl flex-shrink-0" aria-hidden>{cardEmoji(c)}</span>
+        <div className="font-display font-bold text-xl text-text-primary truncate">
+          {lang === 'zh' ? c.name_zh : c.name_en}
+        </div>
       </div>
 
       {/* ability text */}

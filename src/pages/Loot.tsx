@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { IconStar, IconArrowRight } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useCardById } from '@/api/cards'
+import { cardEmoji } from '@/lib/cardArt'
 import type { SubmitWorkoutResult, StreakStatus } from '@/api/submitWorkout'
 import type { Rarity } from '@/types/db'
 
@@ -148,8 +149,11 @@ export default function Loot() {
                 </span>
               </div>
 
-              {/* name + ability */}
+              {/* art + name + ability */}
               <div className="flex-1 flex flex-col justify-center text-center">
+                {card && (
+                  <div className="text-6xl mb-3" aria-hidden>{cardEmoji(card)}</div>
+                )}
                 <div className="font-display font-bold text-3xl text-text-primary mb-3">
                   {card ? (lang === 'zh' ? card.name_zh : card.name_en) : '...'}
                 </div>

@@ -1,5 +1,6 @@
 import { IconX } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
+import { cardEmoji } from '@/lib/cardArt'
 import type { OwnedCard } from '@/api/cards'
 import type { Rarity } from '@/types/db'
 
@@ -35,7 +36,8 @@ export default function DeckSlots({ slots, onRemove }: Props) {
           >
             <IconX size={12} className="text-text-tertiary" />
           </button>
-          <div className="font-display font-bold text-sm mb-1">
+          <div className="text-2xl text-center mb-1" aria-hidden>{cardEmoji(s.card)}</div>
+          <div className="font-display font-bold text-sm mb-1 truncate">
             {lang === 'zh' ? s.card.name_zh : s.card.name_en}
           </div>
           <div className="font-mono text-[10px] tabular-nums text-text-secondary">
