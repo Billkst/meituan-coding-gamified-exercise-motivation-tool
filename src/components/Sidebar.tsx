@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
+import { useDevStore } from '@/store/useDevStore'
 
 const NAV: { to: string; key: TranslationKey; icon: string }[] = [
   { to: '/dashboard', key: 'nav.dashboard', icon: 'ti-layout-dashboard' },
@@ -13,6 +14,7 @@ const NAV: { to: string; key: TranslationKey; icon: string }[] = [
 
 export default function Sidebar() {
   const { t, lang, toggleLang } = useTranslation()
+  const { isDevMode, togglePanel } = useDevStore()
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-[240px] bg-bg-secondary border-r border-white/10 flex flex-col">
@@ -25,6 +27,15 @@ export default function Sidebar() {
           {t('nav.tagline')}
         </div>
       </div>
+
+      {isDevMode && (
+        <button
+          onClick={togglePanel}
+          className="mx-4 mt-3 mb-1 self-start bg-semantic-error text-white font-display font-bold uppercase tracking-wider px-3 py-1 rounded text-xs hover:opacity-80"
+        >
+          DEV
+        </button>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 py-4">
