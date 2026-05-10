@@ -34,7 +34,6 @@ declare
   v_intensity_mult int;
   v_xp_gained int;
   v_today date := (now() at time zone 'utc')::date;
-  v_yesterday date := v_today - interval '1 day';
   v_gap int;
   v_new_streak int;
   v_streak_status text;
