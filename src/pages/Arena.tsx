@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { IconLock, IconArrowRight } from '@tabler/icons-react'
+import { IconLock, IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useNpcOpponents } from '@/api/npcs'
 import { useActiveDeck } from '@/api/deck'
 import { useStartBattle } from '@/api/battles'
 import { useCurrentUser } from '@/api/users'
+import BattleRulesModal from '@/components/battle/BattleRulesModal'
 
 export default function Arena() {
   const { t, lang } = useTranslation()
@@ -13,6 +15,7 @@ export default function Arena() {
   const { data: deck } = useActiveDeck()
   const { data: user } = useCurrentUser()
   const startBattle = useStartBattle()
+  const [rulesOpen, setRulesOpen] = useState(false)
 
   const deckReady = !!deck && deck.card_ids.length === 8
   const isStarting = startBattle.isPending
@@ -31,9 +34,20 @@ export default function Arena() {
       <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
         {t('arena.section')}
       </div>
-      <h1 className="font-display font-bold text-3xl uppercase tracking-tight mb-8">
-        {t('arena.lobby.title')}
-      </h1>
+      <div className="flex items-center justify-between mb-8 gap-3">
+        <h1 className="font-display font-bold text-3xl uppercase tracking-tight">
+          {t('arena.lobby.title')}
+        </h1>
+        <button
+          type="button"
+          onClick={() => setRulesOpen(true)}
+          aria-label={t('battle.rules.open')}
+          className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary hover:text-accent-primary p-1.5 border border-white/10 rounded-button hover:border-accent-primary inline-flex items-center gap-1.5 flex-shrink-0"
+        >
+          <IconInfoCircle size={14} />
+          {t('battle.rules.open')}
+        </button>
+      </div>
 
       <section className="bg-bg-secondary border border-white/10 rounded-card p-6 mb-8 flex items-baseline justify-between">
         <div>
@@ -105,6 +119,8 @@ export default function Arena() {
           {(startBattle.error as Error).message}
         </div>
       )}
+
+      <BattleRulesModal open={rulesOpen} onClose={() => setRulesOpen(false)} />
     </div>
   )
 }

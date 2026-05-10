@@ -1,9 +1,11 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { IconInfoCircle } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useAllCards, useMyCards } from '@/api/cards'
 import { useBattleStore } from '@/store/useBattleStore'
 import BattleBoard from '@/components/battle/BattleBoard'
+import BattleRulesModal from '@/components/battle/BattleRulesModal'
 import TurnIndicator from '@/components/battle/TurnIndicator'
 import BattlePhaseBanner from '@/components/battle/BattlePhaseBanner'
 import type { StartBattleResult } from '@/api/battles'
@@ -24,6 +26,7 @@ export default function ArenaBattle() {
   const navigate = useNavigate()
   const { t, lang } = useTranslation()
   const startResult = (location.state as LocationState | null)?.startResult
+  const [rulesOpen, setRulesOpen] = useState(false)
 
   const state = useBattleStore((s) => s.state)
   const init = useBattleStore((s) => s.initBattle)
@@ -107,9 +110,20 @@ export default function ArenaBattle() {
 
   return (
     <div className="max-w-container mx-auto px-8 py-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3">
         <TurnIndicator turn={state.turn} />
-        <BattlePhaseBanner phase={state.current_phase} />
+        <div className="flex items-center gap-3">
+          <BattlePhaseBanner phase={state.current_phase} />
+          <button
+            type="button"
+            onClick={() => setRulesOpen(true)}
+            aria-label={t('battle.rules.open')}
+            title={t('battle.rules.open')}
+            className="text-text-tertiary hover:text-accent-primary p-1.5 border border-white/10 rounded-button hover:border-accent-primary"
+          >
+            <IconInfoCircle size={16} />
+          </button>
+        </div>
       </div>
       <BattleBoard
         state={state}
@@ -117,6 +131,7 @@ export default function ArenaBattle() {
         onPickAttacker={selectAttacker}
         onPickTarget={selectTarget}
       />
+      <BattleRulesModal open={rulesOpen} onClose={() => setRulesOpen(false)} />
     </div>
   )
 }
