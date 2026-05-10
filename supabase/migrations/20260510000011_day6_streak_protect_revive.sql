@@ -266,3 +266,67 @@ begin
 end; $$;
 
 grant execute on function public.revive_streak() to authenticated;
+
+-- ============================================================
+-- 4. grant_onboarding_pack — 1 epic guaranteed + 2 random common/rare
+-- ============================================================
+create or replace function public.grant_onboarding_pack(p_buffs jsonb default '{}'::jsonb)
+returns jsonb language plpgsql security definer set search_path = public as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_user users%rowtype;
+  v_existing jsonb;
+  v_epic cards%rowtype;
+  v_random1 cards%rowtype;
+  v_random2 cards%rowtype;
+begin
+  if v_user_id is null then raise exception 'unauthorized' using errcode = '28000'; end if;
+
+  select * into v_user from users where id = v_user_id for update;
+  if not found then raise exception 'user not found' using errcode = '22023'; end if;
+
+  -- idempotent: already onboarded
+  if v_user.onboarded_at is not null then
+    select coalesce(jsonb_agg(jsonb_build_object('id', c.id, 'rarity', c.rarity)
+            order by case c.rarity when 'legendary' then 0 when 'epic' then 1 when 'rare' then 2 else 3 end), '[]'::jsonb)
+      into v_existing
+      from user_cards uc join cards c on c.id = uc.card_id
+      where uc.user_id = v_user_id;
+    return jsonb_build_object('cards', v_existing, 'idempotent', true);
+  end if;
+
+  -- 1 epic
+  select * into v_epic from cards where rarity = 'epic' order by random() limit 1;
+  if v_epic.id is null then raise exception 'no epic cards in pool'; end if;
+  insert into user_cards (user_id, card_id, copies) values (v_user_id, v_epic.id, 1)
+    on conflict (user_id, card_id) do update set copies = user_cards.copies + 1;
+
+  -- 2 random common/rare (different ids)
+  select * into v_random1 from cards where rarity in ('common','rare') order by random() limit 1;
+  if v_random1.id is null then raise exception 'no common/rare cards in pool'; end if;
+  insert into user_cards (user_id, card_id, copies) values (v_user_id, v_random1.id, 1)
+    on conflict (user_id, card_id) do update set copies = user_cards.copies + 1;
+
+  select * into v_random2 from cards where rarity in ('common','rare') and id <> v_random1.id
+    order by random() limit 1;
+  if v_random2.id is null then v_random2 := v_random1; end if;  -- fallback if only 1 card in pool
+  insert into user_cards (user_id, card_id, copies) values (v_user_id, v_random2.id, 1)
+    on conflict (user_id, card_id) do update set copies = user_cards.copies + 1;
+
+  -- 写 onboarded_at + exploration_buffs
+  update users set
+    onboarded_at = now(),
+    exploration_buffs = p_buffs
+    where id = v_user_id;
+
+  return jsonb_build_object(
+    'cards', jsonb_build_array(
+      jsonb_build_object('id', v_epic.id, 'rarity', 'epic'),
+      jsonb_build_object('id', v_random1.id, 'rarity', v_random1.rarity),
+      jsonb_build_object('id', v_random2.id, 'rarity', v_random2.rarity)
+    ),
+    'idempotent', false
+  );
+end; $$;
+
+grant execute on function public.grant_onboarding_pack(jsonb) to authenticated;
