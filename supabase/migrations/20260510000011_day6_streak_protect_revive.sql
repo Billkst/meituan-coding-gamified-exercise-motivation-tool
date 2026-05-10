@@ -374,7 +374,7 @@ begin
       delete from user_cards where user_id = v_user_id;
       delete from workouts where user_id = v_user_id;
       delete from battles where attacker_id = v_user_id;
-      delete from decks where user_id = v_user_id;
+      update decks set card_ids = '{}'::text[] where user_id = v_user_id;
       delete from streaks where user_id = v_user_id;
       update users set
         level = 1, xp = 0, total_workouts = 0,
