@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { IconInfoCircle } from '@tabler/icons-react'
+import { IconInfoCircle, IconBook2 } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useAllCards, useMyCards } from '@/api/cards'
+import { useCurrentUser } from '@/api/users'
 import { useBattleStore } from '@/store/useBattleStore'
-import BattleBoard from '@/components/battle/BattleBoard'
+import BattleArena from '@/components/battle/BattleArena'
 import BattleRulesModal from '@/components/battle/BattleRulesModal'
-import TurnIndicator from '@/components/battle/TurnIndicator'
-import BattlePhaseBanner from '@/components/battle/BattlePhaseBanner'
+import BattleTutorialOverlay from '@/components/battle/BattleTutorialOverlay'
 import type { StartBattleResult } from '@/api/battles'
 import type { PvpStartResult } from '@/types/db'
 import type { BattleCard } from '@/lib/battle/types'
@@ -20,6 +20,8 @@ function isPvpStart(s: StartBattleResult | PvpStartResult): s is PvpStartResult 
   return (s as PvpStartResult).kind === 'pvp'
 }
 
+const TUTORIAL_KEY = 'pulse.battle.tutorial_seen'
+
 export default function ArenaBattle() {
   const { battleId } = useParams<{ battleId: string }>()
   const location = useLocation()
@@ -27,6 +29,10 @@ export default function ArenaBattle() {
   const { t, lang } = useTranslation()
   const startResult = (location.state as LocationState | null)?.startResult
   const [rulesOpen, setRulesOpen] = useState(false)
+  const [tutorialOpen, setTutorialOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem(TUTORIAL_KEY) !== '1'
+  })
 
   const state = useBattleStore((s) => s.state)
   const init = useBattleStore((s) => s.initBattle)
@@ -37,6 +43,7 @@ export default function ArenaBattle() {
 
   const { data: allCards = [] } = useAllCards()
   const { data: myCards = [] } = useMyCards()
+  const { data: me } = useCurrentUser()
 
   const cardsById = useMemo(() => {
     const m = new Map<string, typeof allCards[number]>()
@@ -49,7 +56,6 @@ export default function ArenaBattle() {
     return m
   }, [myCards])
 
-  // Init battle from startResult
   useEffect(() => {
     if (!startResult || !battleId || state) return
     const playerCards: BattleCard[] = startResult.attacker_deck_ids
@@ -79,7 +85,6 @@ export default function ArenaBattle() {
     }
   }, [startResult, battleId, state, cardsById, myStarById, init])
 
-  // Auto-finalize when phase becomes 'finalizing'
   useEffect(() => {
     if (state?.current_phase !== 'finalizing') return
     finishBattle().then(() => {
@@ -89,16 +94,20 @@ export default function ArenaBattle() {
     })
   }, [state?.current_phase, finishBattle, navigate, battleId])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => { reset() }
   }, [reset])
+
+  const dismissTutorial = () => {
+    window.localStorage.setItem(TUTORIAL_KEY, '1')
+    setTutorialOpen(false)
+  }
 
   if (!startResult || !state) {
     return (
       <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12 text-center">
         <div className="font-mono text-sm uppercase tracking-widest text-text-tertiary">
-          {t('arena.battle.phase.ai_thinking')}
+          {t('battle.phase.resolving')}
         </div>
       </div>
     )
@@ -107,31 +116,47 @@ export default function ArenaBattle() {
   const opponentName = isPvpStart(startResult)
     ? startResult.opponent_username
     : (lang === 'zh' ? startResult.npc_name_zh : startResult.npc_name_en)
+  const opponentLevel = isPvpStart(startResult)
+    ? startResult.opponent_level
+    : startResult.npc_level
 
   return (
-    <div className="max-w-container mx-auto px-8 py-8">
-      <div className="flex items-center justify-between mb-6 gap-3">
-        <TurnIndicator turn={state.turn} />
-        <div className="flex items-center gap-3">
-          <BattlePhaseBanner phase={state.current_phase} />
-          <button
-            type="button"
-            onClick={() => setRulesOpen(true)}
-            aria-label={t('battle.rules.open')}
-            title={t('battle.rules.open')}
-            className="text-text-tertiary hover:text-accent-primary p-1.5 border border-white/10 rounded-button hover:border-accent-primary"
-          >
-            <IconInfoCircle size={16} />
-          </button>
-        </div>
+    <div className="max-w-container mx-auto px-4 md:px-8 py-6 md:py-8">
+      <div className="flex items-center justify-end mb-4 gap-2">
+        <button
+          type="button"
+          onClick={() => setTutorialOpen(true)}
+          aria-label={t('battle.tutorial.open')}
+          title={t('battle.tutorial.open')}
+          className="text-text-tertiary hover:text-accent-primary p-1.5 border border-white/10 rounded-button hover:border-accent-primary inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest"
+        >
+          <IconBook2 size={14} />
+          {t('battle.tutorial.open')}
+        </button>
+        <button
+          type="button"
+          onClick={() => setRulesOpen(true)}
+          aria-label={t('battle.rules.open')}
+          title={t('battle.rules.open')}
+          className="text-text-tertiary hover:text-accent-primary p-1.5 border border-white/10 rounded-button hover:border-accent-primary inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest"
+        >
+          <IconInfoCircle size={14} />
+          {t('battle.rules.open')}
+        </button>
       </div>
-      <BattleBoard
+
+      <BattleArena
         state={state}
-        npcName={opponentName}
+        opponentName={opponentName}
+        opponentLevel={opponentLevel}
+        yourName={me?.username ?? 'YOU'}
+        yourLevel={me?.level}
         onPickAttacker={selectAttacker}
         onPickTarget={selectTarget}
       />
+
       <BattleRulesModal open={rulesOpen} onClose={() => setRulesOpen(false)} />
+      <BattleTutorialOverlay open={tutorialOpen} onClose={dismissTutorial} />
     </div>
   )
 }

@@ -1,29 +1,18 @@
-import { useEffect, useState } from 'react'
-
 interface Props {
-  amount: number | null
-  label?: string
-  side: 'top' | 'bottom'
+  amount: number
 }
 
-export default function DamageFloat({ amount, label, side }: Props) {
-  const [show, setShow] = useState(false)
-  useEffect(() => {
-    if (amount == null) return
-    setShow(true)
-    const t = setTimeout(() => setShow(false), 800)
-    return () => clearTimeout(t)
-  }, [amount])
-  if (!show || amount == null) return null
+// Floats a "-N" red number above the parent container. Mounted only while
+// the parent is in an animating phase; unmounts when the phase changes.
+export default function DamageFloat({ amount }: Props) {
   return (
     <div
-      className={
-        'absolute left-1/2 -translate-x-1/2 pointer-events-none animate-fade-up font-display text-3xl font-black ' +
-        (side === 'top' ? 'top-12 ' : 'bottom-12 ') +
-        (label === 'PIERCE' ? 'text-rarity-legendary' : 'text-semantic-error')
-      }
+      className="absolute left-1/2 top-1/2 z-20 pointer-events-none animate-damage-float font-display font-black text-3xl text-semantic-error tabular-nums"
+      style={{
+        textShadow: '0 0 12px rgba(255,80,80,0.9), 0 0 24px rgba(255,40,40,0.6)',
+      }}
     >
-      {label ? `${label} ` : ''}-{amount}
+      -{amount}
     </div>
   )
 }

@@ -353,6 +353,49 @@ const dict = {
     'battle.hint.label': '战术建议',
     'battle.hint.no_target': '当前没有可攻击的目标',
 
+    // Day 13 — Battle arena zones + phase
+    'arena.zone.opponent': '对手',
+    'arena.zone.you': '你',
+    'battle.turn_label': 'T{n}/8',
+    'battle.phase.your_turn': '你的回合 · 选自己的卡',
+    'battle.phase.pick_target': '选对手的卡作为目标',
+    'battle.phase.player_strikes': '出击！',
+    'battle.phase.ai_thinking': '对手思考中…',
+    'battle.phase.ai_strikes': '对手反击！',
+    'battle.phase.resolving': '结算中…',
+
+    // Day 14 — Battle tutorial overlay
+    'battle.tutorial.open': '战斗教学',
+    'battle.tutorial.progress': '{n} / {total}',
+    'battle.tutorial.next': '下一步',
+    'battle.tutorial.prev': '上一步',
+    'battle.tutorial.skip': '跳过',
+    'battle.tutorial.done': '开打！',
+    'battle.tutorial.s1.title': '上方是对手',
+    'battle.tutorial.s1.body': '红色背景的 8 张卡是对手的，你要把它们打倒（或者把对手 HP 打到 0）才能赢。',
+    'battle.tutorial.s2.title': '下方是你的',
+    'battle.tutorial.s2.body': '绿色背景的 8 张卡是你的卡组（在 [卡组] 页面预先组好）。每回合你可以挑一张攻击。',
+    'battle.tutorial.s3.title': '怎么打',
+    'battle.tutorial.s3.body': '先点你方一张卡（攻击者）→ 再点对方一张卡（目标）→ 出击！对手会自动反击。8 回合内 HP 高者胜。',
+
+    // Day 14 — Battle highlights (post-battle)
+    'battle.highlights.title': '战斗看点',
+    'battle.highlights.key_moment': '关键时刻',
+    'battle.highlights.key_moment_body': '第 {turn} 回合 · {atk} → {def} · {dmg} 伤害',
+    'battle.highlights.triggers': '能力触发',
+    'battle.highlights.no_triggers': '本场没有能力触发',
+    'battle.highlights.hp_curve': 'HP 曲线',
+    'battle.highlights.toggle_log': '展开详细 log',
+
+    // Day 14 — Deck recommend (per NPC)
+    'deck.recommend.title': '为某关卡推荐',
+    'deck.recommend.placeholder': '选 NPC →',
+    'deck.recommend.apply': '一键应用',
+    'deck.recommend.reasoning': '推荐理由',
+    'deck.recommend.applied': '已应用推荐卡组',
+    'deck.recommend.error': '推荐失败：{msg}',
+    'deck.recommend.no_cards': '至少 8 张卡才能推荐',
+
     // Day 12 — Damage preview badges
     'battle.preview.expected': '预计 {dmg}',
     'battle.preview.zero': '伤害 0',
@@ -767,6 +810,49 @@ const dict = {
     'battle.hint.dismiss': "Don't show again",
     'battle.hint.label': 'TACTIC',
     'battle.hint.no_target': 'No attackable target',
+
+    // Day 13 — Battle arena zones + phase
+    'arena.zone.opponent': 'OPPONENT',
+    'arena.zone.you': 'YOU',
+    'battle.turn_label': 'T{n}/8',
+    'battle.phase.your_turn': 'Your turn — pick your card',
+    'battle.phase.pick_target': 'Pick an enemy target',
+    'battle.phase.player_strikes': 'Striking!',
+    'battle.phase.ai_thinking': 'Opponent thinking…',
+    'battle.phase.ai_strikes': 'Opponent counterattacks!',
+    'battle.phase.resolving': 'Resolving…',
+
+    // Day 14 — Battle tutorial overlay
+    'battle.tutorial.open': 'How to fight',
+    'battle.tutorial.progress': '{n} / {total}',
+    'battle.tutorial.next': 'Next',
+    'battle.tutorial.prev': 'Back',
+    'battle.tutorial.skip': 'Skip',
+    'battle.tutorial.done': "Let's go",
+    'battle.tutorial.s1.title': 'Top = opponent',
+    'battle.tutorial.s1.body': "The 8 cards in the red zone belong to your opponent. Beat them or drop their HP to 0 to win.",
+    'battle.tutorial.s2.title': 'Bottom = you',
+    'battle.tutorial.s2.body': "The 8 cards in the green zone are your active deck (built on /deck). Each turn pick one to attack with.",
+    'battle.tutorial.s3.title': 'How to play',
+    'battle.tutorial.s3.body': "Click your card (attacker) → click an enemy card (target) → strike. The opponent counterattacks automatically. After 8 turns, higher HP wins.",
+
+    // Day 14 — Battle highlights (post-battle)
+    'battle.highlights.title': 'Battle highlights',
+    'battle.highlights.key_moment': 'Key moment',
+    'battle.highlights.key_moment_body': 'Turn {turn} · {atk} → {def} · {dmg} damage',
+    'battle.highlights.triggers': 'Abilities triggered',
+    'battle.highlights.no_triggers': 'No abilities triggered this match',
+    'battle.highlights.hp_curve': 'HP curve',
+    'battle.highlights.toggle_log': 'Show full log',
+
+    // Day 14 — Deck recommend (per NPC)
+    'deck.recommend.title': 'Recommend for NPC',
+    'deck.recommend.placeholder': 'Pick an NPC →',
+    'deck.recommend.apply': 'Apply',
+    'deck.recommend.reasoning': 'Why this deck',
+    'deck.recommend.applied': 'Recommended deck applied',
+    'deck.recommend.error': 'Recommend failed: {msg}',
+    'deck.recommend.no_cards': 'Need at least 8 cards to recommend',
 
     // Day 12 — Damage preview badges
     'battle.preview.expected': '~{dmg}',

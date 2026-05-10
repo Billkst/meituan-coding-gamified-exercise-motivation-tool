@@ -63,6 +63,10 @@ export default {
         'reveal-flip': 'reveal-flip 600ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'halo-pulse': 'halo-pulse 2s ease-in-out infinite',
         'fade-up': 'fade-up 800ms ease-out forwards',
+        'strike-up': 'strike-up 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards',
+        'strike-down': 'strike-down 700ms cubic-bezier(0.4, 0, 0.2, 1) forwards',
+        'shake-hit': 'shake-hit 400ms ease-in-out',
+        'damage-float': 'damage-float 900ms ease-out forwards',
       },
       keyframes: {
         breathing: {
@@ -97,6 +101,29 @@ export default {
           '0%':   { opacity: '0', transform: 'translateY(0px)' },
           '20%':  { opacity: '1' },
           '100%': { opacity: '0', transform: 'translateY(-40px)' },
+        },
+        'strike-up': {
+          '0%':   { transform: 'translateY(0)', filter: 'brightness(1)' },
+          '40%':  { transform: 'translateY(-80px) scale(1.05)', filter: 'brightness(1.4)' },
+          '60%':  { transform: 'translateY(-80px) scale(1.05)', filter: 'brightness(1.4)' },
+          '100%': { transform: 'translateY(0)', filter: 'brightness(1)' },
+        },
+        'strike-down': {
+          '0%':   { transform: 'translateY(0)', filter: 'brightness(1)' },
+          '40%':  { transform: 'translateY(80px) scale(1.05)', filter: 'brightness(1.4)' },
+          '60%':  { transform: 'translateY(80px) scale(1.05)', filter: 'brightness(1.4)' },
+          '100%': { transform: 'translateY(0)', filter: 'brightness(1)' },
+        },
+        'shake-hit': {
+          '0%, 100%':  { transform: 'translateX(0)' },
+          '20%, 60%':  { transform: 'translateX(-4px)' },
+          '40%, 80%':  { transform: 'translateX(4px)' },
+        },
+        'damage-float': {
+          '0%':   { opacity: '0', transform: 'translate(-50%, 0) scale(0.5)' },
+          '15%':  { opacity: '1', transform: 'translate(-50%, -10px) scale(1.2)' },
+          '40%':  { opacity: '1', transform: 'translate(-50%, -30px) scale(1)' },
+          '100%': { opacity: '0', transform: 'translate(-50%, -70px) scale(0.9)' },
         },
       },
     },
