@@ -15,6 +15,7 @@ import ArenaResult from './pages/ArenaResult'
 import CardLibrary from './pages/CardLibrary'
 import DeckBuilder from './pages/DeckBuilder'
 import Onboarding from './pages/Onboarding'
+import DevDrawer from './components/DevDrawer'
 
 export default function App() {
   const isInitialized = useAuthStore((s) => s.isInitialized)
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/onboarding" element={<Onboarding />} />
         </Routes>
       </main>
+      <DevDrawer />
     </div>
   )
 }
