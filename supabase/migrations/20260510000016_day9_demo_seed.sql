@@ -66,7 +66,6 @@ declare
   v_duration int;
   v_xp int;
   v_when timestamptz;
-  v_sports text[] := array['running','hiit','swimming','cycling','yoga','basketball','strength','climbing','badminton','tennis','football'];
 begin
   for v_demo in
     select id, total_workouts from public.users
@@ -74,7 +73,8 @@ begin
   loop
     v_n := least(v_demo.total_workouts, 5 + (random() * 12)::int);
     for i in 1..v_n loop
-      v_sport     := v_sports[1 + (random() * (array_length(v_sports, 1) - 1))::int];
+      -- pick a real sport id straight from the table to avoid FK violations on hardcoded strings
+      select id into v_sport from public.sports order by random() limit 1;
       v_intensity := case when random() < 0.4 then 'high' when random() < 0.7 then 'medium' else 'light' end;
       v_duration  := 15 + (random() * 50)::int;
       v_xp        := 30 + (random() * 100)::int;
