@@ -4,6 +4,8 @@ import { useTranslation } from '@/lib/i18n'
 import { useCurrentUser, useMyCardCount } from '@/api/users'
 import ReviveBanner from '@/components/ReviveBanner'
 import DashboardTourOverlay from '@/components/DashboardTourOverlay'
+import { DailyQuestsCard } from '@/components/dashboard/DailyQuestsCard'
+import { AchievementUnlockToast } from '@/components/AchievementUnlockToast'
 
 export default function Dashboard() {
   const { t } = useTranslation()
@@ -28,6 +30,7 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-container mx-auto px-8 py-12">
+      <AchievementUnlockToast />
       <header className="mb-12">
         <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
           {t('dashboard.section')}
@@ -38,6 +41,8 @@ export default function Dashboard() {
       </header>
 
       <ReviveBanner />
+
+      <DailyQuestsCard />
 
       {/* Streak hero — memorable visual anchor */}
       <section className="bg-bg-secondary border border-white/10 rounded-card py-16 px-8 mb-8 text-center">
