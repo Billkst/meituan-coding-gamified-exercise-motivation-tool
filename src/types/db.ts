@@ -7,6 +7,9 @@ export type SportCategory = 'cardio' | 'strength' | 'ball' | 'flex' | 'martial' 
 export type Rarity = 'common' | 'rare' | 'epic' | 'legendary'
 export type Intensity = 'light' | 'medium' | 'high'
 export type StreakStatus = 'active' | 'broken' | 'frozen'
+export type AchievementCategory = 'workout' | 'streak' | 'cards' | 'arena' | 'special'
+export type RewardKind = 'xp' | 'protect' | 'card' | 'badge_only'
+export type QuestDifficulty = 'easy' | 'medium' | 'hard'
 
 export interface Sport {
   id: string
@@ -35,6 +38,58 @@ export interface UserRow {
   freeze_xp_until: string | null
   last_protect_grant_at: string | null
   onboarded_at: string | null
+  last_quest_date: string | null
+  last_quest_bonus_date: string | null
+}
+
+export interface AchievementRow {
+  id: string
+  category: AchievementCategory
+  name_zh: string
+  name_en: string
+  description_zh: string
+  description_en: string
+  metric: string
+  tier: number
+  target_value: number
+  reward_kind: RewardKind
+  reward_payload: Record<string, unknown>
+  icon: string
+  display_order: number
+  parent_id: string | null
+}
+
+export interface UserAchievementRow {
+  user_id: string
+  achievement_id: string
+  current_value: number
+  unlocked_at: string | null
+  claimed_at: string | null
+}
+
+export interface QuestTemplateRow {
+  id: string
+  difficulty: QuestDifficulty
+  metric: string
+  target_min: number
+  target_max: number
+  reward_xp: number
+  description_zh: string
+  description_en: string
+  active: boolean
+}
+
+export interface DailyQuestRow {
+  user_id: string
+  quest_date: string
+  slot: number
+  template_id: string
+  metric: string
+  target_value: number
+  current_value: number
+  reward_xp: number
+  completed_at: string | null
+  claimed_at: string | null
 }
 
 export interface Card {
