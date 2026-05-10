@@ -4,10 +4,20 @@ import { IconSwords, IconSnowflake } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
 import { useCurrentUser, useMyCardCount } from '@/api/users'
 import ReviveBanner from '@/components/ReviveBanner'
-import DashboardTourOverlay from '@/components/DashboardTourOverlay'
+import SpotlightTour, { type TourStep } from '@/components/SpotlightTour'
 import NextBestActionCard from '@/components/dashboard/NextBestActionCard'
 import { DailyQuestsCard } from '@/components/dashboard/DailyQuestsCard'
 import { AchievementUnlockToast } from '@/components/AchievementUnlockToast'
+
+const TOUR_STEPS: TourStep[] = [
+  { titleKey: 'spotlight.welcome.title', bodyKey: 'spotlight.welcome.body' },
+  { target: 'workout', titleKey: 'spotlight.workout.title', bodyKey: 'spotlight.workout.body' },
+  { target: 'loot', titleKey: 'spotlight.loot.title', bodyKey: 'spotlight.loot.body' },
+  { target: 'arena', titleKey: 'spotlight.arena.title', bodyKey: 'spotlight.arena.body' },
+  { target: 'achievements', titleKey: 'spotlight.achievements.title', bodyKey: 'spotlight.achievements.body' },
+  { target: 'friends', titleKey: 'spotlight.friends.title', bodyKey: 'spotlight.friends.body' },
+  { target: 'leaderboard', titleKey: 'spotlight.leaderboard.title', bodyKey: 'spotlight.leaderboard.body' },
+]
 
 const TOUR_STORAGE_KEY = 'pulse.tour.seen'
 
@@ -128,7 +138,7 @@ export default function Dashboard() {
         </Link>
       </div>
 
-      {showTour && <DashboardTourOverlay onDone={dismissTour} />}
+      <SpotlightTour steps={TOUR_STEPS} open={showTour} onClose={dismissTour} />
     </div>
   )
 }

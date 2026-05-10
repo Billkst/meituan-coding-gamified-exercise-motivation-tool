@@ -330,6 +330,22 @@ const dict = {
     'tour.step6.title': '成就 + 每日任务',
     'tour.step6.body': '18 静态成就 + 每日 3 任务 + 每日 bonus，去 [成就] 页 claim 拿额外 XP。',
 
+    // Day 14 — Spotlight tour (sidebar-driven)
+    'spotlight.welcome.title': '6 步走通 PULSE 主循环',
+    'spotlight.welcome.body': '我会在屏幕上高亮每个入口，点「下一步」逐个看；想停下随时点「跳过」。',
+    'spotlight.workout.title': '从这里打卡',
+    'spotlight.workout.body': '点击高亮的「打卡」→ 选 sport / 时长 / 强度 → 提交。每次会自动入账 XP + 抽 1 张卡。这是 PULSE 的核心动作。',
+    'spotlight.loot.title': '抽到的卡进这里',
+    'spotlight.loot.body': '每次打卡掉一张卡，进卡库。4 等级稀有度（普通 / 稀有 / 史诗 / 传说），同卡叠加升星。',
+    'spotlight.arena.title': 'Arena 对战上分',
+    'spotlight.arena.body': '在「卡组」选 8 张主卡组 → 进 [对战] 打 PVE 8 关 NPC，胜利拿 season_score。',
+    'spotlight.achievements.title': '成就 + 每日任务',
+    'spotlight.achievements.body': '18 个静态成就 × 5 类 + 每日 3 任务 + bonus。完成后去这页 claim 额外 XP。',
+    'spotlight.friends.title': '加好友 PVP',
+    'spotlight.friends.body': '在排行榜或这里加好友，跟好友打 PVP。赢一场 +30 season_score。',
+    'spotlight.leaderboard.title': '上 season_score 排行',
+    'spotlight.leaderboard.body': '8 名 demo 用户已 seed 在榜。Week / Month / All-time 三种 period 看 season_score 排名。点对手可加为好友。',
+
     // Day 12 — Ability labels
     'ability.damage_buff': '增伤',
     'ability.defense_buff': '增防',
@@ -787,6 +803,22 @@ const dict = {
     'tour.step5.body': 'season_score lands you in [Leaderboard], head to head with 8 demo players. Week / Month / All-time tabs.',
     'tour.step6.title': 'Achievements + daily quests',
     'tour.step6.body': '18 static achievements + 3 daily quests + a daily bonus. Claim from [Achievements] for extra XP.',
+
+    // Day 14 — Spotlight tour (sidebar-driven)
+    'spotlight.welcome.title': '6 stops to learn PULSE',
+    'spotlight.welcome.body': "I'll highlight each entry on the sidebar. Click Next to step through — Skip any time.",
+    'spotlight.workout.title': 'Log workouts here',
+    'spotlight.workout.body': 'Click the highlighted Workout entry → pick sport / duration / intensity → submit. You earn XP and draw 1 card. This is the core loop.',
+    'spotlight.loot.title': 'Cards land here',
+    'spotlight.loot.body': 'Every workout drops 1 card into your library. 4 rarity tiers (common / rare / epic / legendary). Duplicates upgrade star level.',
+    'spotlight.arena.title': 'Arena PVE',
+    'spotlight.arena.body': 'Build an 8-card main deck on /deck, then fight NPCs here. Wins give season_score that puts you on the leaderboard.',
+    'spotlight.achievements.title': 'Achievements + daily quests',
+    'spotlight.achievements.body': '18 static achievements × 5 categories + 3 fresh daily quests + a daily bonus. Open this page to claim XP.',
+    'spotlight.friends.title': 'Add friends, go PVP',
+    'spotlight.friends.body': 'Add friends from the leaderboard or here, then start PVP fights. Each win gives +30 season_score.',
+    'spotlight.leaderboard.title': 'Climb season_score',
+    'spotlight.leaderboard.body': '8 demo users seed the board. Three periods: Week / Month / All-time. Click an opponent to friend them.',
 
     // Day 12 — Ability labels
     'ability.damage_buff': 'Damage',
