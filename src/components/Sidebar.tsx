@@ -9,6 +9,7 @@ const NAV: { to: string; key: TranslationKey; icon: string; tour?: string }[] = 
   { to: '/sports', key: 'nav.sports', icon: 'ti-ball-basketball' },
   { to: '/workout', key: 'nav.workout', icon: 'ti-stopwatch', tour: 'workout' },
   { to: '/loot', key: 'nav.loot', icon: 'ti-cards', tour: 'loot' },
+  { to: '/clash', key: 'nav.clash', icon: 'ti-flame', tour: 'clash' },
   { to: '/arena', key: 'nav.arena', icon: 'ti-swords', tour: 'arena' },
   { to: '/library', key: 'nav.library', icon: 'ti-books' },
   { to: '/deck', key: 'nav.deck', icon: 'ti-layout-grid' },

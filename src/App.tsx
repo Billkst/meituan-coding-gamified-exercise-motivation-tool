@@ -21,6 +21,11 @@ import Friends from './pages/Friends'
 import Onboarding from './pages/Onboarding'
 import DevDrawer from './components/DevDrawer'
 import OnboardingGate from './components/OnboardingGate'
+import ClashHome from './clash/pages/ClashHome'
+import ClashMatch from './clash/pages/ClashMatch'
+import ClashResult from './clash/pages/ClashResult'
+import ClashCards from './clash/pages/ClashCards'
+import ClashDeck from './clash/pages/ClashDeck'
 
 export default function App() {
   const isInitialized = useAuthStore((s) => s.isInitialized)
@@ -76,6 +81,11 @@ export default function App() {
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/clash" element={<ClashHome />} />
+            <Route path="/clash/match" element={<ClashMatch />} />
+            <Route path="/clash/result" element={<ClashResult />} />
+            <Route path="/clash/cards" element={<ClashCards />} />
+            <Route path="/clash/deck" element={<ClashDeck />} />
           </Routes>
         </OnboardingGate>
       </main>
