@@ -5,6 +5,7 @@ import { useActiveDeck, useSaveDeck } from '@/api/deck'
 import DeckSlots from '@/components/deck/DeckSlots'
 import CardPicker from '@/components/deck/CardPicker'
 import AdvisorButton from '@/components/deck/AdvisorButton'
+import NpcDeckRecommender from '@/components/deck/NpcDeckRecommender'
 import type { OwnedCard } from '@/api/cards'
 
 export default function DeckBuilder() {
@@ -105,6 +106,8 @@ export default function DeckBuilder() {
           {t('deck.cards_insufficient', { have: myCards.length })}
         </div>
       )}
+
+      <NpcDeckRecommender ownedCardCount={myCards.length} onApply={applyAdvisor} />
 
       <section className="mb-10">
         <DeckSlots slots={slotCards} onRemove={remove} />
