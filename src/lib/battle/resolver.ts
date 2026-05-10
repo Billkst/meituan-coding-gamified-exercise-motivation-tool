@@ -1,5 +1,5 @@
 import type {
-  BattleCard, BattleState, BattleLogEntry, Side, TriggerEvent,
+  BattleCard, BattleState, BattleLogEntry, Side, TriggerEvent, Buff,
 } from '@/lib/battle/types'
 
 function pickCards(side: Side, state: BattleState): BattleCard[] {
@@ -55,9 +55,9 @@ export function resolveAttack(
   }
 
   // 3. passive damage_buff (% multiplier) applied after absolute adds
-  // passive_buffs on state are global for the attacker side; no ownership check needed
+  // Only apply if the buff is owned by the attacking side
   for (const buff of next.passive_buffs) {
-    if (buff.kind === 'damage_buff') {
+    if (buff.kind === 'damage_buff' && isOwnedBy(buff, atkSide, next)) {
       dmg *= (1 + buff.value / 100)
       triggers.push({ card_id: buff.source_card_id, kind: 'damage_buff', effect: `passive +${buff.value}%` })
     }
@@ -113,4 +113,9 @@ export function resolveAttack(
   next.log.push(entry)
 
   return next
+}
+
+function isOwnedBy(buff: Buff, side: Side, state: BattleState): boolean {
+  const cards = side === 'attacker' ? state.attacker_cards : state.defender_cards
+  return cards.some(c => c.card.id === buff.source_card_id)
 }

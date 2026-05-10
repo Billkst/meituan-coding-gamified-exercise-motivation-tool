@@ -102,7 +102,7 @@ describe('resolveAttack', () => {
     }))
     const s = mkState({
       turn: 1,
-      attacker_cards: [card],
+      attacker_cards: [card, mkBattleCard(C_PULSE)],
       passive_buffs: [
         { source_card_id: 'pulse', kind: 'damage_buff', value: 25, expires_after_turn: -1 },
       ],
