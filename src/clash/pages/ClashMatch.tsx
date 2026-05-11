@@ -1,6 +1,6 @@
 // Real-time Clash match page — combines engine + battlefield + hand + UI chrome.
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IconHome2, IconRefresh } from '@tabler/icons-react'
 import { useTranslation } from '@/lib/i18n'
@@ -12,11 +12,14 @@ import type { CrCardId } from '@/clash/lib/cardData'
 import { ARENA, canDeployAt } from '@/clash/lib/arena'
 import type { AiDifficulty } from '@/clash/lib/types'
 import type { StartMatchInput } from '@/clash/engine/types'
-import Battlefield from '@/clash/components/Battlefield'
 import Hand from '@/clash/components/Hand'
 import ElixirBar from '@/clash/components/ElixirBar'
 import TimerBar from '@/clash/components/TimerBar'
 import SpotlightTour, { type TourStep } from '@/components/SpotlightTour'
+
+// Pixi.js bundle (~400KB) is only needed once the user actually starts a
+// match, so split it out of the main chunk.
+const PixiBattlefield = lazy(() => import('@/clash/render/PixiBattlefield'))
 
 const CLASH_TOUR_KEY = 'pulse.clash.tour_seen'
 const CLASH_TOUR_STEPS: TourStep[] = [
@@ -328,11 +331,25 @@ export default function ClashMatch() {
 
       {/* Battlefield */}
       <div className="flex-1 flex items-center justify-center p-3">
-        <Battlefield
-          state={state}
-          showDeployZone={dragHandIndex !== null}
-          dragPreview={dragPreview}
-        />
+        <Suspense
+          fallback={
+            <div
+              data-battlefield
+              className="relative w-full mx-auto bg-bg-primary border border-white/15 rounded-card overflow-hidden flex items-center justify-center"
+              style={{ aspectRatio: '9 / 16', maxWidth: 'min(420px, 100%)' }}
+            >
+              <div className="font-mono text-xs uppercase tracking-widest text-text-tertiary animate-pulse">
+                {t('clash.match.loading_battlefield' as never)}
+              </div>
+            </div>
+          }
+        >
+          <PixiBattlefield
+            state={state}
+            showDeployZone={dragHandIndex !== null}
+            dragPreview={dragPreview}
+          />
+        </Suspense>
       </div>
 
       {/* Elixir bar */}
