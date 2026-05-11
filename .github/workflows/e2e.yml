@@ -9,6 +9,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Fake Supabase env vars so the bundle builds + runtime supabase client
+    # constructs without throwing. Smoke tests only need the React shell to
+    # render; real Supabase calls fail and the unauthenticated branch (user=null)
+    # takes over, which renders the public ClashHome surface.
+    env:
+      VITE_SUPABASE_URL: https://stub.supabase.co
+      VITE_SUPABASE_ANON_KEY: stub-anon-key-for-ci-only
     steps:
       - uses: actions/checkout@v4
 
