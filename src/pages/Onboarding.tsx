@@ -1,33 +1,33 @@
-import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import ProgressDots from '@/components/onboarding/ProgressDots'
-import Step1Welcome from '@/components/onboarding/Step1Welcome'
-import Step2Sports from '@/components/onboarding/Step2Sports'
-import Step3MockWorkout from '@/components/onboarding/Step3MockWorkout'
-import Step4LootReveal from '@/components/onboarding/Step4LootReveal'
+// Day 21 stub — Day 25 will replace with v2 4-step narrative onboarding:
+// welcome → mock workout → starter pack → tutorial battle (player destroys 1 princess).
 
-const STEP_COUNT = 5  // step 5 = dashboard tour overlay
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Onboarding() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [selectedSports, setSelectedSports] = useState<string[]>([])
+  const navigate = useNavigate()
 
-  const stepNum = Math.min(4, Math.max(1, parseInt(searchParams.get('step') ?? '1', 10)))
-  const goNext = () => setSearchParams({ step: String(stepNum + 1) })
-  const goPrev = () => setSearchParams({ step: String(stepNum - 1) })
-
-  const handleStep2Next = (sports: string[]) => {
-    setSelectedSports(sports)
-    goNext()
-  }
+  useEffect(() => {
+    // Until Day 25, mark v1 done so OnboardingGate stops looping users back here,
+    // and push them into the new Clash experience.
+    localStorage.setItem('pulse.onboarding.completed_v1', '1')
+    const id = window.setTimeout(() => navigate('/clash', { replace: true }), 800)
+    return () => window.clearTimeout(id)
+  }, [navigate])
 
   return (
-    <div className="fixed inset-0 bg-bg-primary z-50 flex flex-col">
-      <ProgressDots current={stepNum} total={STEP_COUNT} />
-      {stepNum === 1 && <Step1Welcome onNext={goNext} />}
-      {stepNum === 2 && <Step2Sports onNext={handleStep2Next} onPrev={goPrev} />}
-      {stepNum === 3 && <Step3MockWorkout onNext={goNext} onPrev={goPrev} defaultSportId={selectedSports[0] ?? null} />}
-      {stepNum === 4 && <Step4LootReveal onPrev={goPrev} selectedSports={selectedSports} />}
+    <div className="fixed inset-0 bg-bg-primary z-50 flex items-center justify-center px-8">
+      <div className="text-center">
+        <div className="font-display font-black text-4xl text-accent-primary uppercase tracking-tight mb-3">
+          PULSE
+        </div>
+        <div className="font-mono text-xs uppercase tracking-widest text-text-secondary">
+          loading clash…
+        </div>
+        <div className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary mt-4">
+          new onboarding (v2) ships Day 25
+        </div>
+      </div>
     </div>
   )
 }

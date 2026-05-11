@@ -3,43 +3,79 @@
 import { ARENA, isInRiver, nearestBridgeX } from '@/clash/lib/arena'
 import type { Unit, Vec2 } from './types'
 
-const BRIDGE_NORTH_Y = ARENA.river.yMax + 0.5
+// South and north bridge entry/exit points (just outside the river band).
 const BRIDGE_SOUTH_Y = ARENA.river.yMin - 0.5
+const BRIDGE_NORTH_Y = ARENA.river.yMax + 0.5
+
+// How close to the bridge column counts as "lined up to cross".
+const BRIDGE_LANE_EPS = 0.4
 
 /**
  * Compute the next sub-target a unit should walk toward this tick.
- * For air units this is just `targetPos`.
- * For ground units crossing the river, returns the appropriate bridge endpoint.
+ *
+ * Logic:
+ *   - Air / building units ignore the river entirely (return target as-is).
+ *   - If unit and target are on the same side of the river, return target.
+ *   - Otherwise route via the nearest bridge column in two phases:
+ *       Phase 1: approach the bridge entry (BRIDGE_SOUTH_Y or BRIDGE_NORTH_Y)
+ *                from the unit's current side, walking laterally toward bridgeX.
+ *       Phase 2: once on the bridge column, walk through the river to the far
+ *                exit so the unit clears the band in subsequent ticks.
+ *
+ * The previous version had a stall bug: when fromY reached BRIDGE_SOUTH_Y
+ * (= yMin - 0.5), `crossingNorthbound` was still true (14.5 < 15) and the
+ * function returned (bridgeX, 14.5) — the same point. stepToward then refused
+ * to move (distLeft < 1e-3), so the unit was pinned just south of the river
+ * forever. Phase 2 in the new logic fixes this by aiming past the river once
+ * the unit is aligned with the bridge column.
  */
 export function nextWaypoint(unit: Unit, targetPos: Vec2): Vec2 {
   if (unit.isAir || unit.isBuilding) return targetPos
 
   const fromY = unit.pos.y
   const toY = targetPos.y
-  const crossingNorthbound = fromY < ARENA.river.yMin && toY > ARENA.river.yMax
-  const crossingSouthbound = fromY > ARENA.river.yMax && toY < ARENA.river.yMin
-  const inRiver = isInRiver(fromY)
+  const { yMin, yMax } = ARENA.river
 
-  if (!crossingNorthbound && !crossingSouthbound && !inRiver) {
+  const fromNorth = fromY > yMax
+  const fromSouth = fromY < yMin
+  const fromInRiver = isInRiver(fromY)
+  const targetNorth = toY > yMax
+  const targetSouth = toY < yMin
+
+  // Same side of the river — walk straight at the target.
+  if ((fromNorth && targetNorth) || (fromSouth && targetSouth)) {
     return targetPos
   }
 
-  // Pick the bridge nearer to the unit's lane (or current x).
   const bridgeX = nearestBridgeX(unit.pos.x)
+  const alignedWithBridge = Math.abs(unit.pos.x - bridgeX) <= BRIDGE_LANE_EPS
 
-  if (inRiver) {
-    // Already on bridge — step toward exit.
-    const exitY = fromY < (ARENA.river.yMin + ARENA.river.yMax) / 2
-      ? BRIDGE_SOUTH_Y
-      : BRIDGE_NORTH_Y
-    return { x: bridgeX, y: toY > fromY ? BRIDGE_NORTH_Y + 0.2 : exitY }
-  }
-
-  // Approach the bridge from this side.
-  if (crossingNorthbound) {
+  // Unit currently in the river band — push toward the far exit.
+  if (fromInRiver) {
+    if (toY > fromY) return { x: bridgeX, y: BRIDGE_NORTH_Y }
     return { x: bridgeX, y: BRIDGE_SOUTH_Y }
   }
-  return { x: bridgeX, y: BRIDGE_NORTH_Y }
+
+  // Northbound crossing (from south side, want to go north).
+  if (fromSouth && targetNorth) {
+    if (!alignedWithBridge) {
+      // Phase 1: approach the bridge entry from the south side.
+      return { x: bridgeX, y: BRIDGE_SOUTH_Y }
+    }
+    // Phase 2: lined up — push through the river to the north exit.
+    return { x: bridgeX, y: BRIDGE_NORTH_Y }
+  }
+
+  // Southbound crossing (from north side, want to go south).
+  if (fromNorth && targetSouth) {
+    if (!alignedWithBridge) {
+      return { x: bridgeX, y: BRIDGE_NORTH_Y }
+    }
+    return { x: bridgeX, y: BRIDGE_SOUTH_Y }
+  }
+
+  // Fallback (shouldn't reach here for ground units, but stay safe).
+  return targetPos
 }
 
 /**

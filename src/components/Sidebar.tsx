@@ -5,18 +5,10 @@ import { useTranslation, type TranslationKey } from '@/lib/i18n'
 import { useDevStore } from '@/store/useDevStore'
 
 const NAV: { to: string; key: TranslationKey; icon: string; tour?: string }[] = [
-  { to: '/dashboard', key: 'nav.dashboard', icon: 'ti-layout-dashboard', tour: 'dashboard' },
-  { to: '/sports', key: 'nav.sports', icon: 'ti-ball-basketball' },
+  { to: '/clash', key: 'nav.home', icon: 'ti-flame', tour: 'clash' },
   { to: '/workout', key: 'nav.workout', icon: 'ti-stopwatch', tour: 'workout' },
-  { to: '/loot', key: 'nav.loot', icon: 'ti-cards', tour: 'loot' },
-  { to: '/clash', key: 'nav.clash', icon: 'ti-flame', tour: 'clash' },
-  { to: '/arena', key: 'nav.arena', icon: 'ti-swords', tour: 'arena' },
-  { to: '/library', key: 'nav.library', icon: 'ti-books' },
-  { to: '/deck', key: 'nav.deck', icon: 'ti-layout-grid' },
-  { to: '/achievements', key: 'nav.achievements', icon: 'ti-trophy', tour: 'achievements' },
-  { to: '/stats', key: 'nav.stats', icon: 'ti-chart-bar' },
-  { to: '/friends', key: 'nav.friends', icon: 'ti-users', tour: 'friends' },
-  { to: '/leaderboard', key: 'nav.leaderboard', icon: 'ti-medal', tour: 'leaderboard' },
+  { to: '/clash/collection', key: 'nav.collection', icon: 'ti-cards', tour: 'collection' },
+  { to: '/dashboard', key: 'nav.dashboard', icon: 'ti-layout-dashboard', tour: 'dashboard' },
 ]
 
 export default function Sidebar() {

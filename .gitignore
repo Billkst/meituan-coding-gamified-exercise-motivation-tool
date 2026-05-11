@@ -50,3 +50,9 @@ vitest.config.js
 
 # gstack agent cache
 .agents/
+.vercel
+
+# Playwright
+playwright-report/
+test-results/
+.playwright/

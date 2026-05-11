@@ -3,7 +3,8 @@ import { useUIStore } from '@/store/useUIStore'
 const dict = {
   zh: {
     // Brand / nav
-    'nav.tagline': 'v0.1 · 测评作业',
+    'nav.tagline': 'v0.2 · Clash v2',
+    'nav.home': 'CLASH',
     'nav.dashboard': '主页',
     'nav.sports': '运动',
     'nav.workout': '打卡',
@@ -11,10 +12,14 @@ const dict = {
     'nav.arena': '对战 (经典)',
     'nav.library': '卡库',
     'nav.deck': '卡组',
+    'nav.collection': '卡牌',
     'nav.achievements': '成就',
     'nav.stats': '数据',
     'nav.friends': '好友',
     'nav.leaderboard': '排行榜',
+    'clash.collection.title': '我的卡牌',
+    'clash.collection.tab.cards': '全部卡牌',
+    'clash.collection.tab.deck': '我的卡组',
 
     // Dashboard
     'dashboard.section': '§ 01 · 主页',
@@ -590,7 +595,12 @@ const dict = {
   },
   en: {
     // Brand / nav
-    'nav.tagline': 'v0.1 · Demo',
+    'nav.tagline': 'v0.2 · Clash v2',
+    'nav.home': 'CLASH',
+    'nav.collection': 'Cards',
+    'clash.collection.title': 'My Cards',
+    'clash.collection.tab.cards': 'All Cards',
+    'clash.collection.tab.deck': 'My Deck',
     'nav.dashboard': 'Dashboard',
     'nav.sports': 'Sports',
     'nav.workout': 'Workout',

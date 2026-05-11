@@ -4,8 +4,17 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
 import { useSubmitWorkout } from '@/api/submitWorkout'
-import { sportEmoji } from '@/lib/sportIcon'
 import type { Intensity, Sport } from '@/types/db'
+
+// Inline emoji map (was src/lib/sportIcon.ts, deleted in Day 21 cleanup).
+const SPORT_EMOJI: Record<string, string> = {
+  running: '🏃', cycling: '🚴', swimming: '🏊', jump_rope: '🪢', hiit: '🔥',
+  rowing: '🚣', weightlifting: '🏋️', boxing: '🥊', climbing: '🧗', calisthenics: '🤸',
+  basketball: '🏀', football: '⚽', badminton: '🏸', pingpong: '🏓', tennis: '🎾',
+  volleyball: '🏐', frisbee: '🥏', yoga: '🧘', pilates: '🤸', dance: '💃',
+  tai_chi: '☯️', martial_arts: '🥋', judo: '🥋', hiking: '🥾', skateboard: '🛹', ski: '⛷️',
+}
+const sportEmoji = (id: string): string => SPORT_EMOJI[id] ?? '⚡'
 
 const INTENSITIES: Intensity[] = ['light', 'medium', 'high']
 

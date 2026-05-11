@@ -1,31 +1,19 @@
 import { useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
 import { initAuth } from '@/lib/auth'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useDevStore } from '@/store/useDevStore'
 import { useTranslation } from '@/lib/i18n'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
-import Sports from './pages/Sports'
 import Workout from './pages/Workout'
-import Loot from './pages/Loot'
-import Arena from './pages/Arena'
-import ArenaBattle from './pages/ArenaBattle'
-import ArenaResult from './pages/ArenaResult'
-import CardLibrary from './pages/CardLibrary'
-import DeckBuilder from './pages/DeckBuilder'
-import Achievements from './pages/Achievements'
-import Stats from './pages/Stats'
-import Leaderboard from './pages/Leaderboard'
-import Friends from './pages/Friends'
 import Onboarding from './pages/Onboarding'
 import DevDrawer from './components/DevDrawer'
 import OnboardingGate from './components/OnboardingGate'
 import ClashHome from './clash/pages/ClashHome'
 import ClashMatch from './clash/pages/ClashMatch'
 import ClashResult from './clash/pages/ClashResult'
-import ClashCards from './clash/pages/ClashCards'
-import ClashDeck from './clash/pages/ClashDeck'
+import ClashCollection from './clash/pages/ClashCollection'
 
 export default function App() {
   const isInitialized = useAuthStore((s) => s.isInitialized)
@@ -66,30 +54,46 @@ export default function App() {
       <main className="flex-1 md:ml-[240px]">
         <OnboardingGate>
           <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/clash" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/sports" element={<Sports />} />
             <Route path="/workout" element={<Workout />} />
-            <Route path="/loot" element={<Loot />} />
-            <Route path="/arena" element={<Arena />} />
-            <Route path="/arena/battle/:battleId" element={<ArenaBattle />} />
-            <Route path="/arena/result/:battleId" element={<ArenaResult />} />
-            <Route path="/library" element={<CardLibrary />} />
-            <Route path="/deck" element={<DeckBuilder />} />
-            <Route path="/achievements" element={<Achievements />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/friends" element={<Friends />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/clash" element={<ClashHome />} />
             <Route path="/clash/match" element={<ClashMatch />} />
             <Route path="/clash/result" element={<ClashResult />} />
-            <Route path="/clash/cards" element={<ClashCards />} />
-            <Route path="/clash/deck" element={<ClashDeck />} />
+            <Route path="/clash/collection" element={<ClashCollection />} />
+            <Route path="/clash/cards" element={<CollectionRedirect tab="cards" />} />
+            <Route path="/clash/deck" element={<CollectionRedirect tab="deck" />} />
+            <Route path="/reset" element={<ResetStub />} />
+            <Route path="*" element={<Navigate to="/clash" replace />} />
           </Routes>
         </OnboardingGate>
       </main>
       <DevDrawer />
+    </div>
+  )
+}
+
+function CollectionRedirect({ tab }: { tab: 'cards' | 'deck' }) {
+  return <Navigate to={`/clash/collection?tab=${tab}`} replace />
+}
+
+function ResetStub() {
+  // Day 25 will replace this with real reset logic + dev_reset_user RPC.
+  const [params] = useSearchParams()
+  const force = params.get('force') === '1'
+  useEffect(() => {
+    if (!force) return
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('pulse.'))
+      .forEach((k) => localStorage.removeItem(k))
+    window.location.replace('/onboarding?step=1')
+  }, [force])
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="font-mono text-xs uppercase tracking-widest text-text-tertiary">
+        {force ? '重置中...' : '访问 /reset?force=1 强制重启 onboarding'}
+      </div>
     </div>
   )
 }
