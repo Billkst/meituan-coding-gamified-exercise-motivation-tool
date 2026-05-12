@@ -8,13 +8,21 @@ export default function OnboardingGate({ children }: PropsWithChildren) {
   const location = useLocation()
   const { t } = useTranslation()
   const onOnboardingPath = location.pathname === '/onboarding'
+  // Pass-through paths: always renderable regardless of onboarded state.
+  // /reset must work for stuck judges; /clash/tutorial-result is the
+  // designed exit from onboarding step 4 → ClashHome handoff.
+  const isPassThrough =
+    location.pathname === '/reset' ||
+    location.pathname === '/clash/tutorial-result' ||
+    (location.pathname === '/clash/match' &&
+      new URLSearchParams(location.search).get('tutorial') === '1')
 
   // While user is loading, do NOT render children — otherwise dashboard
   // (or any non-onboarding route) flashes for ~500-1500ms before being
   // redirected to /onboarding when user.onboarded_at finally returns null.
   // Onboarding pages don't need user data, so let those render through.
   if (isLoading) {
-    if (onOnboardingPath) return <>{children}</>
+    if (onOnboardingPath || isPassThrough) return <>{children}</>
     return (
       <div className="min-h-screen flex items-center justify-center px-8">
         <div className="text-center">
@@ -34,8 +42,8 @@ export default function OnboardingGate({ children }: PropsWithChildren) {
   const isOnboarded = user.onboarded_at != null
 
   // Only push unboarded users INTO the flow. Once on /onboarding, the flow
-  // controls its own exit (Step4LootReveal navigates to /dashboard on CTA).
-  if (!isOnboarded && !onOnboardingPath) {
+  // controls its own exit (TutorialResult navigates to /clash on CTA).
+  if (!isOnboarded && !onOnboardingPath && !isPassThrough) {
     return <Navigate to="/onboarding" replace />
   }
   return <>{children}</>

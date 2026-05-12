@@ -12,6 +12,16 @@ import type {
 } from '@/clash/engine/types'
 import type { CrCardId } from '@/clash/lib/cardData'
 
+export interface AiPolicy {
+  decide: (state: MatchState, rng: () => number) => Action | null
+  nextDelay: (state: MatchState, rng: () => number) => number
+}
+
+const DEFAULT_POLICY: AiPolicy = {
+  decide: aiDecide,
+  nextDelay: nextDecisionDelay,
+}
+
 export interface UseClashEngineApi {
   state: MatchState
   isRunning: boolean
@@ -25,7 +35,10 @@ export interface UseClashEngineApi {
   resume: () => void
 }
 
-export function useClashEngine(input: StartMatchInput | null): UseClashEngineApi {
+export function useClashEngine(
+  input: StartMatchInput | null,
+  policy: AiPolicy = DEFAULT_POLICY,
+): UseClashEngineApi {
   const stateRef = useRef<MatchState | null>(null)
   const rngRef = useRef<() => number>(makeRng(input?.seed ?? 1))
   const levelsRef = useRef({
@@ -35,6 +48,9 @@ export function useClashEngine(input: StartMatchInput | null): UseClashEngineApi
   const aiTimerRef = useRef(0)
   const [, forceRender] = useState(0)
   const isRunningRef = useRef(false)
+
+  const policyRef = useRef(policy)
+  policyRef.current = policy
 
   // (Re)initialize when input changes.
   useEffect(() => {
@@ -46,7 +62,7 @@ export function useClashEngine(input: StartMatchInput | null): UseClashEngineApi
     rngRef.current = makeRng(input.seed ?? Date.now() & 0x7fffffff)
     levelsRef.current = { player: input.player.levels, enemy: input.enemy.levels }
     stateRef.current = initMatch(input, rngRef.current)
-    aiTimerRef.current = nextDecisionDelay(stateRef.current, rngRef.current)
+    aiTimerRef.current = policyRef.current.nextDelay(stateRef.current, rngRef.current)
     isRunningRef.current = true
     forceRender((n) => n + 1)
   }, [input])
@@ -64,9 +80,9 @@ export function useClashEngine(input: StartMatchInput | null): UseClashEngineApi
 
         aiTimerRef.current -= dtSec
         if (aiTimerRef.current <= 0) {
-          const action = aiDecide(s, rngRef.current)
+          const action = policyRef.current.decide(s, rngRef.current)
           if (action) applyAction(s, action, rngRef.current, levelsRef.current)
-          aiTimerRef.current = nextDecisionDelay(s, rngRef.current)
+          aiTimerRef.current = policyRef.current.nextDelay(s, rngRef.current)
         }
         forceRender((n) => (n + 1) & 0xffff)
       }
@@ -90,7 +106,7 @@ export function useClashEngine(input: StartMatchInput | null): UseClashEngineApi
     if (!input) return
     rngRef.current = makeRng(Date.now() & 0x7fffffff)
     stateRef.current = initMatch(input, rngRef.current)
-    aiTimerRef.current = nextDecisionDelay(stateRef.current, rngRef.current)
+    aiTimerRef.current = policyRef.current.nextDelay(stateRef.current, rngRef.current)
     isRunningRef.current = true
     forceRender((n) => n + 1)
   }, [input])

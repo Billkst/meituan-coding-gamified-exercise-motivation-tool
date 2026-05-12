@@ -1,18 +1,24 @@
 // Real-time Clash match page — combines engine + battlefield + hand + UI chrome.
 
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { IconHome2, IconRefresh, IconVolume, IconVolumeOff } from '@tabler/icons-react'
 import { getMuted, playSound, setMuted, subscribeMuted } from '@/clash/audio'
 import { useTranslation } from '@/lib/i18n'
 import { useClashState } from '@/clash/api/clashState'
 import { useFinalizeMatch } from '@/clash/api/clashMatch'
-import { useClashEngine } from '@/clash/hooks/useClashEngine'
+import { useClashEngine, type AiPolicy } from '@/clash/hooks/useClashEngine'
 import { CR_CARDS_BY_ID } from '@/clash/lib/cardData'
 import type { CrCardId } from '@/clash/lib/cardData'
 import { ARENA, canDeployAt } from '@/clash/lib/arena'
 import type { AiDifficulty } from '@/clash/lib/types'
 import type { StartMatchInput } from '@/clash/engine/types'
+import {
+  DEFAULT_TUTORIAL_SCRIPT,
+  tutorialDecide,
+  tutorialIsComplete,
+  tutorialNextDelay,
+} from '@/clash/engine/tutorial'
 import Hand from '@/clash/components/Hand'
 import ElixirBar from '@/clash/components/ElixirBar'
 import TimerBar from '@/clash/components/TimerBar'
@@ -33,17 +39,49 @@ const CLASH_TOUR_STEPS: TourStep[] = [
 export default function ClashMatch() {
   const { t, lang } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isTutorial =
+    new URLSearchParams(location.search).get('tutorial') === '1'
   const { data: clashState, isLoading } = useClashState()
   const finalize = useFinalizeMatch()
   const [difficulty, setDifficulty] = useState<AiDifficulty>('normal')
-  const [hasStarted, setHasStarted] = useState(false)
+  const [hasStarted, setHasStarted] = useState(isTutorial)
   const [finalized, setFinalized] = useState(false)
   const [showTour, setShowTour] = useState(false)
   const [aiBanner, setAiBanner] = useState<{ cardId: CrCardId; until: number } | null>(null)
   const [endBanner, setEndBanner] = useState<'win' | 'loss' | 'draw' | null>(null)
 
+  // Tutorial uses a fixed deck so the script always finds 'goblin'.
+  const TUTORIAL_PLAYER_DECK: CrCardId[] = [
+    'knight',
+    'archer',
+    'goblin',
+    'arrows',
+    'cannon',
+    'giant',
+    'musketeer',
+    'valkyrie',
+  ]
+
   const startInput = useMemo<StartMatchInput | null>(() => {
-    if (!clashState || !hasStarted) return null
+    if (!hasStarted) return null
+
+    if (isTutorial) {
+      // Hardcoded all-level-1 deck so the tutorial is reproducible regardless
+      // of player progression (and runs without needing clashState).
+      const playerLevels = Object.fromEntries(
+        TUTORIAL_PLAYER_DECK.map((id) => [id, 1]),
+      ) as Record<CrCardId, number>
+      const enemyLevels = playerLevels
+      return {
+        player: { cardIds: TUTORIAL_PLAYER_DECK, levels: playerLevels },
+        enemy: { cardIds: TUTORIAL_PLAYER_DECK, levels: enemyLevels },
+        difficulty: 'easy',
+        seed: 1, // deterministic so the tutorial story is the same every run
+      }
+    }
+
+    if (!clashState) return null
     if (clashState.deck.length !== 8) return null
     const playerLevels = Object.fromEntries(
       clashState.cards.map((c) => [c.id, c.level]),
@@ -57,9 +95,45 @@ export default function ClashMatch() {
       difficulty,
       seed: Date.now() & 0x7fffffff,
     }
-  }, [clashState, hasStarted, difficulty])
+  }, [clashState, hasStarted, difficulty, isTutorial])
 
-  const engine = useClashEngine(startInput)
+  // Tutorial swaps the adversarial AI policy for a one-shot goblin spawner.
+  const aiPolicy = useMemo<AiPolicy | undefined>(() => {
+    if (!isTutorial) return undefined
+    return {
+      decide: (s) => tutorialDecide(s, DEFAULT_TUTORIAL_SCRIPT),
+      nextDelay: (s) => tutorialNextDelay(s),
+    }
+  }, [isTutorial])
+
+  const engine = useClashEngine(startInput, aiPolicy)
+
+  // Tutorial completion: enemy_left princess HP hit 0 → bounce to TutorialResult.
+  useEffect(() => {
+    if (!isTutorial) return
+    if (!engine.state) return
+    if (!tutorialIsComplete(engine.state, DEFAULT_TUTORIAL_SCRIPT)) return
+    const id = window.setTimeout(() => navigate('/clash/tutorial-result'), 900)
+    return () => window.clearTimeout(id)
+  }, [isTutorial, engine.state, navigate])
+
+  // Tutorial inactivity hint ladder: 30s / 60s / 90s after match start.
+  const [hintLevel, setHintLevel] = useState(0)
+  const tutorialStartRef = useRef<number | null>(null)
+  const lastPlayerDeployRef = useRef<number>(Date.now())
+  useEffect(() => {
+    if (!isTutorial || !hasStarted) return
+    tutorialStartRef.current = Date.now()
+    setHintLevel(0)
+    const id = window.setInterval(() => {
+      const idle = (Date.now() - lastPlayerDeployRef.current) / 1000
+      if (idle > 90) setHintLevel(3)
+      else if (idle > 60) setHintLevel(2)
+      else if (idle > 30) setHintLevel(1)
+      else setHintLevel(0)
+    }, 1000)
+    return () => window.clearInterval(id)
+  }, [isTutorial, hasStarted])
 
   // Union of cards that can appear in the match — pre-warm atlases.
   const matchCardIds = useMemo<readonly CrCardId[]>(() => {
@@ -144,6 +218,7 @@ export default function ClashMatch() {
   // to `state` ref dep) don't cancel it via the cleanup return.
   const finalizeTimerRef = useRef<number | null>(null)
   useEffect(() => {
+    if (isTutorial) return // tutorial uses its own completion path, no RPC
     if (!state || phase !== 'ended' || finalized || !state.result) return
     if (finalizeTimerRef.current !== null) return
     setFinalized(true)
@@ -199,7 +274,7 @@ export default function ClashMatch() {
         },
       )
     }, 1800)
-  }, [state, phase, finalized, finalize, navigate, difficulty])
+  }, [state, phase, finalized, finalize, navigate, difficulty, isTutorial])
 
   useEffect(() => {
     return () => {
@@ -210,7 +285,7 @@ export default function ClashMatch() {
     }
   }, [])
 
-  if (isLoading || !clashState) {
+  if (!isTutorial && (isLoading || !clashState)) {
     return (
       <div className="min-h-screen flex items-center justify-center font-mono text-xs uppercase tracking-widest text-text-secondary animate-pulse">
         loading clash…
@@ -303,7 +378,8 @@ export default function ClashMatch() {
       const x = xPct * ARENA.cols
       const y = (1 - yPct) * ARENA.rows
       if (canDeployAt('player', x, y, enemyLeftAlive, enemyRightAlive)) {
-        engine.deploy(handIndex, { x, y })
+        const ok = engine.deploy(handIndex, { x, y })
+        if (ok) lastPlayerDeployRef.current = Date.now()
       }
     }
     window.addEventListener('pointermove', onMove)
@@ -385,6 +461,33 @@ export default function ClashMatch() {
         draggingHandIndex={dragHandIndex}
         onDragStart={handleDragStart}
       />
+
+      {/* Tutorial inactivity hint ladder */}
+      {isTutorial && hintLevel > 0 && (
+        <div
+          key={hintLevel}
+          className="fixed bottom-44 left-1/2 -translate-x-1/2 z-30 max-w-xs"
+        >
+          <div className="bg-bg-secondary border border-accent-primary/40 rounded-card px-4 py-2.5 shadow-glow-standard animate-pulse text-center">
+            <div className="font-display font-bold text-sm text-accent-primary mb-0.5">
+              {hintLevel === 1 && t('onboarding.v2.tutorial.hint_1' as never)}
+              {hintLevel === 2 && t('onboarding.v2.tutorial.hint_2' as never)}
+              {hintLevel === 3 && t('onboarding.v2.tutorial.hint_3' as never)}
+            </div>
+            {hintLevel === 3 && (
+              <button
+                onClick={() => {
+                  window.localStorage.setItem('pulse.onboarding.completed_v2', '1')
+                  navigate('/clash', { replace: true })
+                }}
+                className="mt-1 font-mono text-[10px] uppercase tracking-widest text-text-secondary hover:text-text-primary underline"
+              >
+                {t('onboarding.v2.tutorial.skip' as never)}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* AI deploy hint banner */}
       {aiBanner && (

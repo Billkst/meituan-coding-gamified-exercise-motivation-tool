@@ -1,33 +1,42 @@
-// Day 21 stub — Day 25 will replace with v2 4-step narrative onboarding:
-// welcome → mock workout → starter pack → tutorial battle (player destroys 1 princess).
+// Day 25 — Onboarding v2: 4-step narrative.
+//   1. Welcome — explain the product loop in plain language.
+//   2. Mock workout — 30s simulated jog → +200 gold visual feedback.
+//   3. Starter pack — chest open + 6-card reveal.
+//   4. Tutorial battle — redirect to /clash/match?tutorial=1 where the player
+//      destroys 1 princess; TutorialResult lands them at /clash.
+//
+// We persist `pulse.onboarding.completed_v2 = '1'` only at the end of the
+// tutorial (in TutorialResult), so a user who quits mid-flow re-enters at
+// step 1. This is intentional — the four steps are the product pitch and
+// dropping them halfway means the user didn't see it.
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Step1Welcome from '@/components/onboarding/v2/Step1Welcome'
+import Step2MockWorkout from '@/components/onboarding/v2/Step2MockWorkout'
+import Step3StarterPack from '@/components/onboarding/v2/Step3StarterPack'
+
+type Step = 1 | 2 | 3
 
 export default function Onboarding() {
   const navigate = useNavigate()
+  const [step, setStep] = useState<Step>(1)
 
+  // If the user already finished v2, bail straight to /clash so we don't
+  // make them sit through onboarding again on every fresh session.
   useEffect(() => {
-    // Until Day 25, mark v1 done so OnboardingGate stops looping users back here,
-    // and push them into the new Clash experience.
-    localStorage.setItem('pulse.onboarding.completed_v1', '1')
-    const id = window.setTimeout(() => navigate('/clash', { replace: true }), 800)
-    return () => window.clearTimeout(id)
+    if (window.localStorage.getItem('pulse.onboarding.completed_v2') === '1') {
+      navigate('/clash', { replace: true })
+    }
   }, [navigate])
 
-  return (
-    <div className="fixed inset-0 bg-bg-primary z-50 flex items-center justify-center px-8">
-      <div className="text-center">
-        <div className="font-display font-black text-4xl text-accent-primary uppercase tracking-tight mb-3">
-          PULSE
-        </div>
-        <div className="font-mono text-xs uppercase tracking-widest text-text-secondary">
-          loading clash…
-        </div>
-        <div className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary mt-4">
-          new onboarding (v2) ships Day 25
-        </div>
-      </div>
-    </div>
-  )
+  if (step === 1) return <Step1Welcome onContinue={() => setStep(2)} />
+  if (step === 2) return <Step2MockWorkout onContinue={() => setStep(3)} />
+  if (step === 3)
+    return (
+      <Step3StarterPack
+        onContinue={() => navigate('/clash/match?tutorial=1', { replace: true })}
+      />
+    )
+  return null
 }
