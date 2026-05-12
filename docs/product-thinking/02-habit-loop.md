@@ -40,6 +40,15 @@ product needs to provide. It's four pieces:
   vs the top whale", which is the wrong contract for a fitness product
   evaluation.
 
+  **Day 27 amendment.** Restored the leaderboard route after first-look
+  user feedback flagged the navigation as too sparse. The "wrong contract"
+  worry stands, but a 4-item sidebar in a *game* product reads as missing
+  features more than as discipline. Compromise: leaderboard returns as one
+  of 5 nav slots, ranked by `season_score` (which is win-driven, not raw
+  workout volume) so the comparison surface is "battle skill", not "who
+  ran more." Friends list and add-friend flow remain out of scope — single-
+  player demo doesn't make either meaningful.
+
 ## The honest weakness
 
 Habit loops typically need **months** to validate. We're shipping an

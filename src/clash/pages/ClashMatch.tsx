@@ -410,6 +410,17 @@ export default function ClashMatch() {
         </button>
         <TimerBar elapsed={state.elapsed} phase={state.phase} />
         <div className="flex items-center gap-1">
+          {isTutorial && (
+            <button
+              onClick={() => {
+                window.localStorage.setItem('pulse.onboarding.completed_v2', '1')
+                navigate('/clash', { replace: true })
+              }}
+              className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary hover:text-text-primary px-2 py-1 rounded-button border border-white/10"
+            >
+              {t('onboarding.v2.tutorial.skip' as never)}
+            </button>
+          )}
           <button
             onClick={toggleMute}
             className="text-text-tertiary hover:text-text-primary p-1.5 rounded-button border border-white/10"

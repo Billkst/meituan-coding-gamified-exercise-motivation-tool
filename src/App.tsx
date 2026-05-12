@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard'
 import Workout from './pages/Workout'
 import Onboarding from './pages/Onboarding'
 import Reset from './pages/Reset'
+import Leaderboard from './pages/Leaderboard'
 import DevDrawer from './components/DevDrawer'
 import OnboardingGate from './components/OnboardingGate'
 import ClashHome from './clash/pages/ClashHome'
@@ -77,6 +78,7 @@ export default function App() {
             <Route path="/clash/cards" element={<CollectionRedirect tab="cards" />} />
             <Route path="/clash/deck" element={<CollectionRedirect tab="deck" />} />
             <Route path="/reset" element={<Reset />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="*" element={<Navigate to="/clash" replace />} />
           </Routes>
         </OnboardingGate>

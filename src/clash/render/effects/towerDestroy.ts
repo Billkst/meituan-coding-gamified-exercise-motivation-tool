@@ -8,7 +8,7 @@
 import * as PIXI from 'pixi.js'
 import { PALETTE } from '@/clash/render/palette'
 
-const DURATION_MS = 850
+const DURATION_MS = 700
 
 export function emitTowerDestroy(
   layer: PIXI.Container,
@@ -21,33 +21,33 @@ export function emitTowerDestroy(
   layer.addChild(cont)
 
   // Central flash.
-  const flash = new PIXI.Graphics().circle(0, 0, 8).fill({ color: PALETTE.grid, alpha: 1 })
+  const flash = new PIXI.Graphics().circle(0, 0, 5).fill({ color: PALETTE.grid, alpha: 1 })
   cont.addChild(flash)
 
   // Two staggered shockwave rings.
   const ringA = new PIXI.Graphics()
-    .circle(0, 0, 10)
-    .stroke({ color: tint, width: 3, alpha: 1 })
+    .circle(0, 0, 6)
+    .stroke({ color: tint, width: 2, alpha: 1 })
   const ringB = new PIXI.Graphics()
-    .circle(0, 0, 10)
-    .stroke({ color: PALETTE.grid, width: 1.5, alpha: 0.8 })
+    .circle(0, 0, 6)
+    .stroke({ color: PALETTE.grid, width: 1, alpha: 0.7 })
   cont.addChild(ringA, ringB)
 
   // Debris squares.
-  const DEBRIS = 18
+  const DEBRIS = 10
   type Bit = { g: PIXI.Graphics; vx: number; vy: number; rot: number }
   const bits: Bit[] = []
   for (let i = 0; i < DEBRIS; i++) {
     const g = new PIXI.Graphics()
-      .rect(-2, -2, 4, 4)
+      .rect(-1.5, -1.5, 3, 3)
       .fill({ color: tint, alpha: 0.9 })
     cont.addChild(g)
     const a = Math.random() * Math.PI * 2
-    const speed = 60 + Math.random() * 80
+    const speed = 32 + Math.random() * 40
     bits.push({
       g,
       vx: Math.cos(a) * speed,
-      vy: Math.sin(a) * speed - 40,
+      vy: Math.sin(a) * speed - 20,
       rot: (Math.random() - 0.5) * 0.4,
     })
   }
@@ -63,17 +63,17 @@ export function emitTowerDestroy(
     const easeOut = 1 - Math.pow(1 - t, 3)
 
     flash.alpha = 1 - t * 1.4
-    flash.scale.set(1 + t * 4)
+    flash.scale.set(1 + t * 2.5)
 
     ringA.alpha = 1 - t
-    ringA.scale.set(1 + easeOut * 16)
-    ringB.alpha = 0.8 * (1 - t)
-    ringB.scale.set(1 + easeOut * 22)
+    ringA.scale.set(1 + easeOut * 8)
+    ringB.alpha = 0.7 * (1 - t)
+    ringB.scale.set(1 + easeOut * 12)
 
     for (const b of bits) {
       const tSec = t * (DURATION_MS / 1000)
       b.g.x = b.vx * tSec
-      b.g.y = b.vy * tSec + 220 * tSec * tSec // gravity
+      b.g.y = b.vy * tSec + 110 * tSec * tSec // gravity
       b.g.rotation += b.rot
       b.g.alpha = 1 - t
     }

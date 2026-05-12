@@ -8,9 +8,9 @@
 import * as PIXI from 'pixi.js'
 import { PALETTE } from '@/clash/render/palette'
 
-const PARTICLE_COUNT = 30
-const LIFETIME_MS = 450
-const SPREAD = 32
+const PARTICLE_COUNT = 14
+const LIFETIME_MS = 360
+const SPREAD = 16
 
 interface Particle {
   g: PIXI.Graphics
@@ -32,7 +32,7 @@ export function emitHitParticles(
   for (let i = 0; i < PARTICLE_COUNT; i++) {
     const angle = Math.random() * Math.PI * 2
     const speed = SPREAD * (0.4 + Math.random() * 0.6)
-    const g = new PIXI.Graphics().rect(-1.5, -1.5, 3, 3).fill({ color: tint })
+    const g = new PIXI.Graphics().rect(-1, -1, 2, 2).fill({ color: tint })
     cont.addChild(g)
     particles.push({
       g,

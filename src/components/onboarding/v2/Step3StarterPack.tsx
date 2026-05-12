@@ -13,6 +13,7 @@ import { CR_CARDS_BY_ID, type CrCardId } from '@/clash/lib/cardData'
 
 interface Props {
   onContinue: () => void
+  onSkipTutorial: () => void
 }
 
 const PACK: { id: CrCardId; rarity: 'common' | 'rare' | 'epic' }[] = [
@@ -28,7 +29,7 @@ const REVEAL_INTERVAL_MS = 700
 
 type Phase = 'closed' | 'opening' | 'revealing' | 'done'
 
-export default function Step3StarterPack({ onContinue }: Props) {
+export default function Step3StarterPack({ onContinue, onSkipTutorial }: Props) {
   const { t, lang } = useTranslation()
   const [phase, setPhase] = useState<Phase>('closed')
   const [revealedCount, setRevealedCount] = useState(0)
@@ -102,12 +103,20 @@ export default function Step3StarterPack({ onContinue }: Props) {
       )}
 
       {phase === 'done' && (
-        <button
-          onClick={onContinue}
-          className="mt-10 bg-accent-primary text-bg-primary font-display font-bold uppercase tracking-wider py-3 px-8 rounded-button shadow-glow-standard hover:scale-[1.02] transition-transform"
-        >
-          {t('onboarding.v2.step3.cta' as never)}
-        </button>
+        <>
+          <button
+            onClick={onContinue}
+            className="mt-10 bg-accent-primary text-bg-primary font-display font-bold uppercase tracking-wider py-3 px-8 rounded-button shadow-glow-standard hover:scale-[1.02] transition-transform"
+          >
+            {t('onboarding.v2.step3.cta' as never)}
+          </button>
+          <button
+            onClick={onSkipTutorial}
+            className="mt-3 font-mono text-[10px] uppercase tracking-widest text-text-tertiary hover:text-text-primary underline"
+          >
+            {t('onboarding.v2.tutorial.skip' as never)}
+          </button>
+        </>
       )}
 
       <div className="mt-12 font-mono text-[10px] uppercase tracking-widest text-text-tertiary">

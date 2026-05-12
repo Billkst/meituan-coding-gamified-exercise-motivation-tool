@@ -36,6 +36,12 @@ export default function Onboarding() {
     return (
       <Step3StarterPack
         onContinue={() => navigate('/clash/match?tutorial=1', { replace: true })}
+        onSkipTutorial={() => {
+          // Skipping still counts as "completed" — the user has seen the
+          // pitch through step 3, they just don't want the hands-on battle.
+          window.localStorage.setItem('pulse.onboarding.completed_v2', '1')
+          navigate('/clash', { replace: true })
+        }}
       />
     )
   return null

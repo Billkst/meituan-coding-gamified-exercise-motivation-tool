@@ -137,11 +137,24 @@ export default function ClashHome() {
       </section>
 
       {/* Sub-nav: cards / deck / chests */}
-      <section className="grid grid-cols-3 gap-3 mb-8">
+      <section className="grid grid-cols-3 gap-3 mb-4">
         <NavTile to="/clash/cards" label={t('clash.home.cards' as never)} emoji="🃏" />
         <NavTile to="/clash/deck" label={t('clash.home.deck' as never)} emoji="📋" />
         <NavTile to="/clash/chests" label={t('clash.home.chests' as never)} emoji="📦" />
       </section>
+
+      {/* Replay tutorial link */}
+      <div className="text-center mb-8">
+        <button
+          onClick={() => {
+            window.localStorage.removeItem('pulse.onboarding.completed_v2')
+            navigate('/clash/match?tutorial=1')
+          }}
+          className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary hover:text-accent-primary underline"
+        >
+          {t('clash.home.replay_tutorial' as never)}
+        </button>
+      </div>
 
       {/* Chest queue */}
       <section data-tour="clash.home.chests" className="mb-8">

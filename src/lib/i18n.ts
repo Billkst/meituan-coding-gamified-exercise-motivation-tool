@@ -503,6 +503,7 @@ const dict = {
     'clash.home.chests': '宝箱',
     'clash.home.streak': '连胜 {n}',
     'clash.home.no_chests': '暂无宝箱 · 胜场获得',
+    'clash.home.replay_tutorial': '重玩教学局',
 
     'clash.cards.title': '卡片收藏',
     'clash.cards.unlock_cta': '解锁',
@@ -1126,6 +1127,7 @@ const dict = {
     'clash.home.chests': 'Chests',
     'clash.home.streak': '{n}-win streak',
     'clash.home.no_chests': 'No chests yet · earn by winning',
+    'clash.home.replay_tutorial': 'Replay tutorial',
 
     'clash.cards.title': 'Card collection',
     'clash.cards.unlock_cta': 'Unlock',

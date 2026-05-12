@@ -8,6 +8,7 @@ const NAV: { to: string; key: TranslationKey; icon: string; tour?: string }[] = 
   { to: '/clash', key: 'nav.home', icon: 'ti-flame', tour: 'clash' },
   { to: '/workout', key: 'nav.workout', icon: 'ti-stopwatch', tour: 'workout' },
   { to: '/clash/collection', key: 'nav.collection', icon: 'ti-cards', tour: 'collection' },
+  { to: '/leaderboard', key: 'nav.leaderboard', icon: 'ti-trophy', tour: 'leaderboard' },
   { to: '/dashboard', key: 'nav.dashboard', icon: 'ti-layout-dashboard', tour: 'dashboard' },
 ]
 
