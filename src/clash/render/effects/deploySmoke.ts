@@ -4,6 +4,7 @@
 // expand outward over ~360ms, fading to nothing.
 
 import * as PIXI from 'pixi.js'
+import { PALETTE } from '@/clash/render/palette'
 
 const DURATION_MS = 360
 const PUFF_COUNT = 6
@@ -30,7 +31,7 @@ export function emitDeploySmoke(
     const dist = 14 + Math.random() * 6
     const g = new PIXI.Graphics()
       .circle(0, 0, 4)
-      .fill({ color: 0xffffff, alpha: 0.55 })
+      .fill({ color: PALETTE.grid, alpha: 0.55 })
     cont.addChild(g)
     puffs.push({ g, tx: Math.cos(angle) * dist, ty: Math.sin(angle) * dist })
   }

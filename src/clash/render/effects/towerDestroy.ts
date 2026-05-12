@@ -6,6 +6,7 @@
 // the bottom of this file).
 
 import * as PIXI from 'pixi.js'
+import { PALETTE } from '@/clash/render/palette'
 
 const DURATION_MS = 850
 
@@ -20,7 +21,7 @@ export function emitTowerDestroy(
   layer.addChild(cont)
 
   // Central flash.
-  const flash = new PIXI.Graphics().circle(0, 0, 8).fill({ color: 0xffffff, alpha: 1 })
+  const flash = new PIXI.Graphics().circle(0, 0, 8).fill({ color: PALETTE.grid, alpha: 1 })
   cont.addChild(flash)
 
   // Two staggered shockwave rings.
@@ -29,7 +30,7 @@ export function emitTowerDestroy(
     .stroke({ color: tint, width: 3, alpha: 1 })
   const ringB = new PIXI.Graphics()
     .circle(0, 0, 10)
-    .stroke({ color: 0xffffff, width: 1.5, alpha: 0.8 })
+    .stroke({ color: PALETTE.grid, width: 1.5, alpha: 0.8 })
   cont.addChild(ringA, ringB)
 
   // Debris squares.

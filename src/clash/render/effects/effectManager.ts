@@ -11,10 +11,12 @@ import { emitTowerDestroy, triggerScreenShake } from './towerDestroy'
 import { emitDeploySmoke } from './deploySmoke'
 import { playSound } from '@/clash/audio'
 
-const COL_PLAYER = 0xb6ff3c
-const COL_ENEMY = 0xff3c70
-const COL_KING = 0xffd23c
-const COL_FIRE = 0xff8a3c
+import { PALETTE } from '@/clash/render/palette'
+
+const COL_PLAYER = PALETTE.player
+const COL_ENEMY = PALETTE.enemy
+const COL_KING = PALETTE.king
+const COL_FIRE = PALETTE.fire
 
 const RANGED_THRESHOLD = 2.5 // cells — anything farther than this fires a projectile
 
@@ -94,7 +96,7 @@ function handleEntry(entry: LogEntry, state: MatchState, ctx: EffectContext) {
 
       const tint = targetUnit
         ? colorForSide(targetUnit.side === 'player' ? 'enemy' : 'player')
-        : 0xffffff
+        : PALETTE.grid
 
       if (distance > RANGED_THRESHOLD) {
         // Fireball for baby_dragon, arrow otherwise.

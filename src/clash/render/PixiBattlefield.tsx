@@ -37,14 +37,16 @@ interface Props {
   cardIds: readonly CrCardId[]
 }
 
-const COL_BG = 0x0a0e1a
-const COL_GRID = 0xffffff
-const COL_RIVER = 0x3c8cff
-const COL_BRIDGE = 0xb37050
-const COL_PLAYER = 0xb6ff3c
-const COL_ENEMY = 0xff3c70
-const COL_KING = 0xffd23c
-const COL_DEPLOY = 0xb6ff3c
+import { PALETTE } from '@/clash/render/palette'
+
+const COL_BG = PALETTE.bg
+const COL_GRID = PALETTE.grid
+const COL_RIVER = PALETTE.river
+const COL_BRIDGE = PALETTE.bridge
+const COL_PLAYER = PALETTE.player
+const COL_ENEMY = PALETTE.enemy
+const COL_KING = PALETTE.king
+const COL_DEPLOY = PALETTE.deploy
 
 const FPS_FLOOR = 45
 const FPS_LOW_FRAMES = 60
@@ -172,7 +174,7 @@ export default function PixiBattlefield({
 
       const hpBg = new PIXI.Graphics()
         .rect(-sizePx / 2, -sizePx / 2 - 6, sizePx, 3)
-        .fill({ color: 0x000000, alpha: 0.5 })
+        .fill({ color: PALETTE.shadow, alpha: 0.5 })
       const hpFill = new PIXI.Graphics()
         .rect(-sizePx / 2, -sizePx / 2 - 6, sizePx, 3)
         .fill({ color: tint })
@@ -215,7 +217,7 @@ export default function PixiBattlefield({
         const placeholder = new PIXI.Graphics()
           .circle(0, 0, cell * 0.4)
           .fill({ color: sideColor, alpha: 0.85 })
-          .stroke({ color: 0x000000, width: 1.5, alpha: 0.6 })
+          .stroke({ color: PALETTE.shadow, width: 1.5, alpha: 0.6 })
         body = placeholder
       }
       body.label = 'body'
@@ -223,7 +225,7 @@ export default function PixiBattlefield({
       const hpBgWidth = cell * 1.0
       const hpBg = new PIXI.Graphics()
         .rect(-hpBgWidth / 2, -hpBgWidth / 2 - 6, hpBgWidth, 2.5)
-        .fill({ color: 0x000000, alpha: 0.6 })
+        .fill({ color: PALETTE.shadow, alpha: 0.6 })
       const hpFill = new PIXI.Graphics()
         .rect(-hpBgWidth / 2, -hpBgWidth / 2 - 6, hpBgWidth, 2.5)
         .fill({ color: sideColor })

@@ -6,6 +6,7 @@
 // Graphics children; ticker drives a single per-frame update.
 
 import * as PIXI from 'pixi.js'
+import { PALETTE } from '@/clash/render/palette'
 
 const PARTICLE_COUNT = 30
 const LIFETIME_MS = 450
@@ -21,7 +22,7 @@ export function emitHitParticles(
   layer: PIXI.Container,
   ticker: PIXI.Ticker,
   pos: { x: number; y: number },
-  tint = 0xb6ff3c,
+  tint = PALETTE.player,
 ) {
   const cont = new PIXI.Container()
   cont.position.set(pos.x, pos.y)

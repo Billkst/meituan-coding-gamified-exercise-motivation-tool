@@ -1,145 +1,119 @@
 # PULSE — 美团编程游戏化运动激励工具
 
-> 把"今天必须练"变成"今天能抽卡 + 上分"。一个把运动打卡转化为 RPG 进度感的 web 工具。
+> 把"今天必须练"变成"今天能抽卡 + 上桌打 AI"。
+> 一个把运动打卡转化为 Clash Royale 风格卡牌战斗的 web 工具。
 
-**测评作业 · v0.1 · 11 days build · 评判维度：产品思考完整度 + 评审在线亲自体验**
+**测评作业 · v0.2 · 26 天累积式开发 · 评判维度：产品思考完整度 + 评审在线亲自体验**
 
-## 🔗 在线体验
+---
+
+## 评审快速通道（5 分钟）
 
 | 入口 | URL |
 |---|---|
-| **正式体验**（推荐评审用） | <https://meituan-coding.vercel.app> |
-| **开发者抽屉**（评审快捷调试） | <https://meituan-coding.vercel.app/?dev=1> |
+| 正式体验 | <https://meituan-coding.vercel.app> |
+| **强制重置 + 重走完整流程** | <https://meituan-coding.vercel.app/reset?force=1> |
+| 开发者抽屉 | <https://meituan-coding.vercel.app/?dev=1> |
 
-打开即用，匿名登录自动注册，**首次进入会有 5 步引导 + 6 步产品 tour**。带 `?dev=1` 后 sidebar 出红色 DEV chip，点开抽屉有 7 个调试 action（详见下方 Dev 模式章节）——评审 5 分钟内能看遍所有边界状态。
+**推荐 5 分钟路径**（在重置 URL 上走一遍）：
 
----
+1. **/reset?force=1** → 清 localStorage + 后端用户状态 → 自动跳 `/onboarding`
+2. **Onboarding 4 步**（< 90 秒）：
+   - Step 1 — 一句话讲清产品（"把跑步变成抽卡"）
+   - Step 2 — 30 秒模拟运动 → +200 金币飞屏（不要真起来跑）
+   - Step 3 — 金色宝箱开启 → 6 张卡 CSS 3D 翻牌
+   - Step 4 — 教学局自动开打，**你必须亲手推下一座 princess 塔**才能毕业
+3. **ClashHome** → 看左上 streak / 中间对战按钮 / 右上 chests
+4. **点对战** → ClashMatch 真打一局（拖卡到桥边部署，过桥 AI 对线）
+5. **打完进 ClashResult** → 看 gold + chest 入账
 
-## 60 秒看懂
-
-```mermaid
-flowchart LR
-    A[打卡 / Workout] --> B[XP + 抽 1 张卡]
-    B --> C[Streak +1]
-    B --> D[卡库 / Library]
-    D --> E[卡组 / Deck — 8 张]
-    E --> F[Arena PVE]
-    F --> G[season_score]
-    G --> H[Leaderboard]
-    A --> I[成就 + 每日任务]
-    I -. 额外 XP .-> A
-```
-
-PULSE 把"今天必须练"重构成多层游戏化反馈：
-
-- **基础回路：** 提交一次运动 → XP 入账 + 自动抽 1 张卡 + streak +1
-- **卡牌回路：** 同卡叠加升星，攒 8 张组主卡组进 Arena 打 PVE
-- **段位回路：** Arena 胜利拿 season_score，进 Leaderboard 跟 8 名 demo 用户对比
-- **辅助回路：** 18 静态成就 + 每日 3 任务 + 每日 bonus 持续给小目标
+整条路径无需注册，匿名 auth 自动签到。
 
 ---
 
-## 主要页面
+## v0.2 的转折点（Day 21–26 重写）
 
-| Dashboard | Arena |
-|:---:|:---:|
-| ![Dashboard](docs/screenshots/dashboard.png) | ![Arena](docs/screenshots/arena.png) |
+v0.1（Day 1–20）把 Arena 做成 DOM 渲染的"属性对撞"——卡组总和 vs 卡组总和，一回合定胜负。视觉是 emoji + 占位 circle，机制单薄。
 
-| Achievements | Leaderboard |
-|:---:|:---:|
-| ![Achievements](docs/screenshots/achievements.png) | ![Leaderboard](docs/screenshots/leaderboard.png) |
+v0.2 把战斗层**整层换掉**：
 
-| Stats |
-|:---:|
-| ![Stats](docs/screenshots/stats.png) |
+| | v0.1 | v0.2 |
+|---|---|---|
+| 战斗引擎 | 属性对撞（一回合定输赢） | 30 Hz tick 实时模拟 |
+| 渲染器 | DOM + Tailwind 绝对定位 | Pixi.js v8 WebGL canvas |
+| 单位视觉 | emoji + 占位 circle | gpt-image-2 生成 12 卡 × ≤4 状态 |
+| 角色动作 | 无 | idle bob / walk swing / attack thrust / death fade（前端 tween） |
+| 特效 | 无 | 命中粒子 / 弓箭弹道 / 火球 / 塔倒塌震屏 / 部署烟雾 |
+| 音效 | 无 | WebAudio API 程序化合成（不 vendor mp3） |
+| Onboarding | 5 步全收集偏好 | 4 步叙事 + 教学局玩家亲手推塔 |
+| Path 修复 | 单位卡在桥头 | TDD 修复 + 20 条 pathfinding 单测 |
+| 主 bundle | ~340KB gzip | **163KB gzip**（Pixi 拆到 lazy chunk） |
 
----
-
-## 5 大机制
-
-### 1. Streak（连续打卡）
-- 每日打卡 +1，**断签不清零**
-- 投入感正反馈：消耗 protect 卡续命，或 24h 内 `revive_streak` 一次
-- 每 5 天解锁 1 张 protect 卡（最多 3 张库存）
-- Onboarding 时赠 1 张 epic + 2 张随机
-
-### 2. Loot（抽卡）
-- 4 rarity：common / rare / epic / legendary
-- 每次打卡保底掉 1 张
-- 按运动类型有 buff（`exploration_buffs`）：练某类运动 → 下次抽对应类型的稀有度概率 +20-40%
-
-### 3. Arena PVE
-- 8 关阶梯，需先构筑 8 张主卡组
-- 一回合制属性对撞：deck atk/def 总和 + 强度 / 时长加成
-- 胜利拿 season_score，败北无惩罚
-
-### 4. Achievements + Quests
-- **18 静态成就** × 5 categories（workout / streak / cards / arena / special）
-- **9 quest 模板** × 3 难度（easy / medium / hard），每日抽 3 个
-- 完成 3/3 拿每日 bonus
-- 全部走 `update_progress` hook，提交运动 / 打 PVE / 抽卡时自动累积
-
-### 5. Leaderboard
-- season_score 排序，`dense_rank()` 处理并列
-- 3 种 period：Week (7d) / Month (30d) / All-time
-- 高亮自己排名 + 击败百分比
-- 8 名 demo 用户已 seed，开箱看到充实 board
+v0.2 删了 11 个 v1 页面（Arena / Loot / Library / DeckBuilder / Achievements / Friends / Leaderboard / Sports / Stats / ArenaBattle / ArenaResult），−5564 行净删。Sidebar 12 项 nav 砍到 4 项。
 
 ---
 
-## 设计决策亮点
+## 产品思考 artifacts
 
-1. **断签不清零** — 把"惩罚"重构成"投入感正反馈"。Streak 是用户最显性的沉没成本符号，归零会逼用户弃号；改成"消耗 protect 卡 / 24h 内 revive"等于多给一次机会，保留参与感。
+这是评分的核心维度，放在 `docs/product-thinking/`：
 
-2. **抽卡概率绑运动类型** — `exploration_buffs` 让"练得多 → 对应类别稀有度概率提升"，鼓励**多元化运动**而非只刷最易的运动。
-
-3. **静态 + 每日双轨成就** — 18 静态成就是长期目标，每日 quest 是短期反馈，两者共享同一个 `update_progress` plpgsql hook，逻辑零重复。
-
-4. **Schema-first + RPC-only** — 业务逻辑全写在 plpgsql RPC 里（用 `auth.uid()` 做内核），前端只 `useMutation/useQuery`。零业务校验在前端，RLS 默认 deny → multi-tenant 安全。
-
-5. **Demo seed 走 trigger 友好** — 不直接 insert `public.users`，让 `handle_new_user` trigger 跑完再 UPDATE 列，避开 username UNIQUE collision。
-
-6. **dev mode 第一公民** — `?dev=1` 激活的 dev drawer 有 7 个 action（set_streak / grant_legendary / break_streak / revive 等），评审 5 分钟内能看到所有边界状态而不需要真练 30 天。
-
----
-
-## 数据
-- 10 天累积式开发（小步可回退，全部 commit 在 main）
-- 17 次 Supabase migration（schema + RPC + RLS + seed）
-- 10 个 test 文件 / 57 unit test 全 green
-- 12 个主 page / 10 个 nav item
-- TypeScript strict / Tailwind v3 / 0 console error
-- 移动端响应式（< 768px sidebar drawer）
+| 文档 | 主题 |
+|---|---|
+| [01-fitness-gold-mapping.md](docs/product-thinking/01-fitness-gold-mapping.md) | 运动 → 金币的 mapping 决策（为什么是 flat 而非 duration 公式） |
+| [02-habit-loop.md](docs/product-thinking/02-habit-loop.md) | Hooked 框架怎么落到 4 个 slot；为什么删 quests/leaderboard |
+| [03-pulse-vs-keep.md](docs/product-thinking/03-pulse-vs-keep.md) | 用户分层：Keep 不服务的"motivation-poor"群体 + 给 Keep 让出的市场 |
+| [04-intentional-fakes.md](docs/product-thinking/04-intentional-fakes.md) | 评审作业里**哪些是 theatre / 哪些是真**——诚实声明 |
+| [05-clash-royale-clone-rationale.md](docs/product-thinking/05-clash-royale-clone-rationale.md) | 为什么选 CR 风格；IP 安全；refused 的其他游戏类型 |
+| [06-pixi-vs-dom-decision.md](docs/product-thinking/06-pixi-vs-dom-decision.md) | 渲染器从 DOM 跳到 Pixi.js 的工程决策 |
+| [asset-prompt-log.md](docs/product-thinking/asset-prompt-log.md) | 12 卡 × 3 状态共 38 张 AI sprite 的 prompt + IP 重命名 + 音效程序化合成的理由 |
 
 ---
 
 ## Stack
-- **Frontend：** Vite 5 + React 18 + TypeScript (strict) + Tailwind v3
-- **State：** Zustand + @tanstack/react-query
-- **Routing：** react-router-dom v6
-- **Backend：** Supabase Postgres + RLS + plpgsql RPC + 匿名 auth
-- **Tests：** Vitest + @testing-library/react + jsdom
-- **Package mgr：** Bun
+
+- **Frontend:** Vite 5 + React 18 + TypeScript (strict) + Tailwind v3
+- **Renderer:** Pixi.js v8（lazy chunk，单独 ~97KB gzip）
+- **State:** Zustand + @tanstack/react-query
+- **Routing:** react-router-dom v6
+- **Backend:** Supabase Postgres + RLS + plpgsql RPC + 匿名 auth
+- **Audio:** Web Audio API 程序化合成（OscillatorNode + BufferSource）
+- **Tests:** Vitest（112 单测）+ Playwright（5 e2e）
+- **Package mgr:** Bun
 
 ---
 
 ## 本地运行
 
 ```bash
-# 1. 装 deps
+# 1. 装依赖
 bun install
 
-# 2. 配 Supabase
+# 2. 填 Supabase env
 cp .env.example .env.local
-# 编辑 .env.local 填 VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY
+# 编辑 .env.local 加 VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
 
-# 3. push migrations（见 CLAUDE.md "Supabase migration push" 章节）
+# 3. 推 migrations（按 CLAUDE.md "Supabase migration push" 套路，WSL2 IPv6 坑见文档）
 
-# 4. 启 dev server
+# 4. 起 dev server
 bun run dev
 
-# 5. 浏览器访问 localhost:5173
-# 6. 评审快捷入口：localhost:5173?dev=1 → 开发者抽屉
+# 5. 浏览器开 localhost:5173/reset?force=1 走完整流程
+```
+
+可选：
+
+```bash
+# 重新生成 AI sprites（需要 OPENAI_API_KEY in .env.local）
+bun run scripts/gen-sprites.ts --anchor
+bun run scripts/gen-sprites.ts
+bun run scripts/qa-sprites.ts
+bun run scripts/optimize-sprites.ts
+
+# 跑测试
+bun run test          # 112 unit
+bun run test:e2e      # 5 e2e (chromium)
+bunx tsc --noEmit     # 0 errors
+bun run build         # production build
 ```
 
 ---
@@ -148,17 +122,17 @@ bun run dev
 
 URL 加 `?dev=1` 激活（sessionStorage 持久化）。Sidebar 显示红色 DEV chip，点击或 `Cmd/Ctrl+Shift+D` 打开抽屉。
 
-7 个调试 action：
+7 个调试 action（v0.1 遗留，对 v0.2 部分仍可用）：
 
 | Action | 用途 |
 |---|---|
-| `set_streak` | 直接设 streak 长度（看高 streak 视觉） |
-| `grant_legendary` | 立即拿 1 张 legendary |
-| `level_up` | 跳 1 级 |
-| `break_streak` | 制造断签场景测 revive |
-| `grant_protect` | 加 1 张 protect 卡 |
-| `reset_onboarding` | 清 onboarded_at 重看引导 |
-| `reset_progress` | 清成就 / 任务进度（保留卡牌） |
+| `set_streak` | 直接设 streak 长度 |
+| `grant_legendary` | 立即拿 1 张 legendary（v0.2 没 legendary tier，会 fallback 到 epic） |
+| `level_up` | 升 1 级 |
+| `break_streak` | 制造断签 |
+| `grant_protect` | 加 1 张 protect 卡（v0.2 已删 protect 机制，no-op） |
+| `reset_onboarding` | 清 onboarded_at 重看引导（推荐直接用 `/reset?force=1`） |
+| `reset_progress` | 清成就 / 任务进度 |
 
 ---
 
@@ -166,20 +140,39 @@ URL 加 `?dev=1` 激活（sessionStorage 持久化）。Sidebar 显示红色 DEV
 
 ```
 src/
-├── pages/        # 路由级 page（10 个主路由 + arena battle/result）
-├── components/   # 复用组件 + Sidebar / DevDrawer / cards / onboarding / battle / deck / stats / leaderboard
-├── api/          # Supabase RPC + React Query hook（每个 RPC 一个文件）
-├── store/        # Zustand store（auth / dev / ui）
-├── lib/          # 纯函数 + i18n + supabase client + streak / achievements / quests 助手
-└── types/db.ts   # 数据库行类型
+├── pages/                # /onboarding /workout /dashboard /reset
+├── clash/                # 整个 Clash 子产品
+│   ├── pages/            # ClashHome / ClashMatch / ClashResult / ClashCollection / TutorialResult
+│   ├── components/       # Hand / ElixirBar / TimerBar / NextBestActionClash
+│   ├── engine/           # tick / ai / tutorial / pathfinding / damage / targeting / unit
+│   ├── render/           # PixiBattlefield + coords + spriteTween + effects/*
+│   ├── audio/            # WebAudio 程序化合成
+│   ├── hooks/            # useClashEngine / useClashAssets
+│   └── api/              # Supabase RPC hook
+├── components/           # 顶层 UI (Sidebar / OnboardingGate / SpotlightTour / DevDrawer / onboarding/v2/*)
+├── store/                # Zustand (auth / dev)
+└── lib/                  # 纯函数 (supabase client / i18n / streak helpers)
 
-supabase/migrations/    # 17 个 cumulative migration
-docs/superpowers/       # 每日 spec + plan（10 days）
-docs/screenshots/       # README 用图
+scripts/                  # gen-sprites / qa-sprites / optimize-sprites (Day 23 pipeline)
+supabase/migrations/      # 28 个累积 migration
+docs/superpowers/         # 每日 spec + plan
+docs/product-thinking/    # 6 个评分核心文档 + asset-prompt-log
+public/sprites/           # 12 atlas (.webp + .json) + 1 anchor PNG
 ```
 
 ---
 
-## 不做的事 / 后续 backlog
+## NOT in scope（v0.2 有意不做）
 
-10 天 scope 内**未做**但已设计的：朋友 PVP（friends 系统 + battles vs_user）、Profile 页、推送提醒（service worker）、全 i18n EN 化、PWA。详见 `docs/superpowers/specs/` 各日设计的"不做的事"小节。
+- ❌ **PvP（人 vs 人）** — 引擎支持，没建 signalling 层。v1 unlock 候选。
+- ❌ **Real fitness tracking** — 一键打卡，不接 GPS / HRV / Apple Health。详见 [01-fitness-gold-mapping.md](docs/product-thinking/01-fitness-gold-mapping.md)
+- ❌ **Achievement / Friends / Leaderboard** — v0.1 有，v0.2 删了。理由见 [02-habit-loop.md](docs/product-thinking/02-habit-loop.md)
+- ❌ **Multi-deck management** — 只支持 1 个主卡组
+- ❌ **Server-authoritative match validation** — client-trust。详见 [04-intentional-fakes.md](docs/product-thinking/04-intentional-fakes.md)
+- ❌ **Card upgrade visual progression** / **Voice-over narration** / **zh-en 之外的语言**
+
+---
+
+## License
+
+测评作业，未明确开源。AI 生成的 sprite 在 `public/sprites/` 下，prompt + 生成方法见 [asset-prompt-log.md](docs/product-thinking/asset-prompt-log.md)。

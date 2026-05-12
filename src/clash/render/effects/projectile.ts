@@ -6,6 +6,7 @@
 // the attacker has range > 2 cells.
 
 import * as PIXI from 'pixi.js'
+import { PALETTE } from '@/clash/render/palette'
 import { emitHitParticles } from './hitParticles'
 
 interface ProjectileOpts {
@@ -15,8 +16,8 @@ interface ProjectileOpts {
 }
 
 const DEFAULTS: Record<ProjectileOpts['kind'], { tint: number; flightMs: number }> = {
-  arrow: { tint: 0xb6ff3c, flightMs: 220 },
-  fireball: { tint: 0xff8a3c, flightMs: 360 },
+  arrow: { tint: PALETTE.player, flightMs: 220 },
+  fireball: { tint: PALETTE.fire, flightMs: 360 },
 }
 
 export function emitProjectile(
@@ -47,7 +48,7 @@ export function emitProjectile(
     g = new PIXI.Graphics()
       .circle(0, 0, 4)
       .fill({ color: tint })
-      .stroke({ color: 0xfff5d6, width: 1, alpha: 0.85 })
+      .stroke({ color: 0xfff5d6 /* keep — fireball core highlight, non-token */, width: 1, alpha: 0.85 })
   }
   g.position.set(from.x, from.y)
   g.rotation = angle
