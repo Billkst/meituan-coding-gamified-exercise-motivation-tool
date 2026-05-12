@@ -54,16 +54,24 @@ export function emitProjectile(
   g.rotation = angle
   layer.addChild(g)
 
-  // Light trailing dots for fireball.
-  const trail: PIXI.Graphics[] = []
+  // Light trailing dots for fireball. We intentionally do NOT track or
+  // pre-destroy these from the main onTick — each dot owns its own dotTick
+  // that cleans up at the end of its 280 ms life. Externally destroying
+  // them while dotTick is still queued causes Pixi to throw on the
+  // destroyed Graphics' transform setter, which silently breaks the entire
+  // ticker iteration ⇒ the whole match appears to freeze. (Root cause of
+  // the "baby_dragon attack hangs the game" report.)
   const start = performance.now()
   const onTick = () => {
+    if (g.destroyed) {
+      ticker.remove(onTick)
+      return
+    }
     const elapsed = performance.now() - start
     const t = elapsed / flightMs
     if (t >= 1) {
       ticker.remove(onTick)
       g.destroy()
-      for (const dot of trail) dot.destroy()
       emitHitParticles(layer, ticker, to, tint)
       // Brief hit ring.
       const ring = new PIXI.Graphics()
@@ -73,6 +81,10 @@ export function emitProjectile(
       layer.addChild(ring)
       const ringStart = performance.now()
       const ringTick = () => {
+        if (ring.destroyed) {
+          ticker.remove(ringTick)
+          return
+        }
         const k = (performance.now() - ringStart) / 220
         if (k >= 1) {
           ticker.remove(ringTick)
@@ -96,9 +108,12 @@ export function emitProjectile(
         .fill({ color: tint, alpha: 0.6 })
       dot.position.set(g.x, g.y)
       layer.addChild(dot)
-      trail.push(dot)
       const dotStart = performance.now()
       const dotTick = () => {
+        if (dot.destroyed) {
+          ticker.remove(dotTick)
+          return
+        }
         const k = (performance.now() - dotStart) / 280
         if (k >= 1) {
           ticker.remove(dotTick)
