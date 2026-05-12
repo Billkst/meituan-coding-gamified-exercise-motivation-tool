@@ -111,13 +111,32 @@ export default function ClashMatch() {
   const engine = useClashEngine(startInput, aiPolicy)
 
   // Tutorial completion: enemy_left princess HP hit 0 → bounce to TutorialResult.
+  //
+  // useClashEngine mutates its MatchState in place — same object reference
+  // every render — so we cannot dep on engine.state (Object.is would always
+  // say "unchanged" and this effect would only run on mount, when the tower
+  // is full HP). We dep on engine.state.tick instead, which is a primitive
+  // that advances every frame. The done-ref keeps the setTimeout from being
+  // re-created (and re-cleared by the next tick's cleanup) on every frame.
+  const tutorialDoneRef = useRef(false)
+  const tutorialTimerRef = useRef<number | null>(null)
   useEffect(() => {
-    if (!isTutorial) return
+    if (!isTutorial || tutorialDoneRef.current) return
     if (!engine.state) return
     if (!tutorialIsComplete(engine.state, DEFAULT_TUTORIAL_SCRIPT)) return
-    const id = window.setTimeout(() => navigate('/clash/tutorial-result'), 900)
-    return () => window.clearTimeout(id)
-  }, [isTutorial, engine.state, navigate])
+    tutorialDoneRef.current = true
+    tutorialTimerRef.current = window.setTimeout(() => {
+      navigate('/clash/tutorial-result')
+    }, 900)
+  }, [isTutorial, engine.state?.tick, navigate])
+  // Unmount-only cleanup for the navigate timer.
+  useEffect(() => {
+    return () => {
+      if (tutorialTimerRef.current !== null) {
+        window.clearTimeout(tutorialTimerRef.current)
+      }
+    }
+  }, [])
 
   // Tutorial inactivity hint ladder: 30s / 60s / 90s after match start.
   const [hintLevel, setHintLevel] = useState(0)
