@@ -7,27 +7,23 @@
 
 ---
 
-## 评审快速通道（5 分钟）
+## 在线体验
 
-| 入口 | URL |
-|---|---|
-| 正式体验 | <https://meituan-coding.vercel.app> |
-| **强制重置 + 重走完整流程** | <https://meituan-coding.vercel.app/reset?force=1> |
-| 开发者抽屉 | <https://meituan-coding.vercel.app/?dev=1> |
+**<https://meituan-coding.vercel.app>**
 
-**推荐 5 分钟路径**（在重置 URL 上走一遍）：
+打开即用，匿名 auth 自动签到。第一次进入会被推到 4 步引导：
 
-1. **/reset?force=1** → 清 localStorage + 后端用户状态 → 自动跳 `/onboarding`
-2. **Onboarding 4 步**（< 90 秒）：
-   - Step 1 — 一句话讲清产品（"把跑步变成抽卡"）
-   - Step 2 — 30 秒模拟运动 → +200 金币飞屏（不要真起来跑）
-   - Step 3 — 金色宝箱开启 → 6 张卡 CSS 3D 翻牌
-   - Step 4 — 教学局自动开打，**你必须亲手推下一座 princess 塔**才能毕业
-3. **ClashHome** → 看左上 streak / 中间对战按钮 / 右上 chests
-4. **点对战** → ClashMatch 真打一局（拖卡到桥边部署，过桥 AI 对线）
-5. **打完进 ClashResult** → 看 gold + chest 入账
+1. 一句话讲清产品（"把跑步变成抽卡"）
+2. 30 秒模拟运动 → +200 金币飞屏（不要真起来跑）
+3. 金色宝箱开启 → 6 张卡 CSS 3D 翻牌
+4. 教学局自动开打，**亲手推下一座 princess 塔**才能毕业
 
-整条路径无需注册，匿名 auth 自动签到。
+进 ClashHome 后：点对战 → 选难度 → 真打一局（拖卡到桥边部署，过桥 AI 对线）→ 拿 gold + chest。
+
+不是入口、只是同站工具路径：
+
+- `/reset?force=1` — 清 localStorage + 后端用户状态，从零再走一遍 onboarding
+- `/?dev=1` — 激活开发者抽屉（sidebar 红色 DEV chip，`Cmd/Ctrl+Shift+D` 打开调试 action）
 
 ---
 
@@ -118,7 +114,7 @@ bun run build         # production build
 
 ---
 
-## Dev 模式（评审用）
+## Dev 模式
 
 URL 加 `?dev=1` 激活（sessionStorage 持久化）。Sidebar 显示红色 DEV chip，点击或 `Cmd/Ctrl+Shift+D` 打开抽屉。
 
