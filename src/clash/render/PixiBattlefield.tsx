@@ -283,7 +283,14 @@ export default function PixiBattlefield({
     }
 
     const drawDragPreview = () => {
-      dragLayer.removeChildren()
+      // Destroy children explicitly — removeChildren alone leaks the
+      // underlying textures + graphics buffers, which adds up to thousands
+      // of objects across a 3-minute drag-heavy session.
+      while (dragLayer.children.length) {
+        const child = dragLayer.children[0]
+        dragLayer.removeChild(child)
+        child.destroy({ children: true })
+      }
       const dp = dragRef.current
       if (!dp) return
       const px = boardToPixel(dp.pos, size)

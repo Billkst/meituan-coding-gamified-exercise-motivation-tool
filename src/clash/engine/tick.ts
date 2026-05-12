@@ -167,9 +167,21 @@ function stepTick(
   cullDead(state)
   decayDamageEvents(state, dtSec)
   resolveTowerDeaths(state)
+  truncateLog(state)
   resolveEndConditions(state)
 
   return state
+}
+
+// Engine pushes a log entry for every deploy/spell/attack/death/tower_destroyed.
+// A 3-minute match easily produces 3000–5000 entries, which the renderer's
+// effect manager iterates fully each frame. We cap to the most recent 500;
+// the renderer's per-tick cursor (lastLogTick) prevents re-emitting older
+// effects and never needs more than the latest frame's worth anyway.
+const LOG_RETENTION = 500
+function truncateLog(state: MatchState) {
+  if (state.log.length <= LOG_RETENTION) return
+  state.log.splice(0, state.log.length - LOG_RETENTION)
 }
 
 function updatePhase(state: MatchState) {

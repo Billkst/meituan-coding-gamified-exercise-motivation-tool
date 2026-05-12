@@ -117,6 +117,18 @@ describe('match E2E — engine doesn\'t hang', () => {
     }
   })
 
+  it('caps state.log so it cannot grow unbounded over a long match', () => {
+    // Without truncation, attack entries alone push 1500+ per minute for an
+    // active match. We cap at 500 so the renderer's per-frame log scan stays
+    // bounded regardless of match duration.
+    const { state, rng } = freshMatch()
+    deployByCardId(state, rng, 'player', 'knight', { x: 3, y: 13 })
+    deployByCardId(state, rng, 'enemy', 'knight', { x: 3, y: 19 })
+    // 200 seconds of combat — way past the natural log-overflow threshold.
+    tick(state, rng, 200)
+    expect(state.log.length).toBeLessThanOrEqual(500)
+  })
+
   it('cleans up dead units (no zombie corpses lingering past deathFadeSec)', () => {
     const { state, rng } = freshMatch()
     deployByCardId(state, rng, 'player', 'knight', { x: 3, y: 10 })

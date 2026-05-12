@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { IconHome2, IconRefresh, IconVolume, IconVolumeOff } from '@tabler/icons-react'
 import { getMuted, playSound, setMuted, subscribeMuted } from '@/clash/audio'
 import { useTranslation } from '@/lib/i18n'
+import { useDevStore } from '@/store/useDevStore'
 import { useClashState } from '@/clash/api/clashState'
 import { useFinalizeMatch } from '@/clash/api/clashMatch'
 import { useClashEngine, type AiPolicy } from '@/clash/hooks/useClashEngine'
@@ -40,6 +41,7 @@ export default function ClashMatch() {
   const { t, lang } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
+  const isDev = useDevStore((s) => s.isDevMode)
   const isTutorial =
     new URLSearchParams(location.search).get('tutorial') === '1'
   const { data: clashState, isLoading } = useClashState()
@@ -549,6 +551,23 @@ export default function ClashMatch() {
                   : 'clash.match.banner_draw',
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dev HUD — only visible with ?dev=1. Shows live engine stats so
+          when a "stuck" report comes in, the user can read off real numbers
+          (tick advancing? units count? log entries growing unbounded?). */}
+      {isDev && state && (
+        <div className="fixed top-2 left-2 z-50 bg-bg-secondary/90 border border-white/15 rounded-button px-2 py-1.5 font-mono text-[10px] text-text-secondary pointer-events-none leading-tight">
+          <div>tick {state.tick} · t {state.elapsed.toFixed(1)}s · {state.phase}</div>
+          <div>
+            units {state.units.length} · log {state.log.length} · fx{' '}
+            {state.damageEvents.length}
+          </div>
+          <div>
+            elx P{state.player.elixir.current.toFixed(1)} / E{state.enemy.elixir.current.toFixed(1)}
+            {state.result && ` · ${state.result}`}
           </div>
         </div>
       )}
