@@ -46,14 +46,23 @@ export default function App() {
   if (!isInitialized) {
     return <BootScreen message={t('auth.initializing')} />
   }
-  if (initError) {
-    return <BootScreen message={t('auth.error', { msg: initError })} error />
-  }
+  // initError used to hard-block the entire app, which made the judge
+  // experience brittle (one DNS hiccup → blank screen). Now we let routes
+  // render and surface the failure as a non-blocking banner so /reset and
+  // local onboarding still work without server-side auth.
 
   return (
     <div className="flex min-h-screen">
       <Sidebar />
       <main className="flex-1 md:ml-[240px]">
+        {initError && (
+          <div
+            className="bg-semantic-error/15 border-b border-semantic-error/40 px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-semantic-error text-center"
+            role="alert"
+          >
+            {t('auth.error', { msg: initError })}
+          </div>
+        )}
         <OnboardingGate>
           <Routes>
             <Route path="/" element={<Navigate to="/clash" replace />} />
