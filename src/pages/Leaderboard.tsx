@@ -75,6 +75,14 @@ export default function Leaderboard() {
         </div>
       )}
       {data && data.entries.length > 0 && (
+        <>
+          {/* Column header — aligns with each row's 3-column layout (rank w-10
+              · player flex-1 · score) so users know what the number means. */}
+          <div className="flex items-center gap-3 px-4 pb-2 mb-1 border-b border-white/5 font-mono text-[9px] uppercase tracking-widest text-text-tertiary">
+            <div className="w-10 text-center">{t('leaderboard.col.rank' as never)}</div>
+            <div className="flex-1">{t('leaderboard.col.player' as never)}</div>
+            <div>{t('leaderboard.col.score' as never)}</div>
+          </div>
         <ul className="space-y-2">
           {data.entries.map((e) => (
             <li
@@ -119,6 +127,7 @@ export default function Leaderboard() {
             </li>
           ))}
         </ul>
+        </>
       )}
     </div>
   )

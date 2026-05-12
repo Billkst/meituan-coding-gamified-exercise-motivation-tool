@@ -86,7 +86,7 @@ function TabButton({ active, onClick, label }: { active: boolean; onClick: () =>
 // =============================================================================
 
 function CardsView() {
-  const { lang } = useTranslation()
+  const { t, lang } = useTranslation()
   const { data } = useClashState()
   const unlock = useUnlockCard()
   const upgrade = useUpgradeCard()
@@ -110,6 +110,12 @@ function CardsView() {
           {flash}
         </div>
       )}
+
+      {/* 1-line currency model hint — pre-empts the "I got 3💎 from workout
+          but the card is still locked at 10💰" confusion the QA report flagged. */}
+      <div className="font-mono text-[10px] uppercase tracking-widest text-text-tertiary mb-4 text-center">
+        {t('clash.cards.currency_hint' as never)}
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {CR_CARDS.map((cardDef) => {
@@ -220,18 +226,28 @@ function CardTile({
           )}
         </>
       ) : (
-        <button
-          onClick={onUnlock}
-          disabled={!canUnlock || busy}
-          className={
-            'w-full font-mono uppercase text-[10px] tracking-widest py-1.5 rounded-button border ' +
-            (canUnlock
-              ? 'bg-accent-primary text-bg-primary border-accent-primary hover:scale-[1.02]'
-              : 'border-white/10 text-text-tertiary cursor-not-allowed')
-          }
-        >
-          {t('clash.cards.unlock_cta' as never)} · {card.unlock_cost}💰
-        </button>
+        <>
+          {/* Show accumulated shards even when locked so workout chest drops
+              ("+3 💎 小皮卡") have a visible home. Without this the user feels
+              the chest reward vanished. */}
+          {card.shards > 0 && (
+            <div className="font-mono text-[10px] text-text-tertiary mb-2">
+              💎 {card.shards}
+            </div>
+          )}
+          <button
+            onClick={onUnlock}
+            disabled={!canUnlock || busy}
+            className={
+              'w-full font-mono uppercase text-[10px] tracking-widest py-1.5 rounded-button border ' +
+              (canUnlock
+                ? 'bg-accent-primary text-bg-primary border-accent-primary hover:scale-[1.02]'
+                : 'border-white/10 text-text-tertiary cursor-not-allowed')
+            }
+          >
+            {t('clash.cards.unlock_cta' as never)} · {card.unlock_cost}💰
+          </button>
+        </>
       )}
     </div>
   )
