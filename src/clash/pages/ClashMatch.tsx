@@ -2,7 +2,8 @@
 
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { IconHome2, IconRefresh } from '@tabler/icons-react'
+import { IconHome2, IconRefresh, IconVolume, IconVolumeOff } from '@tabler/icons-react'
+import { getMuted, playSound, setMuted, subscribeMuted } from '@/clash/audio'
 import { useTranslation } from '@/lib/i18n'
 import { useClashState } from '@/clash/api/clashState'
 import { useFinalizeMatch } from '@/clash/api/clashMatch'
@@ -133,6 +134,11 @@ export default function ClashMatch() {
     return () => window.clearTimeout(id)
   }, [aiBanner])
 
+  // Sync mute state to a piece of local state so the toggle button can re-render.
+  const [muted, setMutedLocal] = useState<boolean>(() => getMuted())
+  useEffect(() => subscribeMuted(setMutedLocal), [])
+  const toggleMute = () => setMuted(!muted)
+
   // Auto-finalize when match ends — show big banner for ~1.8s, then RPC + navigate.
   // The timer is tracked via ref so subsequent renders (which re-run the effect due
   // to `state` ref dep) don't cancel it via the cleanup return.
@@ -142,6 +148,7 @@ export default function ClashMatch() {
     if (finalizeTimerRef.current !== null) return
     setFinalized(true)
     setEndBanner(state.result)
+    playSound(state.result === 'win' ? 'victory' : state.result === 'loss' ? 'defeat' : 'unit_deploy')
     const startTs = startTimeRef.current ?? Date.now()
     const duration = Math.round((Date.now() - startTs) / 1000)
     const matchResult = state.result
@@ -327,6 +334,13 @@ export default function ClashMatch() {
         </button>
         <TimerBar elapsed={state.elapsed} phase={state.phase} />
         <div className="flex items-center gap-1">
+          <button
+            onClick={toggleMute}
+            className="text-text-tertiary hover:text-text-primary p-1.5 rounded-button border border-white/10"
+            aria-label={muted ? t('clash.match.unmute' as never) : t('clash.match.mute' as never)}
+          >
+            {muted ? <IconVolumeOff size={16} /> : <IconVolume size={16} />}
+          </button>
           <button
             onClick={() => engine.restart()}
             className="text-text-tertiary hover:text-text-primary p-1.5 rounded-button border border-white/10"

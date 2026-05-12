@@ -52,3 +52,17 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Clash tower-destroy screen shake — one-shot, triggered by JS adding the class. */
+@keyframes clash-shake-kf {
+  0% { transform: translate3d(0, 0, 0); }
+  15% { transform: translate3d(-6px, 2px, 0); }
+  30% { transform: translate3d(5px, -3px, 0); }
+  45% { transform: translate3d(-4px, 4px, 0); }
+  60% { transform: translate3d(3px, -2px, 0); }
+  75% { transform: translate3d(-2px, 1px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+.clash-shake {
+  animation: clash-shake-kf 0.32s ease-out;
+}

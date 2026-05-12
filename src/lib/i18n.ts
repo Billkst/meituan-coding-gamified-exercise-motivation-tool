@@ -554,6 +554,8 @@ const dict = {
     'clash.match.difficulty.normal': '普通',
     'clash.match.difficulty.hard': '困难',
     'clash.match.loading_battlefield': '战场加载中...',
+    'clash.match.mute': '静音',
+    'clash.match.unmute': '取消静音',
 
     'clash.result.title_win': '胜利',
     'clash.result.title_loss': '失败',
@@ -1147,6 +1149,8 @@ const dict = {
     'clash.match.difficulty.normal': 'Normal',
     'clash.match.difficulty.hard': 'Hard',
     'clash.match.loading_battlefield': 'Loading battlefield...',
+    'clash.match.mute': 'Mute',
+    'clash.match.unmute': 'Unmute',
 
     'clash.result.title_win': 'Victory',
     'clash.result.title_loss': 'Defeat',

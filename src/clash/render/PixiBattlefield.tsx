@@ -24,6 +24,10 @@ import {
   applySpawnRise,
   applyWalkSwing,
 } from '@/clash/render/spriteTween'
+import {
+  createEffectState,
+  scanLogAndEmit,
+} from '@/clash/render/effects/effectManager'
 
 interface Props {
   state: MatchState
@@ -107,7 +111,9 @@ export default function PixiBattlefield({
     let deployLayer: PIXI.Graphics
     let towerLayer: PIXI.Container
     let unitLayer: PIXI.Container
+    let effectLayer: PIXI.Container
     let dragLayer: PIXI.Container
+    const effectState = createEffectState()
 
     const drawStaticScene = () => {
       const cell = size.w / ARENA.cols
@@ -386,6 +392,16 @@ export default function PixiBattlefield({
       drawDeployZone()
       drawDragPreview()
 
+      const s = stateRef.current
+      if (s) {
+        scanLogAndEmit(s, {
+          layer: effectLayer,
+          ticker: app.ticker,
+          size,
+          shakeTarget: wrapper,
+        }, effectState)
+      }
+
       if (!degraded) {
         if (app.ticker.FPS < FPS_FLOOR) fpsLowFrames++
         else fpsLowFrames = 0
@@ -419,6 +435,7 @@ export default function PixiBattlefield({
       deployLayer = new PIXI.Graphics()
       towerLayer = new PIXI.Container()
       unitLayer = new PIXI.Container()
+      effectLayer = new PIXI.Container()
       dragLayer = new PIXI.Container()
       app.stage.addChild(
         gridLayer,
@@ -427,6 +444,7 @@ export default function PixiBattlefield({
         deployLayer,
         towerLayer,
         unitLayer,
+        effectLayer,
         dragLayer,
       )
 

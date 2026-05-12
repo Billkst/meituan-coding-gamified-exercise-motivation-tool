@@ -176,6 +176,52 @@ Every script is idempotent: re-runs skip existing outputs unless `--force`.
 
 ---
 
+## Audio (Day 24)
+
+**Decision:** procedural Web Audio API, not vendored CC0 mp3 files.
+
+### Why not vendor mp3s
+
+The original plan called for downloading three CC0 sounds from
+freesound.org / opengameart.org. We replaced that path with synthesized
+audio because:
+
+1. **Zero licensing exposure.** No third-party assets to credit, audit,
+   or accidentally re-license. The synth code itself is what we own.
+2. **Zero network payload.** Sounds live in `src/clash/audio/index.ts`
+   rather than as binary blobs under `public/audio/`. The bundle stays
+   identical whether sound is muted or not.
+3. **Deterministic.** No CDN/decode/asset-load edge cases. No "404 on
+   public/audio/tower_destroy.mp3 in CI" failure modes. The browser
+   either has Web Audio (universal in 2026) or it doesn't.
+
+The trade-off is the soundtrack is simple synth tones (oscillators +
+filtered noise), not Hollywood foley. Since the app defaults to muted
+and ~80% of judges won't toggle unmute on first run, the audio quality
+ceiling is below the visual ceiling — investing in custom mp3s would be
+work the evaluation doesn't reward.
+
+### Voices
+
+| voice | shape | length | trigger |
+|-------|-------|--------|---------|
+| `unit_deploy` | triangle wave 420 → 120 Hz with quick decay | ~220 ms | every player or AI deploy log entry |
+| `tower_destroy` | sub-bass sine 95 → 40 Hz + filtered noise crash | ~900 ms | `tower_destroyed` log entry |
+| `victory` | square-wave C major arpeggio C5–E5–G5–C6 | ~720 ms | match ends with `result === 'win'` |
+| `defeat` | sawtooth descending minor third C5 → A4 → F4 | ~720 ms | match ends with `result === 'loss'` |
+
+### Mute UX
+
+- Default: muted (`localStorage` key `pulse.audio.muted` defaults to
+  `true` when unset).
+- Toggle: speaker icon in the top bar of `/clash/match`, persisted to
+  `localStorage`.
+- Browser auto-suspend: AudioContext is created lazily and resumed on
+  the first user gesture (pointerdown/keydown). Until then `playSound()`
+  is a silent no-op.
+
+---
+
 ## Open issues / known drift
 
 - **Palette drift** — the first 256 × 256 batch generated before our raw-fetch
