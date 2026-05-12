@@ -56,3 +56,7 @@ vitest.config.js
 playwright-report/
 test-results/
 .playwright/
+
+# Sprite raw inputs (regenerable via scripts/gen-sprites.ts)
+public/sprites/raw/
+scripts/retry-queue.json

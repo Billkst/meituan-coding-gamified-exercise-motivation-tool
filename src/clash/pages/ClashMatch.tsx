@@ -60,6 +60,14 @@ export default function ClashMatch() {
 
   const engine = useClashEngine(startInput)
 
+  // Union of cards that can appear in the match — pre-warm atlases.
+  const matchCardIds = useMemo<readonly CrCardId[]>(() => {
+    if (!startInput) return []
+    return Array.from(
+      new Set([...startInput.player.cardIds, ...startInput.enemy.cardIds]),
+    )
+  }, [startInput])
+
   // Drag state
   const [dragHandIndex, setDragHandIndex] = useState<number | null>(null)
   const [dragPreviewPos, setDragPreviewPos] = useState<{ x: number; y: number } | null>(null)
@@ -348,6 +356,7 @@ export default function ClashMatch() {
             state={state}
             showDeployZone={dragHandIndex !== null}
             dragPreview={dragPreview}
+            cardIds={matchCardIds}
           />
         </Suspense>
       </div>
