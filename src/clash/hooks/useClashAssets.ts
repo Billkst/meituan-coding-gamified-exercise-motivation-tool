@@ -48,9 +48,14 @@ export function useClashAssets(cardIds: readonly CrCardId[]): ClashAssets {
       ids.map(async (id) => {
         const file = spriteFilenameFor(id)
         try {
-          const sheet = (await PIXI.Assets.load(
-            `/sprites/${file}.json`,
-          )) as PIXI.Spritesheet
+          // Per-atlas cachePrefix so the global Cache sees `<id>/idle` etc.
+          // Every atlas reuses the same 4 frame names (idle/walk/attack/death),
+          // and Pixi's Cache warns on duplicate keys — without a prefix every
+          // sheet past the first emits 4 noisy warnings per load.
+          const sheet = (await PIXI.Assets.load({
+            src: `/sprites/${file}.json`,
+            data: { cachePrefix: `${id}/` },
+          })) as PIXI.Spritesheet
           return [id, sheet] as const
         } catch (err) {
           // Missing atlas (404, decode error, …) — log but don't fail the whole
