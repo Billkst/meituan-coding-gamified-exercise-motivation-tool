@@ -53,16 +53,21 @@ export default function ClashMatch() {
   const [aiBanner, setAiBanner] = useState<{ cardId: CrCardId; until: number } | null>(null)
   const [endBanner, setEndBanner] = useState<'win' | 'loss' | 'draw' | null>(null)
 
-  // Tutorial uses a fixed deck so the script always finds 'goblin'.
+  // Tutorial deck = the 6 cards Step3StarterPack reveals (knight/archer/
+  // goblin/cannon/giant/baby_dragon) + 2 fillers. Keeps the "these are MY
+  // cards" promise the chest just made — without this alignment the user
+  // saw a different 4-card hand and the onboarding narrative broke. The
+  // tutorial AI script (tutorial.ts:38) requires 'goblin' in enemy hand,
+  // which we preserve.
   const TUTORIAL_PLAYER_DECK: CrCardId[] = [
     'knight',
     'archer',
     'goblin',
-    'arrows',
     'cannon',
     'giant',
+    'baby_dragon',
+    'arrows',
     'musketeer',
-    'valkyrie',
   ]
 
   const startInput = useMemo<StartMatchInput | null>(() => {

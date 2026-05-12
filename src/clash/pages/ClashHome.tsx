@@ -30,8 +30,15 @@ export default function ClashHome() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const seen = window.localStorage.getItem(HOME_TOUR_KEY)
-    if (!seen) setShowTour(true)
+    if (window.localStorage.getItem(HOME_TOUR_KEY)) return
+    // Suppress for v2-onboarded users — they already walked through 4 onboarding
+    // steps + 4 in-tutorial popups. A third 4-step tour here is the "19-popup
+    // overload" the QA report flagged.
+    if (window.localStorage.getItem('pulse.onboarding.completed_v2') === '1') {
+      window.localStorage.setItem(HOME_TOUR_KEY, '1')
+      return
+    }
+    setShowTour(true)
   }, [])
 
   const dismissTour = () => {
@@ -76,7 +83,7 @@ export default function ClashHome() {
   }
 
   return (
-    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 pl-14 md:pl-8 py-8 md:py-12">
       {/* Brand header */}
       <header className="mb-8">
         <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">

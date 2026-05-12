@@ -28,9 +28,17 @@ export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [showTour, setShowTour] = useState(() => {
     if (typeof window === 'undefined') return false
-    const fromQuery = new URLSearchParams(window.location.search).get('tour') === '1'
-    const seen = window.localStorage.getItem(TOUR_STORAGE_KEY)
-    return fromQuery || !seen
+    // Explicit replay (?tour=1) always wins, even for v2-onboarded users.
+    if (new URLSearchParams(window.location.search).get('tour') === '1') return true
+    if (window.localStorage.getItem(TOUR_STORAGE_KEY)) return false
+    // Suppress auto-tour for v2-onboarded users — onboarding + tutorial already
+    // taught them the loop. A 7-step dashboard tour on top would push the
+    // total popup count past 19 (the "tour overload" QA flagged).
+    if (window.localStorage.getItem('pulse.onboarding.completed_v2') === '1') {
+      window.localStorage.setItem(TOUR_STORAGE_KEY, '1')
+      return false
+    }
+    return true
   })
   const dismissTour = () => {
     window.localStorage.setItem(TOUR_STORAGE_KEY, '1')
@@ -52,7 +60,7 @@ export default function Dashboard() {
     : ''
 
   return (
-    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 pl-14 md:pl-8 py-8 md:py-12">
       <AchievementUnlockToast />
       <header className="mb-12">
         <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">

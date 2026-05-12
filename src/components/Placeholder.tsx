@@ -15,7 +15,7 @@ export default function Placeholder({
 }: PlaceholderProps) {
   const { t } = useTranslation()
   return (
-    <div className="max-w-container mx-auto px-4 md:px-8 py-8 md:py-12">
+    <div className="max-w-container mx-auto px-4 md:px-8 pl-14 md:pl-8 py-8 md:py-12">
       <div className="font-mono text-[13px] uppercase tracking-widest text-accent-primary mb-2">
         {t(sectionKey)}
       </div>

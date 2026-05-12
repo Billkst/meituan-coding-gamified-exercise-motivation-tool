@@ -40,7 +40,7 @@ export default function ClashCollection() {
   if (!data) return null
 
   return (
-    <div className="max-w-container mx-auto px-4 md:px-8 py-8">
+    <div className="max-w-container mx-auto px-4 md:px-8 pl-14 md:pl-8 py-8">
       <header className="mb-6 flex items-center gap-3">
         <button onClick={() => navigate('/clash')} className="text-text-tertiary hover:text-text-primary">
           <IconArrowLeft size={18} />
