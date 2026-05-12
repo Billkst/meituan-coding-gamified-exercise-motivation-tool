@@ -63,10 +63,19 @@ const STATE_TO_FRAME: Record<UnitState, 'idle' | 'walk' | 'attack' | 'death'> = 
 interface UnitNodeRefs {
   container: PIXI.Container
   ring: PIXI.Graphics
+  /** Outer wrapper that the tweens act on (scale/rotation/alpha). */
   body: PIXI.Container
+  /**
+   * Inner sprite (if hasSprite). The sprite carries its own scale to convert
+   * the 512-px atlas frame down to ~cell*1.5 px on-screen. We keep that scale
+   * separate from the tween scale by wrapping it in `body`, so an attack
+   * pulse (body.scale=1.15) doesn't accidentally inflate the sprite back to
+   * native size.
+   */
+  bodySprite: PIXI.Sprite | null
   hpFill: PIXI.Graphics
   hpBgWidth: number
-  /** Last frame name applied to `body.sprite.texture` — used to skip texture writes. */
+  /** Last frame name applied to `bodySprite.texture` — used to skip texture writes. */
   lastFrame: 'idle' | 'walk' | 'attack' | 'death' | null
   /** Sprite vs placeholder. */
   hasSprite: boolean
@@ -204,14 +213,20 @@ export default function PixiBattlefield({
       const sheet = atlasRef.current?.get(cardId)
       const idleTex = sheet?.textures?.idle
       let body: PIXI.Container
+      let bodySprite: PIXI.Sprite | null = null
       let hasSprite = false
       if (idleTex) {
+        // Wrap sprite in a group so tweens can mutate the group's scale
+        // without clobbering the sprite's own atlas-to-pixel scale.
+        const group = new PIXI.Container()
         const sprite = new PIXI.Sprite(idleTex)
         sprite.anchor.set(0.5, 0.55)
         const drawSize = cell * 1.5
         sprite.width = drawSize
         sprite.height = drawSize
-        body = sprite
+        group.addChild(sprite)
+        body = group
+        bodySprite = sprite
         hasSprite = true
       } else {
         const placeholder = new PIXI.Graphics()
@@ -236,6 +251,7 @@ export default function PixiBattlefield({
         container,
         ring,
         body,
+        bodySprite,
         hpFill,
         hpBgWidth,
         lastFrame: hasSprite ? 'idle' : null,
@@ -357,13 +373,18 @@ export default function PixiBattlefield({
         refs.container.position.set(px.x, px.y)
 
         // Swap sprite frame when state changed, if we have a sheet.
-        if (refs.hasSprite) {
+        if (refs.hasSprite && refs.bodySprite) {
           const wanted = STATE_TO_FRAME[u.state]
           if (wanted !== refs.lastFrame) {
             const sheet = atlasRef.current?.get(u.cardId)
             const tex = sheet?.textures?.[wanted]
-            if (tex && refs.body instanceof PIXI.Sprite) {
-              refs.body.texture = tex
+            if (tex) {
+              refs.bodySprite.texture = tex
+              // Re-anchor the on-screen size in case the new frame's intrinsic
+              // dimensions differ (and to undo Pixi's scale-from-texture behavior).
+              const target = cell * 1.5
+              refs.bodySprite.width = target
+              refs.bodySprite.height = target
               refs.lastFrame = wanted
             }
           }
