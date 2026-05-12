@@ -1,23 +1,27 @@
-import { useEffect } from 'react'
+import { useEffect, lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { initAuth } from '@/lib/auth'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useDevStore } from '@/store/useDevStore'
 import { useTranslation } from '@/lib/i18n'
 import Sidebar from './components/Sidebar'
-import Dashboard from './pages/Dashboard'
-import Workout from './pages/Workout'
-import WorkoutResult from './pages/WorkoutResult'
-import Onboarding from './pages/Onboarding'
-import Reset from './pages/Reset'
-import Leaderboard from './pages/Leaderboard'
 import DevDrawer from './components/DevDrawer'
 import OnboardingGate from './components/OnboardingGate'
+// Eager-load the two pages a fresh visitor lands on so the first paint
+// doesn't show a Suspense fallback.
 import ClashHome from './clash/pages/ClashHome'
-import ClashMatch from './clash/pages/ClashMatch'
-import ClashResult from './clash/pages/ClashResult'
-import ClashCollection from './clash/pages/ClashCollection'
-import TutorialResult from './clash/pages/TutorialResult'
+import Onboarding from './pages/Onboarding'
+// Lazy-load everything else so the main bundle drops below the 500 KB
+// chunk warning. Each route swaps in its chunk on demand.
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Workout = lazy(() => import('./pages/Workout'))
+const WorkoutResult = lazy(() => import('./pages/WorkoutResult'))
+const Reset = lazy(() => import('./pages/Reset'))
+const Leaderboard = lazy(() => import('./pages/Leaderboard'))
+const ClashMatch = lazy(() => import('./clash/pages/ClashMatch'))
+const ClashResult = lazy(() => import('./clash/pages/ClashResult'))
+const ClashCollection = lazy(() => import('./clash/pages/ClashCollection'))
+const TutorialResult = lazy(() => import('./clash/pages/TutorialResult'))
 
 export default function App() {
   const isInitialized = useAuthStore((s) => s.isInitialized)
@@ -66,23 +70,25 @@ export default function App() {
           </div>
         )}
         <OnboardingGate>
-          <Routes>
-            <Route path="/" element={<Navigate to="/clash" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/workout" element={<Workout />} />
-            <Route path="/workout/result" element={<WorkoutResult />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/clash" element={<ClashHome />} />
-            <Route path="/clash/match" element={<ClashMatch />} />
-            <Route path="/clash/result" element={<ClashResult />} />
-            <Route path="/clash/tutorial-result" element={<TutorialResult />} />
-            <Route path="/clash/collection" element={<ClashCollection />} />
-            <Route path="/clash/cards" element={<CollectionRedirect tab="cards" />} />
-            <Route path="/clash/deck" element={<CollectionRedirect tab="deck" />} />
-            <Route path="/reset" element={<Reset />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="*" element={<Navigate to="/clash" replace />} />
-          </Routes>
+          <Suspense fallback={<RouteLoading />}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/clash" replace />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/workout" element={<Workout />} />
+              <Route path="/workout/result" element={<WorkoutResult />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/clash" element={<ClashHome />} />
+              <Route path="/clash/match" element={<ClashMatch />} />
+              <Route path="/clash/result" element={<ClashResult />} />
+              <Route path="/clash/tutorial-result" element={<TutorialResult />} />
+              <Route path="/clash/collection" element={<ClashCollection />} />
+              <Route path="/clash/cards" element={<CollectionRedirect tab="cards" />} />
+              <Route path="/clash/deck" element={<CollectionRedirect tab="deck" />} />
+              <Route path="/reset" element={<Reset />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="*" element={<Navigate to="/clash" replace />} />
+            </Routes>
+          </Suspense>
         </OnboardingGate>
       </main>
       <DevDrawer />
@@ -92,6 +98,14 @@ export default function App() {
 
 function CollectionRedirect({ tab }: { tab: 'cards' | 'deck' }) {
   return <Navigate to={`/clash/collection?tab=${tab}`} replace />
+}
+
+function RouteLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center font-mono text-xs uppercase tracking-widest text-text-secondary animate-pulse">
+      …
+    </div>
+  )
 }
 
 function BootScreen({ message, error }: { message: string; error?: boolean }) {

@@ -8,7 +8,7 @@ import { useTranslation } from '@/lib/i18n'
 import { useDevStore } from '@/store/useDevStore'
 import { useClashState } from '@/clash/api/clashState'
 import { useFinalizeMatch } from '@/clash/api/clashMatch'
-import { useClashEngine, type AiPolicy } from '@/clash/hooks/useClashEngine'
+import { useClashEngine, clearMatchSnapshot, type AiPolicy } from '@/clash/hooks/useClashEngine'
 import { CR_CARDS_BY_ID } from '@/clash/lib/cardData'
 import type { CrCardId } from '@/clash/lib/cardData'
 import { ARENA, canDeployAt } from '@/clash/lib/arena'
@@ -130,6 +130,10 @@ export default function ClashMatch() {
     if (!engine.state) return
     if (!tutorialIsComplete(engine.state, DEFAULT_TUTORIAL_SCRIPT)) return
     tutorialDoneRef.current = true
+    // Tutorial complete — clear the snapshot so re-landing on /clash/match
+    // (which loops back through ?tutorial=1) doesn't try to resume the
+    // finished match.
+    clearMatchSnapshot()
     tutorialTimerRef.current = window.setTimeout(() => {
       navigate('/clash/tutorial-result')
     }, 900)
@@ -248,6 +252,10 @@ export default function ClashMatch() {
     if (!state || phase !== 'ended' || finalized || !state.result) return
     if (finalizeTimerRef.current !== null) return
     setFinalized(true)
+    // Match settled — wipe the in-progress snapshot so /clash/result and any
+    // subsequent /clash/match visit start clean rather than resume this ended
+    // state.
+    clearMatchSnapshot()
     setEndBanner(state.result)
     playSound(state.result === 'win' ? 'victory' : state.result === 'loss' ? 'defeat' : 'unit_deploy')
     const startTs = startTimeRef.current ?? Date.now()

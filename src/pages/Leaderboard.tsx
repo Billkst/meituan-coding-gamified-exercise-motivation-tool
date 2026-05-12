@@ -2,6 +2,17 @@ import { useState } from 'react'
 import { useTranslation } from '@/lib/i18n'
 import { useLeaderboard, type LeaderboardPeriod } from '@/api/leaderboard'
 
+// Anon Supabase users get auto-generated `user_<hex>` handles. Rendering them
+// next to themed seed accounts (cardio_lord / hiit_demon) looks like a data
+// mismatch, so we relabel them to `匿名玩家 #<rank>` — same information density,
+// less visual noise. Real custom usernames pass through unchanged.
+const ANON_USERNAME = /^user_[a-f0-9]+$/i
+function displayName(username: string | null, rank: number, anonLabel: string): string {
+  if (!username) return `${anonLabel} #${rank}`
+  if (ANON_USERNAME.test(username)) return `${anonLabel} #${rank}`
+  return username
+}
+
 const PERIODS: LeaderboardPeriod[] = ['all', 'month', 'week']
 
 export default function Leaderboard() {
@@ -110,7 +121,7 @@ export default function Leaderboard() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-display font-bold text-sm truncate">
-                  {e.username ?? `User ${e.user_id.slice(0, 6)}`}
+                  {displayName(e.username, e.rank, t('leaderboard.anon_label' as never))}
                   {e.is_self && (
                     <span className="ml-2 font-mono text-[9px] uppercase tracking-widest text-accent-primary">
                       you
