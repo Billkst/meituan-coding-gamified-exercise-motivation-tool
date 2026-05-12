@@ -13,6 +13,7 @@ interface ResultState {
   ai_towers_lost: number
   duration: number
   degraded?: boolean
+  errorMsg?: string
 }
 
 export default function ClashResult() {
@@ -90,8 +91,15 @@ export default function ClashResult() {
         </div>
 
         {data.degraded && (
-          <div className="font-mono text-[10px] uppercase tracking-widest text-semantic-error/80 mb-4">
-            (服务器结算失败 · 仅本地展示)
+          <div className="mb-4">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-semantic-error/80">
+              (服务器结算失败 · 仅本地展示)
+            </div>
+            {data.errorMsg && (
+              <div className="mt-1 font-mono text-[10px] text-semantic-error/70 break-words px-2 normal-case tracking-normal">
+                {data.errorMsg}
+              </div>
+            )}
           </div>
         )}
 

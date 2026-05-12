@@ -256,7 +256,8 @@ export default function ClashMatch() {
               },
             })
           },
-          onError: () => {
+          onError: (err) => {
+            console.error('[ClashMatch] cr_finalize_match failed:', err)
             navigate('/clash/result', {
               state: {
                 result: matchResult,
@@ -268,6 +269,7 @@ export default function ClashMatch() {
                 ai_towers_lost: aiTowersLost,
                 duration,
                 degraded: true,
+                errorMsg: (err as Error)?.message ?? String(err),
               },
             })
           },
