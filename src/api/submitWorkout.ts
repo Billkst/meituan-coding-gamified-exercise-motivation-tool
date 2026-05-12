@@ -12,7 +12,7 @@ export type StreakStatus = 'new' | 'continued' | 'same_day' | 'protected' | 'bro
 
 export interface SubmitWorkoutResult {
   xp_gained: number
-  card_drawn: { id: string; rarity: Rarity }
+  card_drawn: { id: string; rarity: Rarity; shards_earned?: number }
   streak: number
   streak_status: StreakStatus
   gold_earned: number
@@ -40,7 +40,7 @@ export function useSubmitWorkout() {
       qc.invalidateQueries({ queryKey: ['users', 'me'] })
       qc.invalidateQueries({ queryKey: ['user_cards'] })
       qc.invalidateQueries({ queryKey: ['workouts'] })
-      qc.invalidateQueries({ queryKey: ['clash', 'state'] })
+      qc.invalidateQueries({ queryKey: ['clash'] })
     },
   })
 }

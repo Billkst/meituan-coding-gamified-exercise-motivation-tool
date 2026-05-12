@@ -3,10 +3,11 @@ import { useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useTranslation } from '@/lib/i18n'
 import type { SubmitWorkoutResult } from '@/api/submitWorkout'
 import type { Rarity } from '@/types/db'
+import { CR_CARDS_BY_ID, type CrCardId } from '@/clash/lib/cardData'
 
 type Phase = 'closed' | 'opening' | 'revealed'
 
-const RARITY_EMOJI: Record<Rarity, string> = {
+const RARITY_FALLBACK_EMOJI: Record<Rarity, string> = {
   common: '🃏',
   rare: '💎',
   epic: '⚡',
@@ -21,7 +22,7 @@ const RARITY_BORDER: Record<Rarity, string> = {
 }
 
 export default function WorkoutResult() {
-  const { t } = useTranslation()
+  const { t, lang } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
   const state = location.state as { result?: SubmitWorkoutResult } | null
@@ -77,33 +78,52 @@ export default function WorkoutResult() {
         <div className="text-8xl select-none animate-spin-slow">✨📦✨</div>
       )}
 
-      {phase === 'revealed' && (
-        <div
-          className={
-            'w-48 aspect-[3/4] rounded-card border-2 bg-bg-secondary flex flex-col items-center justify-center gap-3 px-3 ' +
-            RARITY_BORDER[card_drawn.rarity]
-          }
-        >
-          <div className="text-6xl">{RARITY_EMOJI[card_drawn.rarity]}</div>
-          <div className="font-display font-bold text-sm uppercase tracking-wider text-text-primary text-center break-all">
-            {card_drawn.id}
-          </div>
+      {phase === 'revealed' && (() => {
+        const crCard = CR_CARDS_BY_ID[card_drawn.id as CrCardId]
+        const emoji = crCard?.emoji ?? RARITY_FALLBACK_EMOJI[card_drawn.rarity]
+        const displayName = crCard
+          ? lang === 'zh'
+            ? crCard.name_zh
+            : crCard.name_en
+          : card_drawn.id
+        return (
           <div
             className={
-              'font-mono text-[10px] uppercase tracking-widest ' +
-              (card_drawn.rarity === 'legendary'
-                ? 'text-rarity-legendary'
-                : card_drawn.rarity === 'epic'
-                  ? 'text-rarity-epic'
-                  : card_drawn.rarity === 'rare'
-                    ? 'text-rarity-rare'
-                    : 'text-rarity-common')
+              'w-48 aspect-[3/4] rounded-card border-2 bg-bg-secondary flex flex-col items-center justify-center gap-2 px-3 relative ' +
+              RARITY_BORDER[card_drawn.rarity]
             }
           >
-            {card_drawn.rarity}
+            {crCard && (
+              <div className="absolute top-1 right-1 bg-rarity-epic text-bg-primary font-display font-bold text-[10px] w-5 h-5 rounded-full flex items-center justify-center">
+                {crCard.cost}
+              </div>
+            )}
+            <div className="text-6xl">{emoji}</div>
+            <div className="font-display font-bold text-sm uppercase tracking-wider text-text-primary text-center break-all px-1">
+              {displayName}
+            </div>
+            <div
+              className={
+                'font-mono text-[10px] uppercase tracking-widest ' +
+                (card_drawn.rarity === 'legendary'
+                  ? 'text-rarity-legendary'
+                  : card_drawn.rarity === 'epic'
+                    ? 'text-rarity-epic'
+                    : card_drawn.rarity === 'rare'
+                      ? 'text-rarity-rare'
+                      : 'text-rarity-common')
+              }
+            >
+              {card_drawn.rarity}
+            </div>
+            {card_drawn.shards_earned != null && card_drawn.shards_earned > 0 && (
+              <div className="font-mono text-[10px] uppercase tracking-widest text-accent-primary">
+                +{card_drawn.shards_earned} 💎
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {phase === 'revealed' && (
         <div className="flex gap-3 mt-10">
