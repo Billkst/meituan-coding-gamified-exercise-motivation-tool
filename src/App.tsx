@@ -7,6 +7,7 @@ import { useTranslation } from '@/lib/i18n'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import Workout from './pages/Workout'
+import WorkoutResult from './pages/WorkoutResult'
 import Onboarding from './pages/Onboarding'
 import Reset from './pages/Reset'
 import Leaderboard from './pages/Leaderboard'
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/clash" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/workout" element={<Workout />} />
+            <Route path="/workout/result" element={<WorkoutResult />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/clash" element={<ClashHome />} />
             <Route path="/clash/match" element={<ClashMatch />} />

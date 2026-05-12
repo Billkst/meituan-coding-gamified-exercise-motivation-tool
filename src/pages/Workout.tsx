@@ -45,7 +45,7 @@ export default function Workout() {
       { sportId, durationMinutes: duration, intensity },
       {
         onSuccess: (r) => {
-          navigate('/loot', { state: { result: r, ts: Date.now() } })
+          navigate('/workout/result', { state: { result: r, ts: Date.now() } })
         },
       }
     )
