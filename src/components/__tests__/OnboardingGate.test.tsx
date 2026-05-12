@@ -30,6 +30,7 @@ const Setup = ({ initial }: { initial: string }) => (
 describe('OnboardingGate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    window.localStorage.clear()
   })
 
   it('not onboarded + on /dashboard → redirect to /onboarding', () => {
@@ -46,6 +47,13 @@ describe('OnboardingGate', () => {
 
   it('onboarded + on /dashboard → no redirect', () => {
     mockUser('2026-05-01T00:00:00Z')
+    render(<Setup initial="/dashboard" />)
+    expect(screen.getByText('DASH')).toBeInTheDocument()
+  })
+
+  it('v2 completed_v2 in localStorage → treated as onboarded even without server flag', () => {
+    mockUser(null)
+    window.localStorage.setItem('pulse.onboarding.completed_v2', '1')
     render(<Setup initial="/dashboard" />)
     expect(screen.getByText('DASH')).toBeInTheDocument()
   })

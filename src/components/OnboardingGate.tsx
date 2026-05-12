@@ -39,7 +39,18 @@ export default function OnboardingGate({ children }: PropsWithChildren) {
 
   if (!user) return <>{children}</>
 
-  const isOnboarded = user.onboarded_at != null
+  // Onboarding state has two backing stores:
+  //   - users.onboarded_at (v1, server-side) — set by complete_onboarding RPC
+  //   - pulse.onboarding.completed_v2 (v2, localStorage) — set by TutorialResult
+  //     or the Step 3 skip-tutorial link
+  // v2 deliberately does NOT write to the server column because the flow is
+  // pure client narrative + a starter pack grant. Either flag is enough to
+  // consider the user "onboarded" — otherwise the v2-skip path bounces
+  // through /onboarding → /clash → /onboarding (infinite redirect).
+  const v2Completed =
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem('pulse.onboarding.completed_v2') === '1'
+  const isOnboarded = user.onboarded_at != null || v2Completed
 
   // Only push unboarded users INTO the flow. Once on /onboarding, the flow
   // controls its own exit (TutorialResult navigates to /clash on CTA).
