@@ -64,6 +64,21 @@ export function clearMatchSnapshot() {
   window.sessionStorage.removeItem(SNAPSHOT_KEY)
 }
 
+/**
+ * UI-only peek at the saved snapshot — extracts the bits ClashMatch needs to
+ * decide whether to skip the difficulty selector on mount and which difficulty
+ * to preselect. Returns null when no resumable match is saved.
+ */
+export function peekSavedMatchInfo(): { isTutorial: boolean; difficulty: string } | null {
+  const snap = readSnapshot()
+  if (!snap) return null
+  if (snap.state.phase === 'ended') return null
+  // Fingerprint format: `${tag}|${difficulty}|${playerDeck}|${enemyDeck}`
+  const parts = snap.fingerprint.split('|')
+  if (parts.length < 2) return null
+  return { isTutorial: parts[0] === 'T', difficulty: parts[1] }
+}
+
 export interface AiPolicy {
   decide: (state: MatchState, rng: () => number) => Action | null
   nextDelay: (state: MatchState, rng: () => number) => number

@@ -8,7 +8,7 @@ import { useTranslation } from '@/lib/i18n'
 import { useDevStore } from '@/store/useDevStore'
 import { useClashState } from '@/clash/api/clashState'
 import { useFinalizeMatch } from '@/clash/api/clashMatch'
-import { useClashEngine, clearMatchSnapshot, type AiPolicy } from '@/clash/hooks/useClashEngine'
+import { useClashEngine, clearMatchSnapshot, peekSavedMatchInfo, type AiPolicy } from '@/clash/hooks/useClashEngine'
 import { CR_CARDS_BY_ID } from '@/clash/lib/cardData'
 import type { CrCardId } from '@/clash/lib/cardData'
 import { ARENA, canDeployAt } from '@/clash/lib/arena'
@@ -46,8 +46,19 @@ export default function ClashMatch() {
     new URLSearchParams(location.search).get('tutorial') === '1'
   const { data: clashState, isLoading } = useClashState()
   const finalize = useFinalizeMatch()
-  const [difficulty, setDifficulty] = useState<AiDifficulty>('normal')
-  const [hasStarted, setHasStarted] = useState(isTutorial)
+  // F5 recovery: if a non-ended snapshot exists for this match type, skip the
+  // difficulty selector and seed the difficulty state to what was originally
+  // chosen so the input fingerprint matches and useClashEngine rehydrates.
+  const savedMatch = useMemo(() => {
+    const info = peekSavedMatchInfo()
+    if (!info) return null
+    if (info.isTutorial !== isTutorial) return null
+    return info
+  }, [isTutorial])
+  const [difficulty, setDifficulty] = useState<AiDifficulty>(
+    (savedMatch?.difficulty as AiDifficulty) || 'normal',
+  )
+  const [hasStarted, setHasStarted] = useState(isTutorial || savedMatch !== null)
   const [finalized, setFinalized] = useState(false)
   const [showTour, setShowTour] = useState(false)
   const [aiBanner, setAiBanner] = useState<{ cardId: CrCardId; until: number } | null>(null)
