@@ -34,19 +34,39 @@ interface CandidateMatch {
 }
 
 /**
+ * Sight range — how far an attacker can "see" / aggro a target.
+ *
+ * Without this, pickTarget returned the closest enemy on the entire field,
+ * so a knight walking the left lane would aggro a cannon dropped in the
+ * opposite back corner and walk diagonally across the river. Clash Royale's
+ * real sight cone is about 5.5 tiles for melee troops.
+ *
+ * - Troops: max(stats.range + 3, 5.5). Ranged units (musketeer range 6)
+ *   get a slightly larger cone so they aggro stuff they could already hit.
+ * - Buildings: stats.range. Buildings don't chase, so seeing past their
+ *   own attack range serves no purpose.
+ */
+export function sightRangeFor(attacker: Unit): number {
+  if (attacker.isBuilding) return attacker.stats.range
+  return Math.max(attacker.stats.range + 3, 5.5)
+}
+
+/**
  * Pick the best target for `attacker` from the live state.
  *
  * Rules:
  *   - Only enemies of `attacker.side`.
+ *   - Must be within sight range (see `sightRangeFor`).
  *   - target='building' (e.g. Giant) ignores troops, only hits buildings + towers.
  *   - target='ground' ignores air units (e.g. Baby Dragon).
  *   - King towers are dormant until activated (princess down OR direct hit).
- *   - Anti-jitter: keep current target if still valid.
+ *   - Anti-jitter: keep current target if still valid AND still in sight.
  *   - Otherwise: closest by Euclidean distance.
  */
 export function pickTarget(state: MatchState, attacker: Unit): TargetId | null {
   const enemySide: Side = attacker.side === 'player' ? 'enemy' : 'player'
   const tt = attacker.stats.target
+  const sight = sightRangeFor(attacker)
   const candidates: CandidateMatch[] = []
 
   for (const u of state.units) {
@@ -54,14 +74,18 @@ export function pickTarget(state: MatchState, attacker: Unit): TargetId | null {
     if (u.hp <= 0 || u.state === 'dying' || u.state === 'dead') continue
     if (tt === 'building' && !u.isBuilding) continue
     if (!canHitAir(tt, u.isAir)) continue
-    candidates.push({ id: u.id, pos: u.pos, distance: dist(attacker.pos, u.pos) })
+    const d = dist(attacker.pos, u.pos)
+    if (d > sight) continue
+    candidates.push({ id: u.id, pos: u.pos, distance: d })
   }
 
   for (const t of state.towers) {
     if (t.side !== enemySide) continue
     if (t.hp <= 0) continue
     if (t.isKing && !t.isActive) continue
-    candidates.push({ id: t.id, pos: t.pos, distance: dist(attacker.pos, t.pos) })
+    const d = dist(attacker.pos, t.pos)
+    if (d > sight) continue
+    candidates.push({ id: t.id, pos: t.pos, distance: d })
   }
 
   if (candidates.length === 0) return null
